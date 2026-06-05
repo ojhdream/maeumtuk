@@ -286,8 +286,13 @@ function Phone({ children, tab, setTab, saveOverlayVisible }) {
   );
 }
 
-function MiniPhoto({ bg }) {
-  return <div className="h-[76px] w-[76px] shrink-0 rounded-[11px] shadow-inner ring-1 ring-black/[.03]" style={{ background: bg }} />;
+function MiniPhoto({ bg, size = "md" }) {
+  const sizeClass = {
+    md: "h-[64px] w-[64px] rounded-[10px]",
+    lg: "h-[76px] w-[76px] rounded-[11px]",
+  }[size];
+
+  return <div className={`${sizeClass} shrink-0 shadow-inner ring-1 ring-black/[.03]`} style={{ background: bg }} />;
 }
 
 function EmptyState({ title, body }) {
@@ -716,7 +721,7 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
           )}
         </div>
         {!compact && !editing && item.image && (
-          <div className="pt-8">
+          <div className="pt-7">
             <MiniPhoto bg={item.image} />
           </div>
         )}
@@ -1141,7 +1146,7 @@ function TodayTab({ logItems }) {
               <div className="flex gap-3 overflow-hidden">
                 {selectedPeriod.moments.map((item) => (
                   <div key={item.id || `${item.date}-${item.time}`} className="w-[76px] shrink-0">
-                    <MiniPhoto bg={item.image} />
+                    <MiniPhoto bg={item.image} size="lg" />
                     <p className="mt-2 line-clamp-2 text-[11px] font-medium leading-4 text-[#746d65]">{item.title || getMomentTitle(item)}</p>
                   </div>
                 ))}
