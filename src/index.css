@@ -31,6 +31,10 @@ body {
   animation: maeumtuk-save-sub 0.95s ease both;
 }
 
+.maeumtuk-log-card {
+  animation: maeumtuk-card-settle 0.28s ease both;
+}
+
 @keyframes maeumtuk-save-screen {
   0% {
     opacity: 0;
@@ -41,6 +45,17 @@ body {
   }
   100% {
     opacity: 0;
+  }
+}
+
+@keyframes maeumtuk-card-settle {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

@@ -192,12 +192,12 @@ function getMomentTitle(item) {
 }
 
 function getTimeGreeting(hour) {
-  if (hour >= 5 && hour < 10) return "조용한 아침이네요.";
+  if (hour >= 5 && hour < 10) return "아침이 천천히 오네요.";
   if (hour >= 10 && hour < 14) return "점심 무렵이네요.";
-  if (hour >= 14 && hour < 17) return "느슨한 오후네요.";
-  if (hour >= 17 && hour < 21) return "차분한 저녁이네요.";
-  if (hour >= 21 || hour < 1) return "늦은 밤이네요.";
-  return "조용한 새벽이네요.";
+  if (hour >= 14 && hour < 17) return "오후가 천천히 가네요.";
+  if (hour >= 17 && hour < 21) return "저녁빛이 내려앉네요.";
+  if (hour >= 21 || hour < 1) return "밤이 꽤 깊었네요.";
+  return "새벽이 조용하네요.";
 }
 
 function TimeOfDayIcon({ hour }) {
@@ -370,7 +370,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
         {showWritingExample && !draft && (
           <section className="mb-3 rounded-[11px] bg-[#fff9f3] px-4 py-3.5 ring-1 ring-[#eee3d8]">
             <p className="whitespace-pre-line text-[14px] font-normal leading-6 text-[#514840]">
-              커피를 마셨는데도 졸리다.
+              커피 마셨는데도 졸리다. 왜지.
             </p>
             <div className="mt-2 flex items-center justify-between">
               <span className="text-[11px] font-medium text-[#a18f82]">그냥, 이런 생각 하나.</span>
@@ -390,11 +390,11 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
               if (event.target.closest("button")) return;
               draftRef.current?.focus();
             }}
-            className="relative min-h-[142px] cursor-text rounded-[10px] bg-[#fffaf2] px-3.5 pb-2.5 pt-3 ring-1 ring-[#efe6dc]"
+            className="relative min-h-[142px] cursor-text rounded-[10px] bg-[#fffaf2] px-3.5 pb-2.5 pt-3 shadow-[inset_0_1px_0_rgba(255,255,255,.8)] ring-1 ring-[#efe6dc]"
           >
-            <div className="pointer-events-none absolute inset-x-4 top-[54px] h-px bg-[#eee5db]" />
-            <div className="pointer-events-none absolute inset-x-4 top-[88px] h-px bg-[#eee5db]/75" />
-            <div className="pointer-events-none absolute inset-x-4 top-[122px] h-px bg-[#eee5db]/55" />
+            <div className="pointer-events-none absolute left-4 right-[18px] top-[54px] h-px bg-[#eadfd4]/80" />
+            <div className="pointer-events-none absolute left-[18px] right-4 top-[88px] h-px bg-[#eee5db]/65" />
+            <div className="pointer-events-none absolute left-4 right-[22px] top-[123px] h-px bg-[#eee5db]/45" />
             <textarea
               ref={draftRef}
               value={draft}
@@ -583,7 +583,7 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
   };
 
   return (
-    <article className="relative rounded-[13px] border border-[#eee6dc] bg-[#fffdf9] p-4 shadow-[0_7px_18px_rgba(54,42,30,.035)]">
+    <article className="maeumtuk-log-card relative rounded-[13px] border border-[#eee4d9] bg-[#fffaf5] p-4 shadow-[0_7px_18px_rgba(54,42,30,.032)]">
       {showManage && (
         <button
           onClick={() => {
