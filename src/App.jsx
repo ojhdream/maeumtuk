@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
   ChevronDown,
@@ -89,6 +89,21 @@ const initialTodayLogItems = [
 const tags = ["#퇴근길", "#바람", "#혼자있는시간", "#카페", "#생각정리", "#산책", "#소소한행복", "#고마운사람"];
 const writeHints = ["지금을 스친 그 생각을 남겨보세요.", "지나가기 전에 툭.", "지금 머릿속에 있는 생각 하나."];
 const LOG_PAGE_SIZE = 20;
+const STORAGE_KEY = "maeumtuk:v1";
+
+function loadStoredAppState() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const saved = window.localStorage.getItem(STORAGE_KEY);
+    if (!saved) return null;
+    return JSON.parse(saved);
+  } catch {
+    return null;
+  }
+}
 
 const autoWordRules = [
   { words: ["퇴근", "집에 오는 길", "집 가는 길", "버스", "지하철"], label: "퇴근길" },
@@ -272,12 +287,11 @@ function EmptyState({ title, body }) {
   );
 }
 
-function NowTab({ todayLogs, onAddLog }) {
+function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample }) {
   const [draft, setDraft] = useState("");
   const [photoAttached, setPhotoAttached] = useState(false);
   const [saved, setSaved] = useState(false);
   const [lengthNotice, setLengthNotice] = useState(false);
-  const [showWritingExample, setShowWritingExample] = useState(true);
   const draftRef = useRef(null);
   const currentMeta = getCurrentLogMeta();
   const draftLength = draft.trim().length;
@@ -312,7 +326,7 @@ function NowTab({ todayLogs, onAddLog }) {
     onAddLog(nextLog);
     setSaved(true);
     setLengthNotice(false);
-    setShowWritingExample(false);
+    onHideWritingExample();
     window.setTimeout(() => {
       setDraft("");
       setPhotoAttached(false);
@@ -346,7 +360,7 @@ function NowTab({ todayLogs, onAddLog }) {
             <div className="mt-2 flex items-center justify-between">
               <span className="text-[11px] font-medium text-[#a18f82]">그냥, 이런 생각 하나.</span>
               <button
-                onClick={() => setShowWritingExample(false)}
+                onClick={onHideWritingExample}
                 className="rounded-[7px] px-1.5 py-1 text-[10px] font-medium text-[#9b9188] hover:bg-[#f4eee8]"
               >
                 그만 보기
@@ -706,31 +720,43 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
           </div>
         )}
       </div>
-      {showEnvelope && <EnvelopeInteraction note={item.note} />}
+      {showEnvelope && <EnvelopeInteraction note={item.note} onChange={(nextNote) => onUpdate?.(item, { note: nextNote })} />}
     </article>
   );
 }
 
-function EnvelopeInteraction({ note }) {
+function EnvelopeInteraction({ note, onChange }) {
   const [open, setOpen] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [message, setMessage] = useState("");
-  const [editMessage, setEditMessage] = useState("");
+  const [sent, setSent] = useState(Boolean(note));
+  const [message, setMessage] = useState(note || "");
+  const [editMessage, setEditMessage] = useState(note || "");
   const [menuOpen, setMenuOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
+  useEffect(() => {
+    setSent(Boolean(note));
+    setMessage(note || "");
+    setEditMessage(note || "");
+  }, [note]);
+
   const sendMessage = () => {
-    if (!message.trim()) return;
+    const nextMessage = message.trim();
+    if (!nextMessage) return;
+    setMessage(nextMessage);
+    setEditMessage(nextMessage);
     setSent(true);
-    setEditMessage(message);
+    setOpen(false);
+    onChange?.(nextMessage);
   };
 
   const saveEdit = () => {
-    if (!editMessage.trim()) return;
-    setMessage(editMessage.trim());
+    const nextMessage = editMessage.trim();
+    if (!nextMessage) return;
+    setMessage(nextMessage);
     setEditing(false);
     setMenuOpen(false);
+    onChange?.(nextMessage);
   };
 
   const deleteMessage = () => {
@@ -741,6 +767,7 @@ function EnvelopeInteraction({ note }) {
     setEditing(false);
     setConfirmDelete(false);
     setMenuOpen(false);
+    onChange?.("");
   };
 
   return (
@@ -1145,8 +1172,20 @@ function TodayTab({ logItems }) {
 
 export default function App() {
   const [tab, setTab] = useState("now");
-  const [todayLogs, setTodayLogs] = useState(initialTodayLogItems);
-  const [allLogs, setAllLogs] = useState(initialLogItems);
+  const [todayLogs, setTodayLogs] = useState(() => loadStoredAppState()?.todayLogs || initialTodayLogItems);
+  const [allLogs, setAllLogs] = useState(() => loadStoredAppState()?.allLogs || initialLogItems);
+  const [showWritingExample, setShowWritingExample] = useState(() => loadStoredAppState()?.showWritingExample ?? true);
+
+  useEffect(() => {
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        todayLogs,
+        allLogs,
+        showWritingExample,
+      }),
+    );
+  }, [todayLogs, allLogs, showWritingExample]);
 
   const addLog = (log) => {
     setTodayLogs((current) => [log, ...current]);
@@ -1172,13 +1211,18 @@ export default function App() {
   const screen = useMemo(
     () =>
       tab === "now" ? (
-        <NowTab todayLogs={todayLogs} onAddLog={addLog} />
+        <NowTab
+          todayLogs={todayLogs}
+          onAddLog={addLog}
+          showWritingExample={showWritingExample}
+          onHideWritingExample={() => setShowWritingExample(false)}
+        />
       ) : tab === "log" ? (
         <LogTab logItems={allLogs} onUpdateLog={updateLog} onDeleteLog={deleteLog} />
       ) : (
         <TodayTab logItems={allLogs} />
       ),
-    [tab, todayLogs, allLogs],
+    [tab, todayLogs, allLogs, showWritingExample],
   );
 
   return (
