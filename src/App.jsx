@@ -212,15 +212,33 @@ function TimeOfDayIcon({ hour }) {
   return <Sun size={22} strokeWidth={1.8} className="text-[#f0bd3f]" />;
 }
 
+function TukMark({ size = "sm", muted = false }) {
+  const dimensions = size === "lg" ? "h-[38px] w-[92px]" : "h-[18px] w-[48px]";
+  const strokeWidth = size === "lg" ? 5.4 : 4.2;
+  const dotRadius = size === "lg" ? 3.5 : 3;
+  const markColor = muted ? "#d2c4b8" : "#d9825f";
+  const dotColor = muted ? "#d9b86b" : "#ff7442";
+
+  return (
+    <svg className={dimensions} viewBox="0 0 92 38" fill="none" aria-hidden="true">
+      <path
+        d="M6 27 C22 27, 36 25, 42 18 C47 11, 38 7, 33 13 C26 22, 28 33, 43 31 C52 30, 58 26, 63 22"
+        stroke={markColor}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="80" cy="25" r={dotRadius} fill={dotColor} />
+    </svg>
+  );
+}
+
 function AppHeader() {
   return (
     <header className="flex items-center justify-between px-6 pt-6">
       <div className="flex items-center gap-3">
         <div className="font-['SUIT'] text-[22px] font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭</div>
-        <div className="flex w-[38px] items-center" aria-hidden="true">
-          <span className="h-px flex-1 bg-[#cfc3b7]" />
-          <span className="h-2 w-2 rounded-full bg-[#ff7442]" />
-        </div>
+        <TukMark />
       </div>
     </header>
   );
@@ -264,10 +282,8 @@ function SaveOverlay() {
   return (
     <div className="maeumtuk-save-screen pointer-events-none absolute inset-0 z-50 grid place-items-center bg-[#fffaf4]/88 backdrop-blur-[3px]">
       <div className="maeumtuk-save-pop flex flex-col items-center">
-        <div className="mb-5 flex w-[82px] items-center" aria-hidden="true">
-          <span className="h-px flex-1 bg-[#c8baad]" />
-          <span className="h-3 w-3 rounded-full bg-[#ff7442]" />
-          <span className="h-px flex-1 bg-[#c8baad]" />
+        <div className="mb-5">
+          <TukMark size="lg" />
         </div>
         <p className="font-['SUIT'] text-[20px] font-semibold tracking-[-0.02em] text-[#2d2119]">툭, 남겨졌어요.</p>
         <p className="maeumtuk-save-sub mt-3 text-[13px] font-medium text-[#8b857e]">여기에 잠깐 머물러요.</p>
@@ -298,10 +314,8 @@ function MiniPhoto({ bg, size = "md" }) {
 function EmptyState({ title, body }) {
   return (
     <section className="rounded-[13px] border border-[#eee6dc] bg-[#fffdf9] px-5 py-8 text-center shadow-[0_7px_18px_rgba(54,42,30,.03)]">
-      <div className="mx-auto mb-5 flex w-[58px] items-center" aria-hidden="true">
-        <span className="h-px flex-1 bg-[#cfc3b7]" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#ff7442]" />
-        <span className="h-px flex-1 bg-[#cfc3b7]" />
+      <div className="mx-auto mb-5 flex justify-center">
+        <TukMark muted />
       </div>
       <h2 className="font-['SUIT'] text-[16px] font-semibold tracking-[-0.02em] text-[#2d2119]">{title}</h2>
       <p className="mx-auto mt-2 max-w-[230px] text-[13px] leading-6 text-[#817970]">{body}</p>
