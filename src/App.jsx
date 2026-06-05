@@ -555,7 +555,6 @@ function AutoTagEditor({ item, onUpdate, editing, onDone }) {
             {normalizeWord(tag)}
           </span>
         ))}
-        {(item.tags || []).length === 0 && <span className="text-[11px] text-[#aaa29a]">자동으로 정리된 태그가 없어요.</span>}
       </div>
     </div>
   );
