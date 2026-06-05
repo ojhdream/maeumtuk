@@ -19,37 +19,60 @@ body {
   min-height: 100vh;
 }
 
+.maeumtuk-save-screen {
+  animation: maeumtuk-save-screen 0.95s ease both;
+}
+
 .maeumtuk-save-pop {
-  animation: maeumtuk-save-pop 1.25s ease both;
+  animation: maeumtuk-save-pop 0.95s ease both;
 }
 
 .maeumtuk-save-sub {
-  animation: maeumtuk-save-sub 1.25s ease both;
+  animation: maeumtuk-save-sub 0.95s ease both;
+}
+
+@keyframes maeumtuk-save-screen {
+  0% {
+    opacity: 0;
+  }
+  14%,
+  76% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes maeumtuk-save-pop {
   0% {
     opacity: 0;
+    transform: translateY(5px);
   }
-  22%,
-  82% {
+  18%,
+  78% {
     opacity: 1;
+    transform: translateY(0);
   }
   100% {
     opacity: 0;
+    transform: translateY(-3px);
   }
 }
 
 @keyframes maeumtuk-save-sub {
   0%,
-  18% {
+  20% {
     opacity: 0;
+    transform: translateY(3px);
   }
-  38%,
-  82% {
+  40%,
+  76% {
     opacity: 1;
+    transform: translateY(0);
   }
   100% {
     opacity: 0;
+    transform: translateY(-2px);
   }
 }

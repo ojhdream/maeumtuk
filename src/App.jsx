@@ -260,11 +260,28 @@ function BottomNav({ tab, setTab }) {
   );
 }
 
-function Phone({ children, tab, setTab }) {
+function SaveOverlay() {
+  return (
+    <div className="maeumtuk-save-screen pointer-events-none absolute inset-0 z-50 grid place-items-center bg-[#fffaf4]/88 backdrop-blur-[3px]">
+      <div className="maeumtuk-save-pop flex flex-col items-center">
+        <div className="mb-5 flex w-[82px] items-center" aria-hidden="true">
+          <span className="h-px flex-1 bg-[#c8baad]" />
+          <span className="h-3 w-3 rounded-full bg-[#ff7442]" />
+          <span className="h-px flex-1 bg-[#c8baad]" />
+        </div>
+        <p className="font-['SUIT'] text-[20px] font-semibold tracking-[-0.02em] text-[#2d2119]">툭, 남겨졌어요.</p>
+        <p className="maeumtuk-save-sub mt-3 text-[13px] font-medium text-[#8b857e]">여기에 잠깐 머물러요.</p>
+      </div>
+    </div>
+  );
+}
+
+function Phone({ children, tab, setTab, saveOverlayVisible }) {
   return (
     <div className="relative min-h-[100dvh] w-full max-w-[430px] overflow-hidden bg-[#f7f3ee] sm:h-[820px] sm:min-h-0 sm:w-[390px] sm:rounded-[26px] sm:shadow-[0_16px_55px_rgba(63,47,30,.08)] sm:ring-1 sm:ring-[#ebe2d8]">
       <div className="h-full min-h-[100dvh] overflow-y-auto pb-[calc(106px+env(safe-area-inset-bottom))] [scrollbar-width:none] sm:min-h-0 [&::-webkit-scrollbar]:hidden">{children}</div>
       <BottomNav tab={tab} setTab={setTab} />
+      {saveOverlayVisible && <SaveOverlay />}
     </div>
   );
 }
@@ -287,10 +304,9 @@ function EmptyState({ title, body }) {
   );
 }
 
-function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample }) {
+function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample, onShowSaved }) {
   const [draft, setDraft] = useState("");
   const [photoAttached, setPhotoAttached] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [lengthNotice, setLengthNotice] = useState(false);
   const draftRef = useRef(null);
   const currentMeta = getCurrentLogMeta();
@@ -324,14 +340,13 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample 
     };
 
     onAddLog(nextLog);
-    setSaved(true);
+    onShowSaved();
     setLengthNotice(false);
     onHideWritingExample();
     window.setTimeout(() => {
       setDraft("");
       setPhotoAttached(false);
     }, 180);
-    window.setTimeout(() => setSaved(false), 1300);
   };
 
   return (
@@ -422,19 +437,6 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample 
           </div>
           {lengthNotice && (
             <p className="mt-2 px-1 text-[12px] font-medium text-[#c46b49]">조금 길어요. 툭은 300자 안쪽이 잘 읽혀요.</p>
-          )}
-          {saved && (
-            <div className="absolute inset-3 z-30 grid place-items-center rounded-[12px] bg-[#fffdf9]/88 backdrop-blur-sm">
-              <div className="maeumtuk-save-pop flex flex-col items-center">
-                <div className="mb-5 flex w-[70px] items-center" aria-hidden="true">
-                  <span className="h-px flex-1 bg-[#cfc3b7]" />
-                  <span className="h-3 w-3 rounded-full bg-[#ff7442]" />
-                  <span className="h-px flex-1 bg-[#cfc3b7]" />
-                </div>
-                <p className="font-['SUIT'] text-[19px] font-semibold tracking-[-0.02em] text-[#2d2119]">툭, 남겨졌어요.</p>
-                <p className="maeumtuk-save-sub mt-3 text-[13px] font-medium text-[#8b857e]">여기에 잠깐 머물러요.</p>
-              </div>
-            </div>
           )}
         </section>
 
@@ -1175,6 +1177,8 @@ export default function App() {
   const [todayLogs, setTodayLogs] = useState(() => loadStoredAppState()?.todayLogs || initialTodayLogItems);
   const [allLogs, setAllLogs] = useState(() => loadStoredAppState()?.allLogs || initialLogItems);
   const [showWritingExample, setShowWritingExample] = useState(() => loadStoredAppState()?.showWritingExample ?? true);
+  const [saveOverlayVisible, setSaveOverlayVisible] = useState(false);
+  const saveTimerRef = useRef(null);
 
   useEffect(() => {
     window.localStorage.setItem(
@@ -1186,6 +1190,25 @@ export default function App() {
       }),
     );
   }, [todayLogs, allLogs, showWritingExample]);
+
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) {
+        window.clearTimeout(saveTimerRef.current);
+      }
+    };
+  }, []);
+
+  const showSaveOverlay = () => {
+    if (saveTimerRef.current) {
+      window.clearTimeout(saveTimerRef.current);
+    }
+
+    setSaveOverlayVisible(true);
+    saveTimerRef.current = window.setTimeout(() => {
+      setSaveOverlayVisible(false);
+    }, 950);
+  };
 
   const addLog = (log) => {
     setTodayLogs((current) => [log, ...current]);
@@ -1216,6 +1239,7 @@ export default function App() {
           onAddLog={addLog}
           showWritingExample={showWritingExample}
           onHideWritingExample={() => setShowWritingExample(false)}
+          onShowSaved={showSaveOverlay}
         />
       ) : tab === "log" ? (
         <LogTab logItems={allLogs} onUpdateLog={updateLog} onDeleteLog={deleteLog} />
@@ -1228,7 +1252,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#f7f3ee] p-0 font-['Pretendard'] text-[#211b16] sm:p-6">
       <div className="mx-auto flex max-w-[1260px] items-stretch justify-center gap-7 sm:items-start">
-        <Phone tab={tab} setTab={setTab}>{screen}</Phone>
+        <Phone tab={tab} setTab={setTab} saveOverlayVisible={saveOverlayVisible}>{screen}</Phone>
         <div className="hidden max-w-[520px] rounded-[18px] bg-[#fffdf9]/78 p-7 text-sm leading-7 text-[#4b443d] shadow-[0_7px_18px_rgba(54,42,30,.035)] ring-1 ring-[#eee7de] lg:block">
           <h2 className="mb-4 font-['SUIT'] text-lg font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭 UI 메모</h2>
           <p>
