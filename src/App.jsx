@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
+  CalendarDays,
   ChevronDown,
   ChevronUp,
   FileText,
   Image,
+  Leaf,
   MoreHorizontal,
   Moon,
   PencilLine,
@@ -467,6 +469,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
   const isTooLong = draftLength > 300;
   const todayCount = todayLogs.length;
   const todayLabel = todayCount === 0 ? "비어 있음" : todayCount === 1 ? "첫 툭" : `${todayCount}툭`;
+  const [monthLabel, dateLabel] = currentMeta.date.split(".").map((part) => Number(part));
 
   const leaveTuk = () => {
     const text = draft.trim();
@@ -504,13 +507,9 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
     <>
       <AppHeader />
       <main className="px-6 pt-8">
-        <div className="mb-4 font-['Pretendard']">
-          <p className="text-[12px] font-medium text-[#8b8279]">
-            {currentMeta.date} {currentMeta.day} · {currentMeta.time}
-          </p>
-          <p className="mt-2 max-w-[280px] whitespace-pre-line text-[17px] font-medium leading-[29px] tracking-[-0.02em] text-[#3f3933]">
-            한 줄이어도 괜찮아요.{"\n"}떠오르는 대로 그냥 툭.
-          </p>
+        <div className="mb-4 flex items-center gap-2 font-['Pretendard'] text-[14px] font-medium tracking-[-0.02em] text-[#5f5850]">
+          <Leaf size={18} strokeWidth={1.9} className="shrink-0 text-[#6f925b]" />
+          <p>지금 떠오른 생각을 가볍게 적어보세요.</p>
         </div>
 
         {showWritingExample && !draft && (
@@ -530,17 +529,23 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
           </section>
         )}
 
-        <section className="relative rounded-[13px] border border-[#e1e8d8] bg-[#fffdf9] p-3 shadow-[0_7px_18px_rgba(54,42,30,.03)]">
+        <section className="relative rounded-[13px] border border-[#ece4da] bg-[#fffdf9] p-3.5 shadow-[0_9px_22px_rgba(54,42,30,.045)]">
+          <div className="mb-3 flex items-center justify-between gap-3 px-1">
+            <div className="flex items-center gap-2.5 text-[15px] font-semibold tracking-[-0.02em] text-[#2f2924]">
+              <CalendarDays size={17} strokeWidth={1.9} className="text-[#3f3933]" />
+              <span>{monthLabel}월 {dateLabel}일</span>
+              <span className="text-[#6f925b]">{currentMeta.day}</span>
+            </div>
+            <ChevronDown size={18} strokeWidth={2} className="text-[#312b25]" />
+          </div>
+
           <div
             onClick={(event) => {
               if (event.target.closest("button")) return;
               draftRef.current?.focus();
             }}
-            className="relative min-h-[108px] cursor-text rounded-[10px] bg-[#fbfcf7] px-3.5 pb-2.5 pt-3"
+            className="relative cursor-text rounded-[9px] border border-[#ebe2d8] bg-[#fffdf9] px-3 pb-7 pt-3"
           >
-            <div className="pointer-events-none absolute left-4 right-[18px] top-[43px] h-px bg-[#dfe8d3]/72" />
-            <div className="pointer-events-none absolute left-[18px] right-4 top-[72px] h-px bg-[#e6eadb]/58" />
-            <div className="pointer-events-none absolute left-4 right-[22px] top-[101px] h-px bg-[#e6eadb]/42" />
             <textarea
               ref={draftRef}
               value={draft}
@@ -548,9 +553,12 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
                 setDraft(event.target.value);
                 if (lengthNotice) setLengthNotice(false);
               }}
-              className="relative z-10 h-[86px] max-h-[210px] w-full resize-none overflow-y-auto bg-transparent font-['Pretendard'] text-[16px] leading-[29px] tracking-[-0.02em] text-[#272a22] outline-none placeholder:text-[#969e8f] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-              placeholder={writeHints[0]}
+              className="relative z-10 h-[92px] max-h-[220px] w-full resize-none overflow-y-auto bg-transparent font-['Pretendard'] text-[15px] leading-[27px] tracking-[-0.02em] text-[#272a22] outline-none placeholder:text-[#9a9289] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              placeholder="지금 어떤 생각이 스치나요?"
             />
+            <span className={`absolute bottom-2.5 right-3 text-[12px] ${isTooLong ? "font-medium text-[#d46a45]" : "font-medium text-[#8b857e]"}`}>
+              {draftLength} / 300
+            </span>
             {photoData && (
               <div className="mt-2 flex items-start gap-3">
                 <div
@@ -568,7 +576,8 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
               </div>
             )}
           </div>
-          <div className="mt-2 flex items-center justify-between px-1 text-[#655f58]">
+          <div className="mt-3 h-px bg-[#eee6dc]" />
+          <div className="mt-3 flex items-center justify-between gap-3 px-1 text-[#655f58]">
             <input
               ref={photoInputRef}
               type="file"
@@ -581,31 +590,23 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
             />
             <button
               onClick={() => photoInputRef.current?.click()}
-              className="inline-flex h-7 items-center gap-1.5 rounded-[8px] px-1.5 text-[12px] font-medium text-[#607454] hover:bg-[#eef4e8]"
+              className="inline-flex h-9 items-center gap-1.5 rounded-[8px] px-1.5 text-[13px] font-medium text-[#5f7f46] hover:bg-[#eef4e8]"
               aria-label="사진 추가"
             >
-              <Image size={16} strokeWidth={1.7} />
-              사진
+              <Image size={17} strokeWidth={1.8} />
+              사진 추가
             </button>
-            {showLengthCount && (
-              <span className={`text-[12px] ${isTooLong ? "font-medium text-[#d46a45]" : "text-[#8b857e]"}`}>
-                {draftLength} / 300
-              </span>
-            )}
+            <button
+              onClick={leaveTuk}
+              className="h-10 min-w-[116px] rounded-[10px] border border-[rgba(221,111,81,0.2)] bg-[#dd6f51] px-4 font-['SUIT'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_6px_13px_rgba(221,111,81,.13)] transition duration-150 hover:bg-[#d86448] active:scale-[0.98] active:bg-[#c85e43]"
+            >
+              툭, 남기기
+            </button>
           </div>
           {lengthNotice && (
             <p className="mt-2 px-1 text-[12px] font-medium text-[#c46b49]">조금 길어요. 툭은 300자 안쪽이 잘 읽혀요.</p>
           )}
         </section>
-
-        <div className="mt-3 flex justify-end">
-          <button
-            onClick={leaveTuk}
-            className="h-12 min-w-[126px] rounded-full border border-[rgba(221,111,81,0.2)] bg-[#dd6f51] px-5 font-['SUIT'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_7px_15px_rgba(221,111,81,.15)] transition duration-150 hover:bg-[#d86448] active:scale-[0.98] active:bg-[#c85e43]"
-          >
-            툭 남기기
-          </button>
-        </div>
 
         <section className="mt-9">
           <div className="mb-3 flex items-center justify-between">
