@@ -5,7 +5,8 @@
   font-family: "MaruBuri";
   font-style: normal;
   font-weight: 400;
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-10@1.0/MaruBuri-Regular.woff") format("woff");
+  font-display: swap;
+  src: url("https://cdn.jsdelivr.net/gh/sweetherofonts/fontshero_pack3/maruburi/maruburi-Regular.woff2") format("woff2");
 }
 
 @tailwind base;
