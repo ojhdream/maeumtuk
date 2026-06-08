@@ -105,19 +105,52 @@ function loadStoredAppState() {
   }
 }
 
-const autoWordRules = [
-  { words: ["퇴근", "집에 오는 길", "집 가는 길", "버스", "지하철"], label: "퇴근길" },
-  { words: ["바람", "공기", "날씨"], label: "바람" },
-  { words: ["걸", "산책", "걷기"], label: "걷기" },
-  { words: ["카페", "커피", "아메리카노"], label: "카페" },
-  { words: ["친구", "대화", "만났다"], label: "친구" },
-  { words: ["업무", "회의", "메일", "일"], label: "업무" },
-  { words: ["답답", "막막", "숨막"], label: "답답" },
-  { words: ["속상", "서운", "울컥"], label: "속상" },
-  { words: ["떨림", "긴장", "두근"], label: "떨림" },
-  { words: ["좋았다", "괜찮", "편했다", "가벼"], label: "가벼움" },
-  { words: ["조용", "차분", "느슨"], label: "차분함" },
+const categoryTagRules = [
+  { label: "가족", words: ["엄마", "아빠", "아이", "자녀", "육아", "유치원", "가족"] },
+  { label: "일", words: ["회사", "일", "업무", "회의", "개발", "프로젝트", "출시", "코딩"] },
+  { label: "건강", words: ["병원", "검사", "약", "운동", "잠", "피곤", "아프", "건강"] },
+  { label: "관계", words: ["친구", "대화", "만남", "연락", "말", "사람", "세인이"] },
+  { label: "취미", words: ["카페", "커피", "산책", "책", "영화", "음악", "여행"] },
+  { label: "일상", words: ["집", "지하철", "버스", "퇴근", "출근", "밥", "점심", "저녁", "날씨"] },
 ];
+
+const categoryTagLabels = new Set(categoryTagRules.map((rule) => rule.label));
+const personalTagStopWords = new Set([
+  "오늘",
+  "어제",
+  "내일",
+  "지금",
+  "조금",
+  "너무",
+  "그냥",
+  "정말",
+  "계속",
+  "다시",
+  "마음",
+  "생각",
+  "기분",
+  "느낌",
+  "하루",
+  "아침",
+  "오전",
+  "오후",
+  "저녁",
+  "밤",
+  "사람",
+  "시간",
+  "순간",
+  "정도",
+  "때문",
+  "괜찮",
+  "좋다",
+  "좋았",
+  "했다",
+  "같다",
+  "같았",
+  "있다",
+  "없다",
+  "된다",
+]);
 
 function normalizeWord(tag) {
   return tag.replace(/^#/, "");
@@ -127,18 +160,110 @@ function getLogKey(log) {
   return log.id || `${log.date}-${log.time}`;
 }
 
-function extractLeftWords(text) {
+function stripKoreanParticle(word) {
+  return word.replace(/(에게서|에게|한테|에서|으로|부터|까지|처럼|보다|이라도|이라서|이라면|이랑|하고|이며|이면|이다|였다|했다|한다|되어|됐다|이라|라고|와|과|은|는|이|가|을|를|에|도|만|로|랑)$/u, "");
+}
+
+function extractComparableWords(text) {
+  return [...text.matchAll(/[가-힣A-Za-z0-9]{1,}/g)].map(([word]) => stripKoreanParticle(word.trim())).filter(Boolean);
+}
+
+function extractCategoryTags(text) {
   const source = text.trim();
   if (!source) return [];
 
-  const found = autoWordRules.filter((rule) => rule.words.some((word) => source.includes(word))).map((rule) => rule.label);
-  return [...new Set(found)].slice(0, 4);
+  const sourceWords = new Set(extractComparableWords(source));
+  const found = categoryTagRules
+    .filter((rule) =>
+      rule.words.some((word) => {
+        if (word.length === 1) return sourceWords.has(word);
+        return source.includes(word);
+      }),
+    )
+    .map((rule) => rule.label);
+  return [...new Set(found)];
 }
 
-const emotionWords = new Set(["속상", "답답", "떨림", "가벼움", "차분함", "좋음", "묵직함", "느슨함"]);
+function extractCandidateWords(text) {
+  return extractComparableWords(text)
+    .filter((word) => word.length >= 2)
+    .filter((word) => !personalTagStopWords.has(word))
+    .filter((word) => !categoryTagLabels.has(word));
+}
+
+function parseLogDate(item) {
+  const match = item.date?.match(/^(\d{2})\.(\d{2})$/);
+  if (!match) return null;
+
+  const now = new Date();
+  const parsed = new Date(now.getFullYear(), Number(match[1]) - 1, Number(match[2]));
+  if (parsed.getTime() > now.getTime() + 1000 * 60 * 60 * 24) {
+    parsed.setFullYear(parsed.getFullYear() - 1);
+  }
+
+  return parsed;
+}
+
+function getPersonalTagSet(logItems) {
+  const now = new Date();
+  const recentFrom = now.getTime() - 1000 * 60 * 60 * 24 * 30;
+  const stats = new Map();
+
+  logItems.forEach((item) => {
+    const logDate = parseLogDate(item);
+    const isRecent = !logDate || logDate.getTime() >= recentFrom;
+    const words = new Set(extractCandidateWords(item.text || ""));
+
+    words.forEach((word) => {
+      const key = word.toLocaleLowerCase("ko-KR");
+      const current = stats.get(key) || { label: word, total: 0, recent: 0 };
+      current.total += 1;
+      if (isRecent) current.recent += 1;
+      if (word.length < current.label.length) current.label = word;
+      stats.set(key, current);
+    });
+  });
+
+  return new Set(
+    [...stats.values()]
+      .filter((item) => item.total >= 5 || item.recent >= 3)
+      .sort((a, b) => b.total - a.total || b.recent - a.recent)
+      .map((item) => item.label),
+  );
+}
+
+function uniqueWords(words) {
+  const seen = new Set();
+  return words.filter((word) => {
+    const normalized = normalizeWord(word).trim();
+    if (!normalized) return false;
+    const key = normalized.toLocaleLowerCase("ko-KR");
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
 
 function extractAutoTags(text) {
-  return extractLeftWords(text).filter((word) => !emotionWords.has(normalizeWord(word))).slice(0, 4);
+  return extractCategoryTags(text).slice(0, 3);
+}
+
+function getGeneratedTags(item, personalTagSet) {
+  const candidates = extractCandidateWords(item.text || "");
+  const personalTags = uniqueWords(candidates.filter((word) => personalTagSet.has(word)));
+  const categoryTags = extractCategoryTags(item.text || "");
+  return uniqueWords([...personalTags, ...categoryTags]).slice(0, 3);
+}
+
+function enrichLogsWithTags(logItems, personalTagSet = getPersonalTagSet(logItems)) {
+
+  return logItems.map((item) => {
+    if (item.tagsManaged) {
+      return { ...item, tags: uniqueWords(item.tags || []).slice(0, 6) };
+    }
+
+    return { ...item, tags: getGeneratedTags(item, personalTagSet) };
+  });
 }
 
 function getCurrentLogMeta() {
@@ -328,7 +453,6 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
       setLengthNotice(true);
       return;
     }
-    const leftWords = extractLeftWords(text);
     const autoTags = extractAutoTags(text);
 
     const nextLog = {
@@ -338,7 +462,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
       time: currentMeta.time,
       text: text || "사진으로 남긴 툭",
       tags: autoTags,
-      mood: leftWords.find((word) => ["속상", "답답", "떨림", "가벼움", "차분함"].includes(word)) || "남김",
+      mood: "남김",
       dot: currentMeta.dot,
       image: photoAttached ? "linear-gradient(135deg,#b7c9ba,#f3c66f 52%,#7d5a3e)" : null,
       note: "",
@@ -575,11 +699,10 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
   const saveEdit = () => {
     const nextText = editText.trim();
     if (!nextText) return;
-    const nextWords = extractLeftWords(nextText);
     onUpdate?.(item, {
       text: nextText,
       tags: item.tagsManaged ? item.tags : extractAutoTags(nextText),
-      mood: nextWords.find((word) => ["속상", "답답", "떨림", "가벼움", "차분함"].includes(word)) || item.mood,
+      mood: item.mood || "남김",
       image: editImage,
     });
     setEditing(false);
@@ -919,6 +1042,7 @@ function LogTab({ logItems, onUpdateLog, onDeleteLog }) {
     : logItems;
   const visibleLogs = filteredLogs.slice(0, visibleCount);
   const hasMoreLogs = visibleCount < filteredLogs.length;
+  const resultLabel = selectedTag ? `${selectedTag}와 함께한 순간 ${filteredLogs.length}개` : `전체 툭 ${filteredLogs.length}개`;
   const groupedLogs = visibleLogs.reduce((groups, item) => {
     const key = `${item.date}-${item.day}`;
     const existing = groups.find((group) => group.key === key);
@@ -970,6 +1094,7 @@ function LogTab({ logItems, onUpdateLog, onDeleteLog }) {
               </button>
             ))}
           </div>
+          {hasLogs && <p className="mt-2 px-1 text-[11px] font-medium text-[#9a9188]">{resultLabel}</p>}
         </section>
         {hasLogs ? (
           filteredLogs.length > 0 ? (
@@ -1050,7 +1175,6 @@ function TodayTab({ logItems }) {
   const [periodOpen, setPeriodOpen] = useState(false);
   const [selectedPeriodId, setSelectedPeriodId] = useState("current");
   const currentFrequentWords = [...new Set(logItems.flatMap((item) => item.tags || []).map(normalizeWord))]
-    .filter((word) => !emotionWords.has(word))
     .slice(0, 6);
   const currentPhotoMoments = logItems.filter((item) => item.image).slice(0, 3);
   const currentContinuedStories = logItems.filter((item) => item.note).slice(0, 2).map((item) => item.note);
@@ -1234,22 +1358,26 @@ export default function App() {
     setAllLogs((current) => current.filter(keepOtherLogs));
   };
 
+  const personalTagSet = useMemo(() => getPersonalTagSet(allLogs), [allLogs]);
+  const taggedAllLogs = useMemo(() => enrichLogsWithTags(allLogs, personalTagSet), [allLogs, personalTagSet]);
+  const taggedTodayLogs = useMemo(() => enrichLogsWithTags(todayLogs, personalTagSet), [todayLogs, personalTagSet]);
+
   const screen = useMemo(
     () =>
       tab === "now" ? (
         <NowTab
-          todayLogs={todayLogs}
+          todayLogs={taggedTodayLogs}
           onAddLog={addLog}
           showWritingExample={showWritingExample}
           onHideWritingExample={() => setShowWritingExample(false)}
           onShowSaved={showSaveOverlay}
         />
       ) : tab === "log" ? (
-        <LogTab logItems={allLogs} onUpdateLog={updateLog} onDeleteLog={deleteLog} />
+        <LogTab logItems={taggedAllLogs} onUpdateLog={updateLog} onDeleteLog={deleteLog} />
       ) : (
-        <TodayTab logItems={allLogs} />
+        <TodayTab logItems={taggedAllLogs} />
       ),
-    [tab, todayLogs, allLogs, showWritingExample],
+    [tab, taggedTodayLogs, taggedAllLogs, showWritingExample],
   );
 
   return (
