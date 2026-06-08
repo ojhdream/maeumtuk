@@ -316,6 +316,27 @@ function getMomentTitle(item) {
   return firstLine.length > 10 ? `${firstLine.slice(0, 10)}...` : firstLine;
 }
 
+function readImageFile(file, onLoad) {
+  if (!file || !file.type.startsWith("image/")) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    if (typeof reader.result === "string") {
+      onLoad(reader.result);
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function getImageBackground(image) {
+  if (!image) return undefined;
+  if (image.startsWith("data:") || image.startsWith("blob:") || image.startsWith("http")) {
+    return `center / cover no-repeat url("${image}")`;
+  }
+
+  return image;
+}
+
 function getTimeGreeting(hour) {
   if (hour >= 5 && hour < 10) return "아침이 천천히 오네요.";
   if (hour >= 10 && hour < 14) return "점심 무렵이네요.";
@@ -417,7 +438,7 @@ function MiniPhoto({ bg, size = "md" }) {
     lg: "h-[76px] w-[76px] rounded-[11px]",
   }[size];
 
-  return <div className={`${sizeClass} shrink-0 shadow-inner ring-1 ring-black/[.03]`} style={{ background: bg }} />;
+  return <div className={`${sizeClass} shrink-0 shadow-inner ring-1 ring-black/[.03]`} style={{ background: getImageBackground(bg) }} />;
 }
 
 function EmptyState({ title, body }) {
@@ -436,9 +457,10 @@ function EmptyState({ title, body }) {
 
 function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample, onShowSaved }) {
   const [draft, setDraft] = useState("");
-  const [photoAttached, setPhotoAttached] = useState(false);
+  const [photoData, setPhotoData] = useState(null);
   const [lengthNotice, setLengthNotice] = useState(false);
   const draftRef = useRef(null);
+  const photoInputRef = useRef(null);
   const currentMeta = getCurrentLogMeta();
   const draftLength = draft.trim().length;
   const showLengthCount = draft.length >= 240;
@@ -448,7 +470,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
 
   const leaveTuk = () => {
     const text = draft.trim();
-    if (!text && !photoAttached) return;
+    if (!text && !photoData) return;
     if (text.length > 300) {
       setLengthNotice(true);
       return;
@@ -464,7 +486,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
       tags: autoTags,
       mood: "남김",
       dot: currentMeta.dot,
-      image: photoAttached ? "linear-gradient(135deg,#b7c9ba,#f3c66f 52%,#7d5a3e)" : null,
+      image: photoData,
       note: "",
     };
 
@@ -474,7 +496,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
     onHideWritingExample();
     window.setTimeout(() => {
       setDraft("");
-      setPhotoAttached(false);
+      setPhotoData(null);
     }, 180);
   };
 
@@ -534,11 +556,14 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
               className="relative z-10 h-[86px] max-h-[210px] w-full resize-none overflow-y-auto bg-transparent font-['Pretendard'] text-[16px] leading-[29px] tracking-[-0.02em] text-[#272a22] outline-none placeholder:text-[#969e8f] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               placeholder={writeHints[0]}
             />
-            {photoAttached && (
+            {photoData && (
               <div className="mt-2 flex items-start gap-3">
-                <div className="relative h-[64px] w-[64px] shrink-0 rounded-[10px] bg-[linear-gradient(135deg,#b7c9ba,#f3c66f_52%,#7d5a3e)] shadow-inner ring-1 ring-black/[.04]">
+                <div
+                  className="relative h-[64px] w-[64px] shrink-0 rounded-[10px] shadow-inner ring-1 ring-black/[.04]"
+                  style={{ background: getImageBackground(photoData) }}
+                >
                   <button
-                    onClick={() => setPhotoAttached(false)}
+                    onClick={() => setPhotoData(null)}
                     className="absolute -right-2.5 -top-2.5 grid h-8 w-8 place-items-center rounded-full bg-[#fffdf9] text-[#6c6259] shadow-[0_2px_8px_rgba(54,42,30,.12)] ring-1 ring-[#e8dfd5]"
                     aria-label="첨부 사진 삭제"
                   >
@@ -549,8 +574,18 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
             )}
           </div>
           <div className="mt-2 flex items-center justify-between px-1 text-[#655f58]">
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(event) => {
+                readImageFile(event.target.files?.[0], setPhotoData);
+                event.target.value = "";
+              }}
+            />
             <button
-              onClick={() => setPhotoAttached(true)}
+              onClick={() => photoInputRef.current?.click()}
               className="inline-flex h-7 items-center gap-1.5 rounded-[8px] px-1.5 text-[12px] font-medium text-[#607454] hover:bg-[#eef4e8]"
               aria-label="사진 추가"
             >
@@ -695,6 +730,7 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [editText, setEditText] = useState(item.text);
   const [editImage, setEditImage] = useState(item.image);
+  const editImageInputRef = useRef(null);
 
   const saveEdit = () => {
     const nextText = editText.trim();
@@ -769,6 +805,16 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
           </div>
           {editing ? (
             <div>
+              <input
+                ref={editImageInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(event) => {
+                  readImageFile(event.target.files?.[0], setEditImage);
+                  event.target.value = "";
+                }}
+              />
               <textarea
                 value={editText}
                 onChange={(event) => setEditText(event.target.value)}
@@ -780,7 +826,7 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
                     <MiniPhoto bg={editImage} />
                     <div className="flex flex-col gap-1.5">
                       <button
-                        onClick={() => setEditImage("linear-gradient(135deg,#c9d7e8,#f6c06c 52%,#7d5a3e)")}
+                        onClick={() => editImageInputRef.current?.click()}
                         className="h-10 rounded-[8px] border border-[#e7ded2] bg-[#fffdf9] px-3 text-[12px] font-medium text-[#5d554d]"
                       >
                         사진 바꾸기
@@ -792,7 +838,7 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
                   </div>
                 ) : (
                   <button
-                    onClick={() => setEditImage("linear-gradient(135deg,#b7c9ba,#f3c66f 52%,#7d5a3e)")}
+                    onClick={() => editImageInputRef.current?.click()}
                     className="flex h-10 items-center gap-1.5 rounded-[9px] border border-[#e7ded2] bg-[#fffdf9] px-3 text-[12px] font-medium text-[#5d554d]"
                   >
                     <Image size={15} strokeWidth={1.8} />
