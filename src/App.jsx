@@ -219,7 +219,7 @@ function AppHeader() {
         <div className="font-['SUIT'] text-[22px] font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭</div>
         <div className="flex w-[38px] items-center" aria-hidden="true">
           <span className="h-px flex-1 bg-[#cfc3b7]" />
-          <span className="h-2 w-2 rounded-full bg-[#6f8f55]" />
+          <span className="h-2 w-2 rounded-full bg-[#8fab62]" />
         </div>
       </div>
     </header>
@@ -242,12 +242,12 @@ function BottomNav({ tab, setTab }) {
             key={item.id}
             onClick={() => setTab(item.id)}
             className={`flex min-h-[52px] w-20 flex-col items-center gap-1.5 text-[12px] transition ${
-              active ? "text-[#5f7d48]" : "text-[#827b73] hover:text-[#4b443d]"
+              active ? "text-[#4f6f3d]" : "text-[#827b73] hover:text-[#4b443d]"
             }`}
           >
             <div
               className={`grid h-9 w-9 place-items-center rounded-[10px] transition ${
-                active ? "bg-[#6f8f55] text-white shadow-[0_7px_16px_rgba(111,143,85,.18)]" : "text-[#777069]"
+                active ? "bg-[#5f7f46] text-white shadow-[0_7px_16px_rgba(79,111,61,.16)]" : "text-[#777069]"
               }`}
             >
               {item.icon}
@@ -266,7 +266,7 @@ function SaveOverlay() {
       <div className="maeumtuk-save-pop flex flex-col items-center">
         <div className="mb-5 flex w-[82px] items-center" aria-hidden="true">
           <span className="h-px flex-1 bg-[#c8baad]" />
-          <span className="h-3 w-3 rounded-full bg-[#6f8f55]" />
+          <span className="h-3 w-3 rounded-full bg-[#8fab62]" />
           <span className="h-px flex-1 bg-[#c8baad]" />
         </div>
         <p className="font-['SUIT'] text-[20px] font-semibold tracking-[-0.02em] text-[#2d2119]">툭, 남겨졌어요.</p>
@@ -300,7 +300,7 @@ function EmptyState({ title, body }) {
     <section className="rounded-[13px] border border-[#eee6dc] bg-[#fffdf9] px-5 py-8 text-center shadow-[0_7px_18px_rgba(54,42,30,.03)]">
       <div className="mx-auto mb-5 flex w-[58px] items-center" aria-hidden="true">
         <span className="h-px flex-1 bg-[#cfc3b7]" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#6f8f55]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#8fab62]" />
         <span className="h-px flex-1 bg-[#cfc3b7]" />
       </div>
       <h2 className="font-['SUIT'] text-[16px] font-semibold tracking-[-0.02em] text-[#2d2119]">{title}</h2>
@@ -389,13 +389,13 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
           </section>
         )}
 
-        <section className="relative rounded-[13px] border border-[#e3e8d8] bg-[#fffdf9] p-3 shadow-[0_7px_18px_rgba(54,42,30,.03)]">
+        <section className="relative rounded-[13px] border border-[#e1e8d8] bg-[#fffdf9] p-3 shadow-[0_7px_18px_rgba(54,42,30,.03)]">
           <div
             onClick={(event) => {
               if (event.target.closest("button")) return;
               draftRef.current?.focus();
             }}
-            className="relative min-h-[142px] cursor-text rounded-[10px] bg-[#fbfcf7] px-3.5 pb-2.5 pt-3 shadow-[inset_0_1px_0_rgba(255,255,255,.82)] ring-1 ring-[#e7ecd8]"
+            className="relative min-h-[142px] cursor-text rounded-[10px] bg-[#fbfcf7] px-3.5 pb-2.5 pt-3 shadow-[inset_0_1px_0_rgba(255,255,255,.82)] ring-1 ring-[#e4ecd9]"
           >
             <div className="pointer-events-none absolute left-4 right-[18px] top-[54px] h-px bg-[#dfe8d3]/75" />
             <div className="pointer-events-none absolute left-[18px] right-4 top-[88px] h-px bg-[#e6eadb]/58" />
@@ -427,7 +427,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setPhotoAttached(true)}
-                  className="grid h-8 w-8 place-items-center rounded-[8px] text-[#687a5b] hover:bg-[#eef3e7]"
+                  className="grid h-8 w-8 place-items-center rounded-[8px] text-[#607454] hover:bg-[#eef4e8]"
                   aria-label="사진 추가"
                 >
                   <Image size={18} strokeWidth={1.7} />
@@ -445,10 +445,10 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
           )}
         </section>
 
-        <div className="mt-3">
+        <div className="mt-3 flex justify-end">
           <button
             onClick={leaveTuk}
-            className="w-full rounded-[11px] border border-[rgba(93,119,70,0.18)] bg-[#6f8f55] px-[18px] py-3 font-['SUIT'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_8px_18px_rgba(93,119,70,.12)] transition duration-150 hover:bg-[#67864f] active:scale-[0.99] active:bg-[#5f7d48]"
+            className="min-w-[132px] rounded-full border border-[rgba(79,111,61,0.18)] bg-[#4f6f3d] px-6 py-2.5 font-['SUIT'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_7px_16px_rgba(79,111,61,.13)] transition duration-150 hover:bg-[#486638] active:scale-[0.98] active:bg-[#425e34]"
           >
             툭 남기기
           </button>
@@ -497,13 +497,13 @@ function AutoTagEditor({ item, onUpdate, editing, onDone }) {
 
   if (editing) {
     return (
-      <div className="mt-2.5 rounded-[9px] bg-[#f6f8f1]/70 px-1 py-1.5">
+      <div className="mt-2.5 rounded-[9px] bg-[#f4f7ef]/72 px-1 py-1.5">
         <div className="flex flex-wrap gap-1.5">
           {nextTags.map((tag) => (
             <button
               key={tag}
               onClick={() => setNextTags((current) => current.filter((itemTag) => itemTag !== tag))}
-              className="inline-flex items-center gap-1 rounded-full bg-[#e8efdf] px-2 py-1 text-[11px] font-medium text-[#526a42]"
+              className="inline-flex items-center gap-1 rounded-full bg-[#e6efdc] px-2 py-1 text-[11px] font-medium text-[#4f6b42]"
               aria-label={`${normalizeWord(tag)} 삭제`}
             >
               {normalizeWord(tag)}
@@ -528,13 +528,13 @@ function AutoTagEditor({ item, onUpdate, editing, onDone }) {
               onBlur={() => {
                 if (!tagInput.trim()) setAddingTag(false);
               }}
-              className="h-[26px] w-[94px] rounded-full border border-[#d6dfcc] bg-[#fffdf9] px-2.5 text-[11px] font-medium text-[#526a42] outline-none placeholder:text-[#9aa391]"
+              className="h-[26px] w-[94px] rounded-full border border-[#d4dfca] bg-[#fffdf9] px-2.5 text-[11px] font-medium text-[#4f6b42] outline-none placeholder:text-[#98a18f]"
               placeholder="+ 태그 추가"
             />
           ) : (
             <button
               onClick={() => setAddingTag(true)}
-              className="inline-flex h-[26px] items-center gap-1 rounded-full border border-dashed border-[#cbd9bf] px-2.5 text-[11px] font-medium text-[#667a56] hover:bg-[#edf3e6]"
+              className="inline-flex h-[26px] items-center gap-1 rounded-full border border-dashed border-[#c8d8ba] px-2.5 text-[11px] font-medium text-[#5f744f] hover:bg-[#eef4e8]"
             >
               <Plus size={11} strokeWidth={2} />
               태그 추가
@@ -542,7 +542,7 @@ function AutoTagEditor({ item, onUpdate, editing, onDone }) {
           )}
           <button
             onClick={saveTags}
-            className="ml-auto inline-flex h-[26px] items-center gap-1 rounded-[7px] px-2 text-[11px] font-medium text-[#667a56] hover:bg-[#e9f0df]"
+            className="ml-auto inline-flex h-[26px] items-center gap-1 rounded-[7px] px-2 text-[11px] font-medium text-[#5f744f] hover:bg-[#e9f0df]"
           >
             <Check size={12} strokeWidth={2} />
             완료
@@ -556,7 +556,7 @@ function AutoTagEditor({ item, onUpdate, editing, onDone }) {
     <div className="mt-2.5">
       <div className="flex flex-wrap gap-1.5">
         {(item.tags || []).map((tag) => (
-          <span key={tag} className="inline-flex items-center rounded-full bg-[#edf3e6] px-2 py-1 text-[11px] font-medium text-[#587244]">
+          <span key={tag} className="inline-flex items-center rounded-full bg-[#eef4e8] px-2 py-1 text-[11px] font-medium text-[#526f43]">
             {normalizeWord(tag)}
           </span>
         ))}
@@ -689,7 +689,7 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
                 >
                   취소
                 </button>
-                <button onClick={saveEdit} className="h-10 rounded-[8px] bg-[#6f8f55] px-3 text-[12px] font-semibold text-white">
+                <button onClick={saveEdit} className="h-10 rounded-[8px] bg-[#4f6f3d] px-3 text-[12px] font-semibold text-white">
                   저장
                 </button>
               </div>
@@ -788,15 +788,15 @@ function EnvelopeInteraction({ note, onChange }) {
         </button>
       )}
       {open && !sent && (
-        <div className="rounded-[10px] border border-[#e1e9d6] bg-[#fbfcf7]/78 px-3 py-2.5">
+        <div className="rounded-[10px] border border-[#dfe8d5] bg-[#fbfcf7]/78 px-3 py-2.5">
           <div className="mb-0.5 flex items-center justify-between">
-            <p className="text-[11px] font-semibold text-[#667a56]">그 후의 생각이나 이야기</p>
+            <p className="text-[11px] font-semibold text-[#5f744f]">그 후의 생각이나 이야기</p>
             <button
               onClick={() => {
                 setMessage("");
                 setOpen(false);
               }}
-              className="grid h-7 w-7 place-items-center rounded-[8px] text-[#7a8570] hover:bg-[#edf3e6]"
+              className="grid h-7 w-7 place-items-center rounded-[8px] text-[#707f66] hover:bg-[#eef4e8]"
               aria-label="툭더하기 접기"
             >
               <ChevronUp size={15} strokeWidth={1.9} />
@@ -811,7 +811,7 @@ function EnvelopeInteraction({ note, onChange }) {
           <div className="mt-1.5 flex justify-end">
             <button
               onClick={sendMessage}
-              className="rounded-[8px] border border-[rgba(93,119,70,0.14)] bg-[rgba(93,119,70,0.09)] px-2.5 py-1 text-[12px] font-semibold text-[#587244] hover:bg-[rgba(93,119,70,0.14)]"
+              className="rounded-[8px] border border-[rgba(79,111,61,0.14)] bg-[rgba(79,111,61,0.09)] px-2.5 py-1 text-[12px] font-semibold text-[#4f6f3d] hover:bg-[rgba(79,111,61,0.14)]"
             >
               남기기
             </button>
@@ -821,11 +821,11 @@ function EnvelopeInteraction({ note, onChange }) {
       {sent && (
         <div className="relative rounded-[10px] bg-[#f8fbf2] px-3.5 py-3 text-[13px] leading-6 text-[#3f4638]">
           <div className="mb-1 flex items-center justify-between gap-2">
-            <p className="text-[11px] font-semibold text-[#6f8f55]">툭더하기</p>
+            <p className="text-[11px] font-semibold text-[#5f7f46]">툭더하기</p>
             {!editing && !confirmDelete && (
               <button
                 onClick={() => setMenuOpen((open) => !open)}
-                className="grid h-9 w-9 place-items-center rounded-[9px] text-[#7a8570] hover:bg-[#edf3e6]"
+                className="grid h-9 w-9 place-items-center rounded-[9px] text-[#707f66] hover:bg-[#eef4e8]"
                 aria-label="툭더하기 관리"
               >
                 <MoreHorizontal size={16} />
@@ -872,7 +872,7 @@ function EnvelopeInteraction({ note, onChange }) {
                 >
                   취소
                 </button>
-                <button onClick={saveEdit} className="h-10 rounded-[8px] bg-[#6f8f55] px-3 text-[12px] font-semibold text-white">
+                <button onClick={saveEdit} className="h-10 rounded-[8px] bg-[#4f6f3d] px-3 text-[12px] font-semibold text-white">
                   저장
                 </button>
               </div>
@@ -949,7 +949,7 @@ function LogTab({ logItems, onUpdateLog, onDeleteLog }) {
                 setVisibleCount(LOG_PAGE_SIZE);
               }}
               className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] font-medium ${
-                selectedTag === "" ? "bg-[#6f8f55] text-white" : "border border-[#dfe8d3] bg-[#f1f5ec] text-[#68775f]"
+                selectedTag === "" ? "bg-[#5f7f46] text-white" : "border border-[#dfe8d3] bg-[#f1f5ec] text-[#68775f]"
               }`}
             >
               전체
@@ -963,7 +963,7 @@ function LogTab({ logItems, onUpdateLog, onDeleteLog }) {
                 }}
                 className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] font-medium ${
                   selectedTag === tag
-                    ? "bg-[#6f8f55] text-[#fffdf9]"
+                    ? "bg-[#5f7f46] text-[#fffdf9]"
                     : "border border-[#dfe8d3] bg-[#f1f5ec] text-[#68775f]"
                 }`}
               >
