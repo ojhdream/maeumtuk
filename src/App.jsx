@@ -395,7 +395,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
               if (event.target.closest("button")) return;
               draftRef.current?.focus();
             }}
-            className="relative min-h-[142px] cursor-text rounded-[10px] bg-[#fbfcf7] px-3.5 pb-2.5 pt-3 shadow-[inset_0_1px_0_rgba(255,255,255,.82)] ring-1 ring-[#e4ecd9]"
+            className="relative min-h-[142px] cursor-text rounded-[10px] bg-[#fbfcf7] px-3.5 pb-2.5 pt-3"
           >
             <div className="pointer-events-none absolute left-4 right-[18px] top-[54px] h-px bg-[#dfe8d3]/75" />
             <div className="pointer-events-none absolute left-[18px] right-4 top-[88px] h-px bg-[#e6eadb]/58" />
@@ -407,11 +407,11 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
                 setDraft(event.target.value);
                 if (lengthNotice) setLengthNotice(false);
               }}
-              className="relative z-10 h-[104px] max-h-[218px] w-full resize-none overflow-y-auto bg-transparent pb-7 font-['Pretendard'] text-[16px] leading-[34px] tracking-[-0.02em] text-[#272a22] outline-none placeholder:text-[#969e8f] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="relative z-10 h-[118px] max-h-[230px] w-full resize-none overflow-y-auto bg-transparent font-['Pretendard'] text-[16px] leading-[34px] tracking-[-0.02em] text-[#272a22] outline-none placeholder:text-[#969e8f] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               placeholder={writeHints[0]}
             />
             {photoAttached && (
-              <div className="mb-2.5 flex items-start gap-3 pt-2">
+              <div className="mt-2 flex items-start gap-3">
                 <div className="relative h-[64px] w-[64px] shrink-0 rounded-[10px] bg-[linear-gradient(135deg,#b7c9ba,#f3c66f_52%,#7d5a3e)] shadow-inner ring-1 ring-black/[.04]">
                   <button
                     onClick={() => setPhotoAttached(false)}
@@ -423,22 +423,21 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
                 </div>
               </div>
             )}
-            <div className="absolute bottom-2.5 left-3.5 right-3.5 z-20 flex items-center justify-between text-[#655f58]">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setPhotoAttached(true)}
-                  className="grid h-8 w-8 place-items-center rounded-[8px] text-[#607454] hover:bg-[#eef4e8]"
-                  aria-label="사진 추가"
-                >
-                  <Image size={18} strokeWidth={1.7} />
-                </button>
-              </div>
-              {showLengthCount && (
-                <span className={`text-[12px] ${isTooLong ? "font-medium text-[#d46a45]" : "text-[#8b857e]"}`}>
-                  {draftLength} / 300
-                </span>
-              )}
-            </div>
+          </div>
+          <div className="mt-2 flex items-center justify-between px-1 text-[#655f58]">
+            <button
+              onClick={() => setPhotoAttached(true)}
+              className="inline-flex h-7 items-center gap-1.5 rounded-[8px] px-1.5 text-[12px] font-medium text-[#607454] hover:bg-[#eef4e8]"
+              aria-label="사진 추가"
+            >
+              <Image size={16} strokeWidth={1.7} />
+              사진
+            </button>
+            {showLengthCount && (
+              <span className={`text-[12px] ${isTooLong ? "font-medium text-[#d46a45]" : "text-[#8b857e]"}`}>
+                {draftLength} / 300
+              </span>
+            )}
           </div>
           {lengthNotice && (
             <p className="mt-2 px-1 text-[12px] font-medium text-[#c46b49]">조금 길어요. 툭은 300자 안쪽이 잘 읽혀요.</p>
