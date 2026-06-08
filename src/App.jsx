@@ -516,6 +516,9 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
           <p className="ml-[38px] mt-1 text-[12px] font-medium text-[#837b72]">
             {currentMeta.date} {currentMeta.day} · {currentMeta.time}
           </p>
+          <p className="mt-5 max-w-[270px] whitespace-pre-line text-[16px] font-medium leading-7 tracking-[-0.02em] text-[#5f5850]">
+            한 줄이어도 괜찮아요,{"\n"}떠오르는 대로 그냥 툭.
+          </p>
         </div>
 
         {showWritingExample && !draft && (
