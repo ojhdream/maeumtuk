@@ -505,19 +505,11 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
       <AppHeader />
       <main className="px-6 pt-8">
         <div className="mb-4 font-['Pretendard']">
-          <div className="flex items-center gap-2.5">
-            <span className="inline-flex h-7 w-7 items-center justify-center" aria-hidden="true">
-              <TimeOfDayIcon hour={currentMeta.hour} />
-            </span>
-            <b className="font-['SUIT'] text-[20px] font-semibold tracking-[-0.02em] text-[#26201b]">
-              {currentMeta.greeting}
-            </b>
-          </div>
-          <p className="ml-[38px] mt-1 text-[12px] font-medium text-[#837b72]">
+          <p className="text-[12px] font-medium text-[#8b8279]">
             {currentMeta.date} {currentMeta.day} · {currentMeta.time}
           </p>
-          <p className="mt-5 max-w-[270px] whitespace-pre-line text-[16px] font-medium leading-7 tracking-[-0.02em] text-[#5f5850]">
-            한 줄이어도 괜찮아요,{"\n"}떠오르는 대로 그냥 툭.
+          <p className="mt-2 max-w-[280px] whitespace-pre-line text-[17px] font-medium leading-[29px] tracking-[-0.02em] text-[#3f3933]">
+            한 줄이어도 괜찮아요.{"\n"}떠오르는 대로 그냥 툭.
           </p>
         </div>
 
