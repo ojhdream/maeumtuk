@@ -365,7 +365,7 @@ function AppHeader() {
         <div className="font-['SUIT'] text-[22px] font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭</div>
         <div className="flex w-[38px] items-center" aria-hidden="true">
           <span className="h-px flex-1 bg-[#cfc3b7]" />
-          <span className="h-2 w-2 rounded-full bg-[#8fab62]" />
+          <span className="h-2 w-2 rounded-full bg-[#e6bd50]" />
         </div>
       </div>
     </header>
@@ -412,7 +412,7 @@ function SaveOverlay() {
       <div className="maeumtuk-save-pop flex flex-col items-center">
         <div className="mb-5 flex w-[82px] items-center" aria-hidden="true">
           <span className="h-px flex-1 bg-[#c8baad]" />
-          <span className="h-3 w-3 rounded-full bg-[#8fab62]" />
+          <span className="h-3 w-3 rounded-full bg-[#e6bd50]" />
           <span className="h-px flex-1 bg-[#c8baad]" />
         </div>
         <p className="font-['SUIT'] text-[20px] font-semibold tracking-[-0.02em] text-[#2d2119]">툭, 남겨졌어요.</p>
@@ -446,7 +446,7 @@ function EmptyState({ title, body }) {
     <section className="rounded-[13px] border border-[#eee6dc] bg-[#fffdf9] px-5 py-8 text-center shadow-[0_7px_18px_rgba(54,42,30,.03)]">
       <div className="mx-auto mb-5 flex w-[58px] items-center" aria-hidden="true">
         <span className="h-px flex-1 bg-[#cfc3b7]" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#8fab62]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#e6bd50]" />
         <span className="h-px flex-1 bg-[#cfc3b7]" />
       </div>
       <h2 className="font-['SUIT'] text-[16px] font-semibold tracking-[-0.02em] text-[#2d2119]">{title}</h2>
@@ -606,7 +606,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
         <div className="mt-3 flex justify-end">
           <button
             onClick={leaveTuk}
-            className="h-12 min-w-[118px] rounded-full border border-[rgba(108,143,106,0.24)] bg-[#6c8f6a] px-5 font-['SUIT'] text-[13px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_6px_13px_rgba(89,124,83,.12)] transition duration-150 hover:bg-[#638661] active:scale-[0.98] active:bg-[#587b56]"
+            className="h-12 min-w-[126px] rounded-full border border-[rgba(108,143,106,0.24)] bg-[#6c8f6a] px-5 font-['SUIT'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_6px_13px_rgba(89,124,83,.12)] transition duration-150 hover:bg-[#638661] active:scale-[0.98] active:bg-[#587b56]"
           >
             툭 남기기
           </button>
