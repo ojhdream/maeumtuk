@@ -519,11 +519,11 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
               if (event.target.closest("button")) return;
               draftRef.current?.focus();
             }}
-            className="relative min-h-[142px] cursor-text rounded-[10px] bg-[#fbfcf7] px-3.5 pb-2.5 pt-3"
+            className="relative min-h-[108px] cursor-text rounded-[10px] bg-[#fbfcf7] px-3.5 pb-2.5 pt-3"
           >
-            <div className="pointer-events-none absolute left-4 right-[18px] top-[54px] h-px bg-[#dfe8d3]/75" />
-            <div className="pointer-events-none absolute left-[18px] right-4 top-[88px] h-px bg-[#e6eadb]/58" />
-            <div className="pointer-events-none absolute left-4 right-[22px] top-[123px] h-px bg-[#e6eadb]/42" />
+            <div className="pointer-events-none absolute left-4 right-[18px] top-[43px] h-px bg-[#dfe8d3]/72" />
+            <div className="pointer-events-none absolute left-[18px] right-4 top-[72px] h-px bg-[#e6eadb]/58" />
+            <div className="pointer-events-none absolute left-4 right-[22px] top-[101px] h-px bg-[#e6eadb]/42" />
             <textarea
               ref={draftRef}
               value={draft}
@@ -531,7 +531,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
                 setDraft(event.target.value);
                 if (lengthNotice) setLengthNotice(false);
               }}
-              className="relative z-10 h-[118px] max-h-[230px] w-full resize-none overflow-y-auto bg-transparent font-['Pretendard'] text-[16px] leading-[34px] tracking-[-0.02em] text-[#272a22] outline-none placeholder:text-[#969e8f] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="relative z-10 h-[86px] max-h-[210px] w-full resize-none overflow-y-auto bg-transparent font-['Pretendard'] text-[16px] leading-[29px] tracking-[-0.02em] text-[#272a22] outline-none placeholder:text-[#969e8f] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               placeholder={writeHints[0]}
             />
             {photoAttached && (
@@ -571,7 +571,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
         <div className="mt-3 flex justify-end">
           <button
             onClick={leaveTuk}
-            className="min-w-[132px] rounded-full border border-[rgba(79,111,61,0.18)] bg-[#4f6f3d] px-6 py-2.5 font-['SUIT'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_7px_16px_rgba(79,111,61,.13)] transition duration-150 hover:bg-[#486638] active:scale-[0.98] active:bg-[#425e34]"
+            className="h-12 min-w-[118px] rounded-full border border-[rgba(108,143,106,0.24)] bg-[#6c8f6a] px-5 font-['SUIT'] text-[13px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_6px_13px_rgba(89,124,83,.12)] transition duration-150 hover:bg-[#638661] active:scale-[0.98] active:bg-[#587b56]"
           >
             툭 남기기
           </button>
@@ -817,7 +817,7 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
               </div>
             </div>
           ) : (
-            <p className="whitespace-pre-line text-[15px] font-normal leading-[27px] tracking-[-0.02em] text-[#2f2924]">{item.text}</p>
+            <p className="whitespace-pre-line font-['MaruBuri'] text-[15px] font-normal leading-[28px] tracking-[-0.01em] text-[#2f2924]">{item.text}</p>
           )}
           {confirmDelete && (
             <div className="mt-3 rounded-[10px] bg-[#fff5ee] p-3 text-[13px] text-[#4a3d34]">
