@@ -524,10 +524,10 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
               커피 마셨는데도 졸리다. 왜지.
             </p>
             <div className="mt-2 flex items-center justify-between">
-              <span className="text-[11px] font-medium text-[#a18f82]">그냥, 이런 생각 하나.</span>
+              <span className="text-[12px] font-medium text-[#a18f82]">그냥, 이런 생각 하나.</span>
               <button
                 onClick={onHideWritingExample}
-                className="rounded-[7px] px-1.5 py-1 text-[10px] font-medium text-[#9b9188] hover:bg-[#f4eee8]"
+                className="rounded-[7px] px-1.5 py-1 text-[11px] font-medium text-[#9b9188] hover:bg-[#f4eee8]"
               >
                 그만 보기
               </button>
@@ -606,7 +606,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
         <div className="mt-3 flex justify-end">
           <button
             onClick={leaveTuk}
-            className="h-12 min-w-[126px] rounded-full border border-[rgba(108,143,106,0.24)] bg-[#6c8f6a] px-5 font-['SUIT'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_6px_13px_rgba(89,124,83,.12)] transition duration-150 hover:bg-[#638661] active:scale-[0.98] active:bg-[#587b56]"
+            className="h-12 min-w-[126px] rounded-full border border-[rgba(221,111,81,0.2)] bg-[#dd6f51] px-5 font-['SUIT'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_7px_15px_rgba(221,111,81,.15)] transition duration-150 hover:bg-[#d86448] active:scale-[0.98] active:bg-[#c85e43]"
           >
             툭 남기기
           </button>
@@ -661,7 +661,7 @@ function AutoTagEditor({ item, onUpdate, editing, onDone }) {
             <button
               key={tag}
               onClick={() => setNextTags((current) => current.filter((itemTag) => itemTag !== tag))}
-              className="inline-flex items-center gap-1 rounded-full bg-[#e6efdc] px-2 py-1 text-[11px] font-medium text-[#4f6b42]"
+              className="inline-flex items-center gap-1 rounded-full bg-[#e6efdc] px-2.5 py-1 text-[12px] font-medium text-[#4f6b42]"
               aria-label={`${normalizeWord(tag)} 삭제`}
             >
               {normalizeWord(tag)}
@@ -686,13 +686,13 @@ function AutoTagEditor({ item, onUpdate, editing, onDone }) {
               onBlur={() => {
                 if (!tagInput.trim()) setAddingTag(false);
               }}
-              className="h-[26px] w-[94px] rounded-full border border-[#d4dfca] bg-[#fffdf9] px-2.5 text-[11px] font-medium text-[#4f6b42] outline-none placeholder:text-[#98a18f]"
+              className="h-[28px] w-[104px] rounded-full border border-[#d4dfca] bg-[#fffdf9] px-2.5 text-[12px] font-medium text-[#4f6b42] outline-none placeholder:text-[#98a18f]"
               placeholder="+ 태그 추가"
             />
           ) : (
             <button
               onClick={() => setAddingTag(true)}
-              className="inline-flex h-[26px] items-center gap-1 rounded-full border border-dashed border-[#c8d8ba] px-2.5 text-[11px] font-medium text-[#5f744f] hover:bg-[#eef4e8]"
+              className="inline-flex h-[28px] items-center gap-1 rounded-full border border-dashed border-[#c8d8ba] px-2.5 text-[12px] font-medium text-[#5f744f] hover:bg-[#eef4e8]"
             >
               <Plus size={11} strokeWidth={2} />
               태그 추가
@@ -700,7 +700,7 @@ function AutoTagEditor({ item, onUpdate, editing, onDone }) {
           )}
           <button
             onClick={saveTags}
-            className="ml-auto inline-flex h-[26px] items-center gap-1 rounded-[7px] px-2 text-[11px] font-medium text-[#5f744f] hover:bg-[#e9f0df]"
+            className="ml-auto inline-flex h-[28px] items-center gap-1 rounded-[7px] px-2 text-[12px] font-medium text-[#5f744f] hover:bg-[#e9f0df]"
           >
             <Check size={12} strokeWidth={2} />
             완료
@@ -714,7 +714,7 @@ function AutoTagEditor({ item, onUpdate, editing, onDone }) {
     <div className="mt-2.5">
       <div className="flex flex-wrap gap-1.5">
         {(item.tags || []).map((tag) => (
-          <span key={tag} className="inline-flex items-center rounded-full bg-[#eef4e8] px-2 py-1 text-[11px] font-medium text-[#526f43]">
+          <span key={tag} className="inline-flex items-center rounded-full bg-[#eef4e8] px-2.5 py-1 text-[12px] font-medium text-[#526f43]">
             {normalizeWord(tag)}
           </span>
         ))}
@@ -1108,7 +1108,7 @@ function LogTab({ logItems, onUpdateLog, onDeleteLog }) {
       <main className="px-6 pt-8">
         <div className="mb-3">
           <h1 className="font-['SUIT'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">툭로그</h1>
-          <p className="mt-1 text-[12px] font-medium text-[#938a82]">마음을 지나간 순간들</p>
+          <p className="mt-1 text-[13px] font-medium text-[#938a82]">마음을 지나간 순간들</p>
         </div>
         <section className="mb-5">
           <div className="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -1117,7 +1117,7 @@ function LogTab({ logItems, onUpdateLog, onDeleteLog }) {
                 setSelectedTag("");
                 setVisibleCount(LOG_PAGE_SIZE);
               }}
-              className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] font-medium ${
+              className={`shrink-0 rounded-full px-3 py-1.5 text-[12px] font-medium ${
                 selectedTag === "" ? "bg-[#5f7f46] text-white" : "border border-[#dfe8d3] bg-[#f1f5ec] text-[#68775f]"
               }`}
             >
@@ -1130,7 +1130,7 @@ function LogTab({ logItems, onUpdateLog, onDeleteLog }) {
                   setSelectedTag(tag);
                   setVisibleCount(LOG_PAGE_SIZE);
                 }}
-                className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] font-medium ${
+                className={`shrink-0 rounded-full px-3 py-1.5 text-[12px] font-medium ${
                   selectedTag === tag
                     ? "bg-[#5f7f46] text-[#fffdf9]"
                     : "border border-[#dfe8d3] bg-[#f1f5ec] text-[#68775f]"
@@ -1140,7 +1140,7 @@ function LogTab({ logItems, onUpdateLog, onDeleteLog }) {
               </button>
             ))}
           </div>
-          {hasLogs && <p className="mt-2 px-1 text-[11px] font-medium text-[#9a9188]">{resultLabel}</p>}
+          {hasLogs && <p className="mt-2 px-1 text-[12px] font-medium text-[#9a9188]">{resultLabel}</p>}
         </section>
         {hasLogs ? (
           filteredLogs.length > 0 ? (
@@ -1207,7 +1207,7 @@ function WeeklyReflectionCard({ reflection }) {
     <section className="rounded-[13px] border border-[#eadfd4] bg-[#fffaf5] px-4 py-4 shadow-[0_7px_18px_rgba(54,42,30,.025)]">
       <div className="mb-3 flex items-center justify-between gap-3">
         <b className="font-['SUIT'] text-[16px] font-semibold tracking-[-0.02em] text-[#2b251f]">이번 주를 돌아보면</b>
-        <span className="shrink-0 text-[10px] font-medium text-[#a18f82]">AI가 읽고 정리했어요</span>
+        <span className="shrink-0 text-[11px] font-medium text-[#a18f82]">AI가 읽고 정리했어요</span>
       </div>
       <p className="whitespace-pre-line text-[14px] font-medium leading-7 tracking-[-0.01em] text-[#4a4038]">
         {reflection}
@@ -1276,7 +1276,7 @@ function TodayTab({ logItems }) {
           >
             <span>
               <span className="block text-[12px] font-semibold text-[#4d453e]">{selectedPeriod.label}</span>
-              <span className="mt-0.5 block text-[10px] font-medium text-[#9a9188]">{selectedPeriod.dates}</span>
+              <span className="mt-0.5 block text-[11px] font-medium text-[#9a9188]">{selectedPeriod.dates}</span>
             </span>
             <ChevronDown size={14} className={`text-[#8b857e] transition ${periodOpen ? "rotate-180" : ""}`} />
           </button>
@@ -1294,7 +1294,7 @@ function TodayTab({ logItems }) {
                   }`}
                 >
                   <span className="block text-[12px] font-semibold text-[#4d453e]">{period.label}</span>
-                  <span className="mt-0.5 block text-[10px] font-medium text-[#9a9188]">{period.dates}</span>
+                  <span className="mt-0.5 block text-[11px] font-medium text-[#9a9188]">{period.dates}</span>
                 </button>
               ))}
             </div>
@@ -1316,7 +1316,7 @@ function TodayTab({ logItems }) {
                 {selectedPeriod.moments.map((item) => (
                   <div key={item.id || `${item.date}-${item.time}`} className="w-[76px] shrink-0">
                     <MiniPhoto bg={item.image} size="lg" />
-                    <p className="mt-2 line-clamp-2 text-[11px] font-medium leading-4 text-[#746d65]">{item.title || getMomentTitle(item)}</p>
+                    <p className="mt-2 line-clamp-2 text-[12px] font-medium leading-5 text-[#746d65]">{item.title || getMomentTitle(item)}</p>
                   </div>
                 ))}
               </div>
