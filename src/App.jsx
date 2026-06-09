@@ -418,7 +418,7 @@ function getResponseTukMessage(count) {
 
 function ResponseTuk({ children }) {
   return (
-    <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#f4f1e7] px-3 py-1.5 text-[12px] font-medium text-[#6f6a5d]">
+    <div className="mt-2 flex items-center gap-1.5 text-[13px] font-medium text-[#777064]">
       <Leaf size={14} strokeWidth={1.9} className="text-[#6f925b]" />
       {children}
     </div>
@@ -474,21 +474,19 @@ function EmptyState({ title, body }) {
   );
 }
 
-function NowFlowItem({ item, sequence }) {
-  const response = [1, 3, 5, 10, 15].includes(sequence) ? getResponseTukMessage(sequence) : "";
+function NowFlowItem({ item, sequence, isLatest = false }) {
+  const response = isLatest || [1, 3, 5, 10, 15].includes(sequence) ? getResponseTukMessage(sequence) : "";
 
   return (
-    <article className="grid grid-cols-[68px_minmax(0,1fr)] gap-3 py-4">
-      <time className="pt-1 text-[12px] font-medium text-[#8b857e]">{item.time}</time>
-      <div className="min-w-0">
-        <div className="flex items-start gap-3">
-          <p className="min-w-0 flex-1 whitespace-pre-line font-['MaruBuri'] text-[16px] leading-[31px] tracking-[-0.01em] text-[#2f2924]">
-            {item.text}
-          </p>
-          {item.image && <MiniPhoto bg={item.image} size="md" />}
-        </div>
-        {response && <ResponseTuk>{response}</ResponseTuk>}
+    <article className="py-4">
+      <time className="mb-2 block text-[12px] font-medium text-[#8b857e]">{item.time}</time>
+      <div className="flex items-start gap-3">
+        <p className="min-w-0 flex-1 whitespace-pre-line font-['MaruBuri'] text-[16px] leading-[31px] tracking-[-0.01em] text-[#2f2924]">
+          {item.text}
+        </p>
+        {item.image && <MiniPhoto bg={item.image} size="md" />}
       </div>
+      {response && <ResponseTuk>{response}</ResponseTuk>}
     </article>
   );
 }
@@ -509,8 +507,8 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
   useEffect(() => {
     const textarea = draftRef.current;
     if (!textarea) return;
-    textarea.style.height = "44px";
-    textarea.style.height = `${Math.min(textarea.scrollHeight, 176)}px`;
+    textarea.style.height = "40px";
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 156)}px`;
   }, [draft]);
 
   const leaveTuk = () => {
@@ -579,7 +577,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
           {todayLogs.length > 0 ? (
             <div className="divide-y divide-[#eee6dc]/55">
               {todayLogs.map((item, index) => (
-                <NowFlowItem key={item.id || `${item.date}-${item.time}`} item={item} sequence={todayLogs.length - index} />
+                <NowFlowItem key={item.id || `${item.date}-${item.time}`} item={item} sequence={todayLogs.length - index} isLatest={index === 0} />
               ))}
             </div>
           ) : (
@@ -589,43 +587,31 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
           )}
         </section>
       </main>
-      <section className="absolute bottom-[calc(78px+env(safe-area-inset-bottom))] left-0 right-0 z-30 border-t border-[#eee6dc] bg-[#fffaf4]/96 px-4 py-3 shadow-[0_-10px_26px_rgba(54,42,30,.06)] backdrop-blur-xl">
-        <div className="mx-auto max-w-[398px] rounded-[13px] border border-[#eadfd4] bg-[#fffdf9] p-2.5 shadow-[0_8px_20px_rgba(54,42,30,.045)]">
+      <section className="absolute bottom-[calc(78px+env(safe-area-inset-bottom))] left-0 right-0 z-30 border-t border-[#eee6dc] bg-[#fffaf4]/96 px-4 py-3 shadow-[0_-8px_22px_rgba(54,42,30,.045)] backdrop-blur-xl">
+        <div className="mx-auto max-w-[398px]">
+          {photoData && (
+            <div className="mb-2 flex items-start">
+              <div
+                className="relative h-[52px] w-[52px] shrink-0 rounded-[9px] shadow-inner ring-1 ring-black/[.04]"
+                style={{ background: getImageBackground(photoData) }}
+              >
+                <button
+                  onClick={() => setPhotoData(null)}
+                  className="absolute -right-2 -top-2 grid h-7 w-7 place-items-center rounded-full bg-[#fffdf9] text-[#6c6259] shadow-[0_2px_8px_rgba(54,42,30,.12)] ring-1 ring-[#e8dfd5]"
+                  aria-label="첨부 사진 삭제"
+                >
+                  <X size={11} strokeWidth={2} />
+                </button>
+              </div>
+            </div>
+          )}
           <div
             onClick={(event) => {
               if (event.target.closest("button")) return;
               draftRef.current?.focus();
             }}
-            className="relative rounded-[10px] bg-[#fffdf9]"
+            className="flex items-end gap-2 rounded-[14px] border border-[#eadfd4] bg-[#fffdf9] p-2 shadow-[0_7px_18px_rgba(54,42,30,.04)]"
           >
-            <textarea
-              ref={draftRef}
-              value={draft}
-              onChange={(event) => {
-                setDraft(event.target.value);
-                if (lengthNotice) setLengthNotice(false);
-              }}
-              className="min-h-[44px] max-h-[176px] w-full resize-none overflow-y-auto bg-transparent px-1 py-2 font-['Pretendard'] text-[15px] leading-[26px] tracking-[-0.02em] text-[#272a22] outline-none placeholder:text-[#9a9289] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-              placeholder="지금..."
-            />
-            {photoData && (
-              <div className="mb-2 flex items-start gap-3">
-                <div
-                  className="relative h-[52px] w-[52px] shrink-0 rounded-[9px] shadow-inner ring-1 ring-black/[.04]"
-                  style={{ background: getImageBackground(photoData) }}
-                >
-                  <button
-                    onClick={() => setPhotoData(null)}
-                    className="absolute -right-2 -top-2 grid h-7 w-7 place-items-center rounded-full bg-[#fffdf9] text-[#6c6259] shadow-[0_2px_8px_rgba(54,42,30,.12)] ring-1 ring-[#e8dfd5]"
-                    aria-label="첨부 사진 삭제"
-                  >
-                    <X size={11} strokeWidth={2} />
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="mt-2 flex items-center justify-between gap-2 border-t border-[#eee6dc] pt-2">
             <input
               ref={photoInputRef}
               type="file"
@@ -639,24 +625,34 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() => photoInputRef.current?.click()}
-                className="grid h-9 w-9 place-items-center rounded-[9px] text-[#607454] hover:bg-[#eef4e8]"
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] text-[#607454] hover:bg-[#eef4e8]"
                 aria-label="사진 추가"
               >
                 <Image size={18} strokeWidth={1.8} />
               </button>
-              {showLengthCount && (
-                <span className={`text-[12px] ${isTooLong ? "font-medium text-[#d46a45]" : "font-medium text-[#8b857e]"}`}>
-                  {draftLength} / 300
-                </span>
-              )}
             </div>
+            <textarea
+              ref={draftRef}
+              value={draft}
+              onChange={(event) => {
+                setDraft(event.target.value);
+                if (lengthNotice) setLengthNotice(false);
+              }}
+              className="min-h-[40px] max-h-[156px] min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-1 py-2 font-['Pretendard'] text-[15px] leading-[24px] tracking-[-0.02em] text-[#272a22] outline-none placeholder:text-[#9a9289] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              placeholder="지금..."
+            />
             <button
               onClick={leaveTuk}
-              className="h-10 min-w-[58px] rounded-[10px] border border-[rgba(221,111,81,0.2)] bg-[#dd6f51] px-4 font-['SUIT'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_6px_13px_rgba(221,111,81,.13)] transition duration-150 hover:bg-[#d86448] active:scale-[0.98] active:bg-[#c85e43]"
+              className="h-10 min-w-[54px] shrink-0 rounded-[10px] border border-[rgba(221,111,81,0.2)] bg-[#dd6f51] px-4 font-['SUIT'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_6px_13px_rgba(221,111,81,.13)] transition duration-150 hover:bg-[#d86448] active:scale-[0.98] active:bg-[#c85e43]"
             >
               툭
             </button>
           </div>
+          {showLengthCount && (
+            <p className={`mt-1 px-1 text-right text-[12px] ${isTooLong ? "font-medium text-[#d46a45]" : "font-medium text-[#8b857e]"}`}>
+              {draftLength} / 300
+            </p>
+          )}
           {lengthNotice && (
             <p className="mt-2 px-1 text-[12px] font-medium text-[#c46b49]">조금 길어요. 툭은 300자 안쪽이 잘 읽혀요.</p>
           )}
@@ -1411,10 +1407,7 @@ export default function App() {
     }
 
     setSaveOverlayMessage(getResponseTukMessage(nextTodayCount));
-    setSaveOverlayVisible(true);
-    saveTimerRef.current = window.setTimeout(() => {
-      setSaveOverlayVisible(false);
-    }, 950);
+    setSaveOverlayVisible(false);
   };
 
   const addLog = (log) => {
