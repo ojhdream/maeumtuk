@@ -502,7 +502,7 @@ function NowFlowItem({ item, sequence, isLatest = false }) {
   return (
     <article className="py-4">
       <time className="mb-2 block text-[12px] font-medium text-[#8b857e]">{item.time}</time>
-      <p className="whitespace-pre-line font-['Pretendard'] text-[16px] leading-[30px] tracking-[-0.02em] text-[#2f2924]">
+      <p className="whitespace-pre-line font-['Pretendard'] text-[16px] font-medium leading-[28px] tracking-[-0.02em] text-[#29241f]">
         {item.text}
       </p>
       {item.image && (
@@ -655,7 +655,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
                 setDraft(event.target.value);
                 if (lengthNotice) setLengthNotice(false);
               }}
-              className="min-h-[34px] max-h-[132px] min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-1 py-[7px] font-['Pretendard'] text-[15px] leading-[22px] tracking-[-0.02em] text-[#272a22] outline-none placeholder:text-[#9a9289] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="min-h-[34px] max-h-[132px] min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-1 py-[7px] font-['Pretendard'] text-[15px] font-medium leading-[22px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-normal placeholder:text-[#9a9289] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               placeholder="지금..."
             />
             <button
@@ -902,7 +902,7 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
               </div>
             </div>
           ) : (
-            <p className="whitespace-pre-line font-['Pretendard'] text-[15px] font-normal leading-[28px] tracking-[-0.01em] text-[#2f2924]">{item.text}</p>
+            <p className="whitespace-pre-line font-['Pretendard'] text-[15px] font-medium leading-[27px] tracking-[-0.01em] text-[#29241f]">{item.text}</p>
           )}
           {confirmDelete && (
             <div className="mt-3 rounded-[10px] bg-[#fff5ee] p-3 text-[13px] text-[#4a3d34]">
