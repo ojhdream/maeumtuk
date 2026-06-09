@@ -407,7 +407,25 @@ function BottomNav({ tab, setTab }) {
   );
 }
 
-function SaveOverlay() {
+function getResponseTukMessage(count) {
+  if (count === 1) return "첫 툭이 남겨졌어요.";
+  if (count === 3) return "오늘 생각이 조금씩 쌓이고 있어요.";
+  if (count === 5) return "벌써 다섯 번째 툭이네요.";
+  if (count === 10) return "자주 보이는 생각이 생겼어요.";
+  if (count === 15) return "요즘의 이야기가 모였어요.";
+  return "툭 남겨졌어요.";
+}
+
+function ResponseTuk({ children }) {
+  return (
+    <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#f4f1e7] px-3 py-1.5 text-[12px] font-medium text-[#6f6a5d]">
+      <Leaf size={14} strokeWidth={1.9} className="text-[#6f925b]" />
+      {children}
+    </div>
+  );
+}
+
+function SaveOverlay({ message }) {
   return (
     <div className="maeumtuk-save-screen pointer-events-none absolute inset-0 z-50 grid place-items-center bg-[#fffaf4]/88 backdrop-blur-[3px]">
       <div className="maeumtuk-save-pop flex flex-col items-center">
@@ -416,19 +434,19 @@ function SaveOverlay() {
           <span className="h-3 w-3 rounded-full bg-[#e6bd50]" />
           <span className="h-px flex-1 bg-[#c8baad]" />
         </div>
-        <p className="font-['SUIT'] text-[20px] font-semibold tracking-[-0.02em] text-[#2d2119]">툭, 남겨졌어요.</p>
+        <p className="font-['SUIT'] text-[20px] font-semibold tracking-[-0.02em] text-[#2d2119]">{message}</p>
         <p className="maeumtuk-save-sub mt-3 text-[13px] font-medium text-[#8b857e]">여기에 잠깐 머물러요.</p>
       </div>
     </div>
   );
 }
 
-function Phone({ children, tab, setTab, saveOverlayVisible }) {
+function Phone({ children, tab, setTab, saveOverlayVisible, saveOverlayMessage }) {
   return (
-    <div className="relative min-h-[100dvh] w-full max-w-[430px] overflow-hidden bg-[#f7f3ee] sm:h-[820px] sm:min-h-0 sm:w-[390px] sm:rounded-[26px] sm:shadow-[0_16px_55px_rgba(63,47,30,.08)] sm:ring-1 sm:ring-[#ebe2d8]">
+    <div className="relative min-h-[100dvh] w-full max-w-[430px] overflow-hidden bg-[#f8f6f2] sm:h-[820px] sm:min-h-0 sm:w-[390px] sm:rounded-[26px] sm:shadow-[0_16px_55px_rgba(63,47,30,.08)] sm:ring-1 sm:ring-[#ebe2d8]">
       <div className="h-full min-h-[100dvh] overflow-y-auto pb-[calc(106px+env(safe-area-inset-bottom))] [scrollbar-width:none] sm:min-h-0 [&::-webkit-scrollbar]:hidden">{children}</div>
       <BottomNav tab={tab} setTab={setTab} />
-      {saveOverlayVisible && <SaveOverlay />}
+      {saveOverlayVisible && <SaveOverlay message={saveOverlayMessage} />}
     </div>
   );
 }
@@ -456,6 +474,25 @@ function EmptyState({ title, body }) {
   );
 }
 
+function NowFlowItem({ item, sequence }) {
+  const response = [1, 3, 5, 10, 15].includes(sequence) ? getResponseTukMessage(sequence) : "";
+
+  return (
+    <article className="grid grid-cols-[68px_minmax(0,1fr)] gap-3 py-4">
+      <time className="pt-1 text-[12px] font-medium text-[#8b857e]">{item.time}</time>
+      <div className="min-w-0">
+        <div className="flex items-start gap-3">
+          <p className="min-w-0 flex-1 whitespace-pre-line font-['MaruBuri'] text-[16px] leading-[31px] tracking-[-0.01em] text-[#2f2924]">
+            {item.text}
+          </p>
+          {item.image && <MiniPhoto bg={item.image} size="md" />}
+        </div>
+        {response && <ResponseTuk>{response}</ResponseTuk>}
+      </div>
+    </article>
+  );
+}
+
 function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample, onShowSaved }) {
   const [draft, setDraft] = useState("");
   const [photoData, setPhotoData] = useState(null);
@@ -472,7 +509,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
   useEffect(() => {
     const textarea = draftRef.current;
     if (!textarea) return;
-    textarea.style.height = "54px";
+    textarea.style.height = "44px";
     textarea.style.height = `${Math.min(textarea.scrollHeight, 176)}px`;
   }, [draft]);
 
@@ -499,7 +536,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
     };
 
     onAddLog(nextLog);
-    onShowSaved();
+    onShowSaved(todayCount + 1);
     setLengthNotice(false);
     onHideWritingExample();
     window.setTimeout(() => {
@@ -540,13 +577,13 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
             <span className="text-[12px] font-medium text-[#8b857e]">{todayLabel}</span>
           </div>
           {todayLogs.length > 0 ? (
-            <div className="space-y-3">
-              {todayLogs.slice(0, 2).map((item) => (
-                <RecentCard key={item.id || `${item.date}-${item.time}`} item={item} compact />
+            <div className="divide-y divide-[#eee6dc]/55">
+              {todayLogs.map((item, index) => (
+                <NowFlowItem key={item.id || `${item.date}-${item.time}`} item={item} sequence={todayLogs.length - index} />
               ))}
             </div>
           ) : (
-            <div className="rounded-[13px] border border-[#eee6dc] bg-[#fffdf9] px-4 py-5 text-[14px] text-[#817970] shadow-[0_7px_18px_rgba(54,42,30,.03)]">
+            <div className="px-1 py-8 text-[14px] leading-6 text-[#817970]">
               오늘은 아직 비어 있어요.
             </div>
           )}
@@ -568,8 +605,8 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
                 setDraft(event.target.value);
                 if (lengthNotice) setLengthNotice(false);
               }}
-              className="min-h-[54px] max-h-[176px] w-full resize-none overflow-y-auto bg-transparent px-1 pb-1 font-['Pretendard'] text-[15px] leading-[27px] tracking-[-0.02em] text-[#272a22] outline-none placeholder:text-[#9a9289] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-              placeholder="지금 어떤 생각이 스치나요?"
+              className="min-h-[44px] max-h-[176px] w-full resize-none overflow-y-auto bg-transparent px-1 py-2 font-['Pretendard'] text-[15px] leading-[26px] tracking-[-0.02em] text-[#272a22] outline-none placeholder:text-[#9a9289] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              placeholder="지금..."
             />
             {photoData && (
               <div className="mb-2 flex items-start gap-3">
@@ -615,9 +652,9 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
             </div>
             <button
               onClick={leaveTuk}
-              className="h-10 min-w-[82px] rounded-[10px] border border-[rgba(221,111,81,0.2)] bg-[#dd6f51] px-4 font-['SUIT'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_6px_13px_rgba(221,111,81,.13)] transition duration-150 hover:bg-[#d86448] active:scale-[0.98] active:bg-[#c85e43]"
+              className="h-10 min-w-[58px] rounded-[10px] border border-[rgba(221,111,81,0.2)] bg-[#dd6f51] px-4 font-['SUIT'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_6px_13px_rgba(221,111,81,.13)] transition duration-150 hover:bg-[#d86448] active:scale-[0.98] active:bg-[#c85e43]"
             >
-              남기기
+              툭
             </button>
           </div>
           {lengthNotice && (
@@ -1346,6 +1383,7 @@ export default function App() {
   const [allLogs, setAllLogs] = useState(() => loadStoredAppState()?.allLogs || initialLogItems);
   const [showWritingExample, setShowWritingExample] = useState(() => loadStoredAppState()?.showWritingExample ?? true);
   const [saveOverlayVisible, setSaveOverlayVisible] = useState(false);
+  const [saveOverlayMessage, setSaveOverlayMessage] = useState(getResponseTukMessage(0));
   const saveTimerRef = useRef(null);
 
   useEffect(() => {
@@ -1367,11 +1405,12 @@ export default function App() {
     };
   }, []);
 
-  const showSaveOverlay = () => {
+  const showSaveOverlay = (nextTodayCount) => {
     if (saveTimerRef.current) {
       window.clearTimeout(saveTimerRef.current);
     }
 
+    setSaveOverlayMessage(getResponseTukMessage(nextTodayCount));
     setSaveOverlayVisible(true);
     saveTimerRef.current = window.setTimeout(() => {
       setSaveOverlayVisible(false);
@@ -1422,9 +1461,9 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-[#f7f3ee] p-0 font-['Pretendard'] text-[#211b16] sm:p-6">
+    <div className="min-h-screen bg-[#f8f6f2] p-0 font-['Pretendard'] text-[#211b16] sm:p-6">
       <div className="mx-auto flex max-w-[1260px] items-stretch justify-center gap-7 sm:items-start">
-        <Phone tab={tab} setTab={setTab} saveOverlayVisible={saveOverlayVisible}>{screen}</Phone>
+        <Phone tab={tab} setTab={setTab} saveOverlayVisible={saveOverlayVisible} saveOverlayMessage={saveOverlayMessage}>{screen}</Phone>
         <div className="hidden max-w-[520px] rounded-[18px] bg-[#fffdf9]/78 p-7 text-sm leading-7 text-[#4b443d] shadow-[0_7px_18px_rgba(54,42,30,.035)] ring-1 ring-[#eee7de] lg:block">
           <h2 className="mb-4 font-['SUIT'] text-lg font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭 UI 메모</h2>
           <p>
