@@ -502,7 +502,7 @@ function NowFlowItem({ item, sequence, isLatest = false }) {
   return (
     <article className="py-4">
       <time className="mb-2 block text-[12px] font-medium text-[#8b857e]">{item.time}</time>
-      <p className="whitespace-pre-line font-['Pretendard'] text-[16px] font-medium leading-[28px] tracking-[-0.02em] text-[#29241f]">
+      <p className="whitespace-pre-line font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f]">
         {item.text}
       </p>
       {item.image && (
@@ -902,7 +902,7 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
               </div>
             </div>
           ) : (
-            <p className="whitespace-pre-line font-['Pretendard'] text-[15px] font-medium leading-[27px] tracking-[-0.01em] text-[#29241f]">{item.text}</p>
+            <p className="whitespace-pre-line font-['Pretendard'] text-[15px] font-normal leading-[27px] tracking-[-0.01em] text-[#29241f]">{item.text}</p>
           )}
           {confirmDelete && (
             <div className="mt-3 rounded-[10px] bg-[#fff5ee] p-3 text-[13px] text-[#4a3d34]">
