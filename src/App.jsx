@@ -382,7 +382,7 @@ function BottomNav({ tab, setTab }) {
   ];
 
   return (
-    <nav className="absolute bottom-0 left-0 right-0 flex h-[calc(78px+env(safe-area-inset-bottom))] items-start justify-around border-t border-[#eee7de] bg-[#fffdf9]/92 pt-3 backdrop-blur-xl">
+    <nav className="maeumtuk-bottom-nav absolute bottom-0 left-0 right-0 flex h-[calc(78px+env(safe-area-inset-bottom))] items-start justify-around border-t border-[#eee7de] bg-[#fffdf9]/92 pt-3 backdrop-blur-xl transition duration-200">
       {items.map((item) => {
         const active = tab === item.id;
         return (
@@ -442,10 +442,31 @@ function SaveOverlay({ message }) {
   );
 }
 
+function useVisibleViewportHeight() {
+  useEffect(() => {
+    const setViewportHeight = () => {
+      const viewport = window.visualViewport;
+      const height = viewport?.height || window.innerHeight;
+      document.documentElement.style.setProperty("--maeumtuk-vh", `${height}px`);
+    };
+
+    setViewportHeight();
+    window.visualViewport?.addEventListener("resize", setViewportHeight);
+    window.visualViewport?.addEventListener("scroll", setViewportHeight);
+    window.addEventListener("resize", setViewportHeight);
+
+    return () => {
+      window.visualViewport?.removeEventListener("resize", setViewportHeight);
+      window.visualViewport?.removeEventListener("scroll", setViewportHeight);
+      window.removeEventListener("resize", setViewportHeight);
+    };
+  }, []);
+}
+
 function Phone({ children, tab, setTab, saveOverlayVisible, saveOverlayMessage }) {
   return (
-    <div className="relative h-[100dvh] max-h-[100dvh] w-full max-w-[430px] overflow-hidden bg-[#f8f6f2] sm:h-[min(820px,calc(100dvh-48px))] sm:max-h-[820px] sm:w-[390px] sm:rounded-[26px] sm:shadow-[0_16px_55px_rgba(63,47,30,.08)] sm:ring-1 sm:ring-[#ebe2d8]">
-      <div className="h-full overflow-y-auto pb-[calc(106px+env(safe-area-inset-bottom))] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">{children}</div>
+    <div className="maeumtuk-phone relative h-[var(--maeumtuk-vh,100dvh)] max-h-[var(--maeumtuk-vh,100dvh)] w-full max-w-[430px] overflow-hidden bg-[#f8f6f2] sm:h-[min(820px,calc(var(--maeumtuk-vh,100dvh)-48px))] sm:max-h-[820px] sm:w-[390px] sm:rounded-[26px] sm:shadow-[0_16px_55px_rgba(63,47,30,.08)] sm:ring-1 sm:ring-[#ebe2d8]">
+      <div className="maeumtuk-scroll h-full overflow-y-auto pb-[calc(106px+env(safe-area-inset-bottom))] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">{children}</div>
       <BottomNav tab={tab} setTab={setTab} />
       {saveOverlayVisible && <SaveOverlay message={saveOverlayMessage} />}
     </div>
@@ -585,7 +606,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
           )}
         </section>
       </main>
-      <section className="absolute bottom-[calc(78px+env(safe-area-inset-bottom))] left-0 right-0 z-30 border-t border-[#eee6dc] bg-[#fffaf4]/96 px-4 py-3 shadow-[0_-8px_22px_rgba(54,42,30,.045)] backdrop-blur-xl">
+      <section className="maeumtuk-composer absolute bottom-[calc(78px+env(safe-area-inset-bottom))] left-0 right-0 z-30 border-t border-[#eee6dc] bg-[#fffaf4]/96 px-4 py-3 shadow-[0_-8px_22px_rgba(54,42,30,.045)] backdrop-blur-xl transition-[bottom] duration-200">
         <div className="mx-auto max-w-[398px]">
           {photoData && (
             <div className="mb-2 flex items-start">
@@ -1370,6 +1391,8 @@ function TodayTab({ logItems }) {
 }
 
 export default function App() {
+  useVisibleViewportHeight();
+
   const [tab, setTab] = useState("now");
   const [todayLogs, setTodayLogs] = useState(() => loadStoredAppState()?.todayLogs || initialTodayLogItems);
   const [allLogs, setAllLogs] = useState(() => loadStoredAppState()?.allLogs || initialLogItems);
@@ -1450,7 +1473,7 @@ export default function App() {
   );
 
   return (
-    <div className="h-[100dvh] overflow-hidden bg-[#f8f6f2] p-0 font-['Pretendard'] text-[#211b16] sm:p-6">
+    <div className="h-[var(--maeumtuk-vh,100dvh)] overflow-hidden bg-[#f8f6f2] p-0 font-['Pretendard'] text-[#211b16] sm:p-6">
       <div className="mx-auto flex h-full max-w-[1260px] items-stretch justify-center gap-7 sm:items-start">
         <Phone tab={tab} setTab={setTab} saveOverlayVisible={saveOverlayVisible} saveOverlayMessage={saveOverlayMessage}>{screen}</Phone>
         <div className="hidden max-w-[520px] rounded-[18px] bg-[#fffdf9]/78 p-7 text-sm leading-7 text-[#4b443d] shadow-[0_7px_18px_rgba(54,42,30,.035)] ring-1 ring-[#eee7de] lg:block">

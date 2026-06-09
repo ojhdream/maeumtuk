@@ -25,6 +25,20 @@ body {
   min-height: 100%;
 }
 
+.maeumtuk-phone:has(textarea:focus) .maeumtuk-bottom-nav {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(100%);
+}
+
+.maeumtuk-phone:has(textarea:focus) .maeumtuk-composer {
+  bottom: env(safe-area-inset-bottom);
+}
+
+.maeumtuk-phone:has(textarea:focus) .maeumtuk-scroll {
+  padding-bottom: calc(108px + env(safe-area-inset-bottom));
+}
+
 .maeumtuk-save-screen {
   animation: maeumtuk-save-screen 0.95s ease both;
 }
