@@ -4,10 +4,17 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body,
+#root {
+  height: 100%;
+}
+
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
   background: #f8f6f2;
   font-family: "Pretendard", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -15,7 +22,7 @@ body {
 }
 
 #root {
-  min-height: 100vh;
+  min-height: 100%;
 }
 
 .maeumtuk-save-screen {

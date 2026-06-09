@@ -443,8 +443,8 @@ function SaveOverlay({ message }) {
 
 function Phone({ children, tab, setTab, saveOverlayVisible, saveOverlayMessage }) {
   return (
-    <div className="relative min-h-[100dvh] w-full max-w-[430px] overflow-hidden bg-[#f8f6f2] sm:h-[820px] sm:min-h-0 sm:w-[390px] sm:rounded-[26px] sm:shadow-[0_16px_55px_rgba(63,47,30,.08)] sm:ring-1 sm:ring-[#ebe2d8]">
-      <div className="h-full min-h-[100dvh] overflow-y-auto pb-[calc(106px+env(safe-area-inset-bottom))] [scrollbar-width:none] sm:min-h-0 [&::-webkit-scrollbar]:hidden">{children}</div>
+    <div className="relative h-[100dvh] max-h-[100dvh] w-full max-w-[430px] overflow-hidden bg-[#f8f6f2] sm:h-[min(820px,calc(100dvh-48px))] sm:max-h-[820px] sm:w-[390px] sm:rounded-[26px] sm:shadow-[0_16px_55px_rgba(63,47,30,.08)] sm:ring-1 sm:ring-[#ebe2d8]">
+      <div className="h-full overflow-y-auto pb-[calc(106px+env(safe-area-inset-bottom))] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">{children}</div>
       <BottomNav tab={tab} setTab={setTab} />
       {saveOverlayVisible && <SaveOverlay message={saveOverlayMessage} />}
     </div>
@@ -1449,8 +1449,8 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-[#f8f6f2] p-0 font-['Pretendard'] text-[#211b16] sm:p-6">
-      <div className="mx-auto flex max-w-[1260px] items-stretch justify-center gap-7 sm:items-start">
+    <div className="h-[100dvh] overflow-hidden bg-[#f8f6f2] p-0 font-['Pretendard'] text-[#211b16] sm:p-6">
+      <div className="mx-auto flex h-full max-w-[1260px] items-stretch justify-center gap-7 sm:items-start">
         <Phone tab={tab} setTab={setTab} saveOverlayVisible={saveOverlayVisible} saveOverlayMessage={saveOverlayMessage}>{screen}</Phone>
         <div className="hidden max-w-[520px] rounded-[18px] bg-[#fffdf9]/78 p-7 text-sm leading-7 text-[#4b443d] shadow-[0_7px_18px_rgba(54,42,30,.035)] ring-1 ring-[#eee7de] lg:block">
           <h2 className="mb-4 font-['Pretendard'] text-lg font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭 UI 메모</h2>
