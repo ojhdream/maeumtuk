@@ -523,8 +523,6 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
   const photoInputRef = useRef(null);
   const currentMeta = getCurrentLogMeta();
   const draftLength = draft.trim().length;
-  const showLengthCount = draft.length >= 240;
-  const isTooLong = draftLength > 300;
   const todayCount = todayLogs.length;
   const todayLabel = todayCount === 0 ? "비어 있음" : todayCount === 1 ? "첫 툭" : `${todayCount}툭`;
   const todaySectionLabel = `오늘, ${currentMeta.displayDate} ${currentMeta.day} · ${todayLabel}`;
@@ -532,8 +530,8 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
   useEffect(() => {
     const textarea = draftRef.current;
     if (!textarea) return;
-    textarea.style.height = "40px";
-    textarea.style.height = `${Math.min(textarea.scrollHeight, 156)}px`;
+    textarea.style.height = "34px";
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 132)}px`;
   }, [draft]);
 
   const leaveTuk = () => {
@@ -606,8 +604,8 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
           )}
         </section>
       </main>
-      <section className="maeumtuk-composer absolute bottom-[calc(78px+env(safe-area-inset-bottom))] left-0 right-0 z-30 border-t border-[#eee6dc] bg-[#fffaf4]/96 px-4 py-3 shadow-[0_-8px_22px_rgba(54,42,30,.045)] backdrop-blur-xl transition-[bottom] duration-200">
-        <div className="mx-auto max-w-[398px]">
+      <section className="maeumtuk-composer absolute bottom-[calc(78px+env(safe-area-inset-bottom))] left-0 right-0 z-30 border-t border-[#eee6dc] bg-[#fffaf4]/96 px-5 py-2.5 shadow-[0_-8px_22px_rgba(54,42,30,.045)] backdrop-blur-xl transition-[bottom] duration-200">
+        <div className="mx-auto max-w-[390px]">
           {photoData && (
             <div className="mb-2 flex items-start">
               <div
@@ -629,7 +627,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
               if (event.target.closest("button")) return;
               draftRef.current?.focus();
             }}
-            className="flex items-end gap-2 rounded-[14px] border border-[#eadfd4] bg-[#fffdf9] p-2 shadow-[0_7px_18px_rgba(54,42,30,.04)]"
+            className="flex min-h-[52px] items-end gap-1.5 rounded-[14px] border border-[#eadfd4] bg-[#fffdf9] px-2 py-1.5 shadow-[0_5px_14px_rgba(54,42,30,.035)]"
           >
             <input
               ref={photoInputRef}
@@ -644,10 +642,10 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() => photoInputRef.current?.click()}
-                className="grid h-10 w-10 shrink-0 place-items-center rounded-[10px] text-[#607454] hover:bg-[#eef4e8]"
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] text-[#647856] hover:bg-[#eef4e8]"
                 aria-label="사진 추가"
               >
-                <Image size={18} strokeWidth={1.8} />
+                <Image size={17} strokeWidth={1.8} />
               </button>
             </div>
             <textarea
@@ -657,21 +655,16 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
                 setDraft(event.target.value);
                 if (lengthNotice) setLengthNotice(false);
               }}
-              className="min-h-[40px] max-h-[156px] min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-1 py-2 font-['Pretendard'] text-[15px] leading-[24px] tracking-[-0.02em] text-[#272a22] outline-none placeholder:text-[#9a9289] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="min-h-[34px] max-h-[132px] min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-1 py-[7px] font-['Pretendard'] text-[15px] leading-[22px] tracking-[-0.02em] text-[#272a22] outline-none placeholder:text-[#9a9289] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               placeholder="지금..."
             />
             <button
               onClick={leaveTuk}
-              className="h-10 min-w-[54px] shrink-0 rounded-[10px] border border-[rgba(221,111,81,0.2)] bg-[#dd6f51] px-4 font-['Pretendard'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_6px_13px_rgba(221,111,81,.13)] transition duration-150 hover:bg-[#d86448] active:scale-[0.98] active:bg-[#c85e43]"
+              className="h-9 min-w-[48px] shrink-0 rounded-[10px] border border-[rgba(221,111,81,0.18)] bg-[#dd6f51] px-3.5 font-['Pretendard'] text-[13px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_5px_11px_rgba(221,111,81,.12)] transition duration-150 hover:bg-[#d86448] active:scale-[0.98] active:bg-[#c85e43]"
             >
               툭
             </button>
           </div>
-          {showLengthCount && (
-            <p className={`mt-1 px-1 text-right text-[12px] ${isTooLong ? "font-medium text-[#d46a45]" : "font-medium text-[#8b857e]"}`}>
-              {draftLength} / 300
-            </p>
-          )}
           {lengthNotice && (
             <p className="mt-2 px-1 text-[12px] font-medium text-[#c46b49]">조금 길어요. 툭은 300자 안쪽이 잘 읽혀요.</p>
           )}
