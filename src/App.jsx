@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Check,
-  CalendarDays,
   ChevronDown,
   ChevronUp,
   FileText,
@@ -469,7 +468,13 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
   const isTooLong = draftLength > 300;
   const todayCount = todayLogs.length;
   const todayLabel = todayCount === 0 ? "비어 있음" : todayCount === 1 ? "첫 툭" : `${todayCount}툭`;
-  const [monthLabel, dateLabel] = currentMeta.date.split(".").map((part) => Number(part));
+
+  useEffect(() => {
+    const textarea = draftRef.current;
+    if (!textarea) return;
+    textarea.style.height = "54px";
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 176)}px`;
+  }, [draft]);
 
   const leaveTuk = () => {
     const text = draft.trim();
@@ -506,7 +511,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
   return (
     <>
       <AppHeader />
-      <main className="px-6 pt-8">
+      <main className="px-6 pb-[220px] pt-8">
         <div className="mb-4 flex items-center gap-2 font-['Pretendard'] text-[14px] font-medium tracking-[-0.02em] text-[#5f5850]">
           <Leaf size={18} strokeWidth={1.9} className="shrink-0 text-[#6f925b]" />
           <p>지금 떠오른 생각을 가볍게 적어보세요.</p>
@@ -529,86 +534,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
           </section>
         )}
 
-        <section className="relative rounded-[13px] border border-[#ece4da] bg-[#fffdf9] p-3.5 shadow-[0_9px_22px_rgba(54,42,30,.045)]">
-          <div className="mb-3 flex items-center justify-between gap-3 px-1">
-            <div className="flex items-center gap-2.5 text-[15px] font-semibold tracking-[-0.02em] text-[#2f2924]">
-              <CalendarDays size={17} strokeWidth={1.9} className="text-[#3f3933]" />
-              <span>{monthLabel}월 {dateLabel}일</span>
-              <span className="text-[#6f925b]">{currentMeta.day}</span>
-            </div>
-            <ChevronDown size={18} strokeWidth={2} className="text-[#312b25]" />
-          </div>
-
-          <div
-            onClick={(event) => {
-              if (event.target.closest("button")) return;
-              draftRef.current?.focus();
-            }}
-            className="relative cursor-text rounded-[9px] border border-[#ebe2d8] bg-[#fffdf9] px-3 pb-7 pt-3"
-          >
-            <textarea
-              ref={draftRef}
-              value={draft}
-              onChange={(event) => {
-                setDraft(event.target.value);
-                if (lengthNotice) setLengthNotice(false);
-              }}
-              className="relative z-10 h-[92px] max-h-[220px] w-full resize-none overflow-y-auto bg-transparent font-['Pretendard'] text-[15px] leading-[27px] tracking-[-0.02em] text-[#272a22] outline-none placeholder:text-[#9a9289] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-              placeholder="지금 어떤 생각이 스치나요?"
-            />
-            <span className={`absolute bottom-2.5 right-3 text-[12px] ${isTooLong ? "font-medium text-[#d46a45]" : "font-medium text-[#8b857e]"}`}>
-              {draftLength} / 300
-            </span>
-            {photoData && (
-              <div className="mt-2 flex items-start gap-3">
-                <div
-                  className="relative h-[64px] w-[64px] shrink-0 rounded-[10px] shadow-inner ring-1 ring-black/[.04]"
-                  style={{ background: getImageBackground(photoData) }}
-                >
-                  <button
-                    onClick={() => setPhotoData(null)}
-                    className="absolute -right-2.5 -top-2.5 grid h-8 w-8 place-items-center rounded-full bg-[#fffdf9] text-[#6c6259] shadow-[0_2px_8px_rgba(54,42,30,.12)] ring-1 ring-[#e8dfd5]"
-                    aria-label="첨부 사진 삭제"
-                  >
-                    <X size={12} strokeWidth={2} />
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="mt-3 h-px bg-[#eee6dc]" />
-          <div className="mt-3 flex items-center justify-between gap-3 px-1 text-[#655f58]">
-            <input
-              ref={photoInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(event) => {
-                readImageFile(event.target.files?.[0], setPhotoData);
-                event.target.value = "";
-              }}
-            />
-            <button
-              onClick={() => photoInputRef.current?.click()}
-              className="inline-flex h-9 items-center gap-1.5 rounded-[8px] px-1.5 text-[13px] font-medium text-[#5f7f46] hover:bg-[#eef4e8]"
-              aria-label="사진 추가"
-            >
-              <Image size={17} strokeWidth={1.8} />
-              사진 추가
-            </button>
-            <button
-              onClick={leaveTuk}
-              className="h-10 min-w-[116px] rounded-[10px] border border-[rgba(221,111,81,0.2)] bg-[#dd6f51] px-4 font-['SUIT'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_6px_13px_rgba(221,111,81,.13)] transition duration-150 hover:bg-[#d86448] active:scale-[0.98] active:bg-[#c85e43]"
-            >
-              툭, 남기기
-            </button>
-          </div>
-          {lengthNotice && (
-            <p className="mt-2 px-1 text-[12px] font-medium text-[#c46b49]">조금 길어요. 툭은 300자 안쪽이 잘 읽혀요.</p>
-          )}
-        </section>
-
-        <section className="mt-9">
+        <section className="mt-5">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="font-['SUIT'] text-[16px] font-semibold tracking-[-0.02em] text-[#2b251f]">오늘의 툭</h2>
             <span className="text-[12px] font-medium text-[#8b857e]">{todayLabel}</span>
@@ -626,6 +552,79 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
           )}
         </section>
       </main>
+      <section className="absolute bottom-[calc(78px+env(safe-area-inset-bottom))] left-0 right-0 z-30 border-t border-[#eee6dc] bg-[#fffaf4]/96 px-4 py-3 shadow-[0_-10px_26px_rgba(54,42,30,.06)] backdrop-blur-xl">
+        <div className="mx-auto max-w-[398px] rounded-[13px] border border-[#eadfd4] bg-[#fffdf9] p-2.5 shadow-[0_8px_20px_rgba(54,42,30,.045)]">
+          <div
+            onClick={(event) => {
+              if (event.target.closest("button")) return;
+              draftRef.current?.focus();
+            }}
+            className="relative rounded-[10px] bg-[#fffdf9]"
+          >
+            <textarea
+              ref={draftRef}
+              value={draft}
+              onChange={(event) => {
+                setDraft(event.target.value);
+                if (lengthNotice) setLengthNotice(false);
+              }}
+              className="min-h-[54px] max-h-[176px] w-full resize-none overflow-y-auto bg-transparent px-1 pb-1 font-['Pretendard'] text-[15px] leading-[27px] tracking-[-0.02em] text-[#272a22] outline-none placeholder:text-[#9a9289] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              placeholder="지금 어떤 생각이 스치나요?"
+            />
+            {photoData && (
+              <div className="mb-2 flex items-start gap-3">
+                <div
+                  className="relative h-[52px] w-[52px] shrink-0 rounded-[9px] shadow-inner ring-1 ring-black/[.04]"
+                  style={{ background: getImageBackground(photoData) }}
+                >
+                  <button
+                    onClick={() => setPhotoData(null)}
+                    className="absolute -right-2 -top-2 grid h-7 w-7 place-items-center rounded-full bg-[#fffdf9] text-[#6c6259] shadow-[0_2px_8px_rgba(54,42,30,.12)] ring-1 ring-[#e8dfd5]"
+                    aria-label="첨부 사진 삭제"
+                  >
+                    <X size={11} strokeWidth={2} />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="mt-2 flex items-center justify-between gap-2 border-t border-[#eee6dc] pt-2">
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(event) => {
+                readImageFile(event.target.files?.[0], setPhotoData);
+                event.target.value = "";
+              }}
+            />
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => photoInputRef.current?.click()}
+                className="grid h-9 w-9 place-items-center rounded-[9px] text-[#607454] hover:bg-[#eef4e8]"
+                aria-label="사진 추가"
+              >
+                <Image size={18} strokeWidth={1.8} />
+              </button>
+              {showLengthCount && (
+                <span className={`text-[12px] ${isTooLong ? "font-medium text-[#d46a45]" : "font-medium text-[#8b857e]"}`}>
+                  {draftLength} / 300
+                </span>
+              )}
+            </div>
+            <button
+              onClick={leaveTuk}
+              className="h-10 min-w-[82px] rounded-[10px] border border-[rgba(221,111,81,0.2)] bg-[#dd6f51] px-4 font-['SUIT'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_6px_13px_rgba(221,111,81,.13)] transition duration-150 hover:bg-[#d86448] active:scale-[0.98] active:bg-[#c85e43]"
+            >
+              남기기
+            </button>
+          </div>
+          {lengthNotice && (
+            <p className="mt-2 px-1 text-[12px] font-medium text-[#c46b49]">조금 길어요. 툭은 300자 안쪽이 잘 읽혀요.</p>
+          )}
+        </div>
+      </section>
     </>
   );
 }
