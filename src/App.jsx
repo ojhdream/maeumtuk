@@ -363,7 +363,7 @@ function AppHeader() {
   return (
     <header className="flex items-center justify-between px-6 pt-6">
       <div className="flex items-center gap-3">
-        <div className="font-['SUIT'] text-[22px] font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭</div>
+        <div className="font-['Pretendard'] text-[22px] font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭</div>
         <div className="flex w-[38px] items-center" aria-hidden="true">
           <span className="h-px flex-1 bg-[#cfc3b7]" />
           <span className="h-2 w-2 rounded-full bg-[#e6bd50]" />
@@ -434,7 +434,7 @@ function SaveOverlay({ message }) {
           <span className="h-3 w-3 rounded-full bg-[#e6bd50]" />
           <span className="h-px flex-1 bg-[#c8baad]" />
         </div>
-        <p className="font-['SUIT'] text-[20px] font-semibold tracking-[-0.02em] text-[#2d2119]">{message}</p>
+        <p className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2d2119]">{message}</p>
         <p className="maeumtuk-save-sub mt-3 text-[13px] font-medium text-[#8b857e]">여기에 잠깐 머물러요.</p>
       </div>
     </div>
@@ -468,7 +468,7 @@ function EmptyState({ title, body }) {
         <span className="h-2.5 w-2.5 rounded-full bg-[#e6bd50]" />
         <span className="h-px flex-1 bg-[#cfc3b7]" />
       </div>
-      <h2 className="font-['SUIT'] text-[16px] font-semibold tracking-[-0.02em] text-[#2d2119]">{title}</h2>
+      <h2 className="font-['Pretendard'] text-[16px] font-semibold tracking-[-0.02em] text-[#2d2119]">{title}</h2>
       <p className="mx-auto mt-2 max-w-[230px] text-[13px] leading-6 text-[#817970]">{body}</p>
     </section>
   );
@@ -481,7 +481,7 @@ function NowFlowItem({ item, sequence, isLatest = false }) {
     <article className="py-4">
       <time className="mb-2 block text-[12px] font-medium text-[#8b857e]">{item.time}</time>
       <div className="flex items-start gap-3">
-        <p className="min-w-0 flex-1 whitespace-pre-line font-['MaruBuri'] text-[16px] leading-[31px] tracking-[-0.01em] text-[#2f2924]">
+        <p className="min-w-0 flex-1 whitespace-pre-line font-['Pretendard'] text-[16px] leading-[30px] tracking-[-0.02em] text-[#2f2924]">
           {item.text}
         </p>
         {item.image && <MiniPhoto bg={item.image} size="md" />}
@@ -547,12 +547,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
     <>
       <AppHeader />
       <main className="px-6 pb-[220px] pt-8">
-        <div className="mb-4 flex items-center gap-2 font-['Pretendard'] text-[14px] font-medium tracking-[-0.02em] text-[#5f5850]">
-          <Leaf size={18} strokeWidth={1.9} className="shrink-0 text-[#6f925b]" />
-          <p>지금 떠오른 생각을 가볍게 적어보세요.</p>
-        </div>
-
-        {showWritingExample && !draft && (
+        {todayLogs.length === 0 && showWritingExample && !draft && (
           <section className="mb-3 rounded-[11px] bg-[#fff9f3] px-4 py-3.5 ring-1 ring-[#eee3d8]">
             <p className="whitespace-pre-line text-[14px] font-normal leading-6 text-[#514840]">
               커피 마셨는데도 졸리다. 왜지.
@@ -571,7 +566,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
 
         <section className="mt-5">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-['SUIT'] text-[16px] font-semibold tracking-[-0.02em] text-[#2b251f]">오늘의 툭</h2>
+            <h2 className="font-['Pretendard'] text-[16px] font-semibold tracking-[-0.02em] text-[#2b251f]">오늘의 툭</h2>
             <span className="text-[12px] font-medium text-[#8b857e]">{todayLabel}</span>
           </div>
           {todayLogs.length > 0 ? (
@@ -643,7 +638,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
             />
             <button
               onClick={leaveTuk}
-              className="h-10 min-w-[54px] shrink-0 rounded-[10px] border border-[rgba(221,111,81,0.2)] bg-[#dd6f51] px-4 font-['SUIT'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_6px_13px_rgba(221,111,81,.13)] transition duration-150 hover:bg-[#d86448] active:scale-[0.98] active:bg-[#c85e43]"
+              className="h-10 min-w-[54px] shrink-0 rounded-[10px] border border-[rgba(221,111,81,0.2)] bg-[#dd6f51] px-4 font-['Pretendard'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_6px_13px_rgba(221,111,81,.13)] transition duration-150 hover:bg-[#d86448] active:scale-[0.98] active:bg-[#c85e43]"
             >
               툭
             </button>
@@ -891,7 +886,7 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
               </div>
             </div>
           ) : (
-            <p className="whitespace-pre-line font-['MaruBuri'] text-[15px] font-normal leading-[28px] tracking-[-0.01em] text-[#2f2924]">{item.text}</p>
+            <p className="whitespace-pre-line font-['Pretendard'] text-[15px] font-normal leading-[28px] tracking-[-0.01em] text-[#2f2924]">{item.text}</p>
           )}
           {confirmDelete && (
             <div className="mt-3 rounded-[10px] bg-[#fff5ee] p-3 text-[13px] text-[#4a3d34]">
@@ -1135,7 +1130,7 @@ function LogTab({ logItems, onUpdateLog, onDeleteLog }) {
       <AppHeader />
       <main className="px-6 pt-8">
         <div className="mb-3">
-          <h1 className="font-['SUIT'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">툭로그</h1>
+          <h1 className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">툭로그</h1>
           <p className="mt-1 text-[13px] font-medium text-[#938a82]">마음을 지나간 순간들</p>
         </div>
         <section className="mb-5">
@@ -1176,7 +1171,7 @@ function LogTab({ logItems, onUpdateLog, onDeleteLog }) {
             {groupedLogs.map((group) => (
               <section key={group.key}>
                 <div className="mb-2.5 flex items-center gap-2 px-1">
-                  <span className="font-['SUIT'] text-[13px] font-semibold tracking-[-0.01em] text-[#4d453e]">{group.date}</span>
+                  <span className="font-['Pretendard'] text-[13px] font-semibold tracking-[-0.01em] text-[#4d453e]">{group.date}</span>
                   <span className="text-[12px] font-medium text-[#8b857e]">{group.day}</span>
                   <span className="h-px flex-1 bg-[#eee6dc]" />
                   <span className="text-[11px] font-medium text-[#9a9188]">{group.items.length}툭</span>
@@ -1223,7 +1218,7 @@ function TodayCard({ title, children }) {
   return (
     <section className="rounded-[13px] border border-[#eee6dc] bg-[#fffdf9] p-4 shadow-[0_7px_18px_rgba(54,42,30,.03)]">
       <div className="mb-3">
-        <b className="font-['SUIT'] text-[15px] font-semibold tracking-[-0.02em] text-[#2b251f]">{title}</b>
+        <b className="font-['Pretendard'] text-[15px] font-semibold tracking-[-0.02em] text-[#2b251f]">{title}</b>
       </div>
       {children}
     </section>
@@ -1234,7 +1229,7 @@ function WeeklyReflectionCard({ reflection }) {
   return (
     <section className="rounded-[13px] border border-[#eadfd4] bg-[#fffaf5] px-4 py-4 shadow-[0_7px_18px_rgba(54,42,30,.025)]">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <b className="font-['SUIT'] text-[16px] font-semibold tracking-[-0.02em] text-[#2b251f]">이번 주를 돌아보면</b>
+        <b className="font-['Pretendard'] text-[16px] font-semibold tracking-[-0.02em] text-[#2b251f]">이번 주를 돌아보면</b>
         <span className="shrink-0 text-[11px] font-medium text-[#a18f82]">AI가 읽고 정리했어요</span>
       </div>
       <p className="whitespace-pre-line text-[14px] font-medium leading-7 tracking-[-0.01em] text-[#4a4038]">
@@ -1297,7 +1292,7 @@ function TodayTab({ logItems }) {
       <AppHeader />
       <main className="px-6 pt-8 font-['Pretendard']">
         <div className="relative mb-5 flex items-center justify-between">
-          <h1 className="font-['SUIT'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">요즘</h1>
+          <h1 className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">요즘</h1>
           <button
             onClick={() => setPeriodOpen((open) => !open)}
             className="inline-flex items-center gap-2 rounded-[10px] border border-[#e6ddd3] bg-[#fffdf9] px-3 py-2 text-right"
@@ -1458,7 +1453,7 @@ export default function App() {
       <div className="mx-auto flex max-w-[1260px] items-stretch justify-center gap-7 sm:items-start">
         <Phone tab={tab} setTab={setTab} saveOverlayVisible={saveOverlayVisible} saveOverlayMessage={saveOverlayMessage}>{screen}</Phone>
         <div className="hidden max-w-[520px] rounded-[18px] bg-[#fffdf9]/78 p-7 text-sm leading-7 text-[#4b443d] shadow-[0_7px_18px_rgba(54,42,30,.035)] ring-1 ring-[#eee7de] lg:block">
-          <h2 className="mb-4 font-['SUIT'] text-lg font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭 UI 메모</h2>
+          <h2 className="mb-4 font-['Pretendard'] text-lg font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭 UI 메모</h2>
           <p>
             하단 탭은 <b>지금 · 툭로그 · 요즘</b> 3개로 고정하고, 작성창과 로그 카드가 먼저 보이도록 밀도를 정리했습니다.
           </p>
