@@ -480,12 +480,14 @@ function NowFlowItem({ item, sequence, isLatest = false }) {
   return (
     <article className="py-4">
       <time className="mb-2 block text-[12px] font-medium text-[#8b857e]">{item.time}</time>
-      <div className="flex items-start gap-3">
-        <p className="min-w-0 flex-1 whitespace-pre-line font-['Pretendard'] text-[16px] leading-[30px] tracking-[-0.02em] text-[#2f2924]">
-          {item.text}
-        </p>
-        {item.image && <MiniPhoto bg={item.image} size="md" />}
-      </div>
+      <p className="whitespace-pre-line font-['Pretendard'] text-[16px] leading-[30px] tracking-[-0.02em] text-[#2f2924]">
+        {item.text}
+      </p>
+      {item.image && (
+        <div className="mt-3">
+          <MiniPhoto bg={item.image} size="md" />
+        </div>
+      )}
       {response && <ResponseTuk>{response}</ResponseTuk>}
     </article>
   );
@@ -820,8 +822,7 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
           </button>
         </div>
       )}
-      <div className="flex gap-3.5">
-        <div className="min-w-0 flex-1 font-['Pretendard']">
+      <div className="font-['Pretendard']">
           <div className="mb-2 flex items-center gap-1.5 pr-8 text-[12px] text-[#77716a]">
             <span className="h-2 w-2 rounded-full" style={{ background: getLogDotColor(item) }} />
             <span>{item.time}</span>
@@ -910,9 +911,8 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
               onDone={() => setTagEditing(false)}
             />
           )}
-        </div>
         {!compact && !editing && item.image && (
-          <div className="pt-7">
+          <div className="mt-3">
             <MiniPhoto bg={item.image} />
           </div>
         )}
