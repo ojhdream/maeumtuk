@@ -276,6 +276,7 @@ function getCurrentLogMeta() {
 
   return {
     date: `${String(now.getMonth() + 1).padStart(2, "0")}.${String(now.getDate()).padStart(2, "0")}`,
+    displayDate: `${now.getMonth() + 1}월 ${now.getDate()}일`,
     day: days[now.getDay()],
     greeting: getTimeGreeting(hour),
     hour,
@@ -505,6 +506,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
   const isTooLong = draftLength > 300;
   const todayCount = todayLogs.length;
   const todayLabel = todayCount === 0 ? "비어 있음" : todayCount === 1 ? "첫 툭" : `${todayCount}툭`;
+  const todaySectionLabel = `오늘, ${currentMeta.displayDate} ${currentMeta.day} · ${todayLabel}`;
 
   useEffect(() => {
     const textarea = draftRef.current;
@@ -567,9 +569,8 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
         )}
 
         <section className="mt-5">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-['Pretendard'] text-[16px] font-semibold tracking-[-0.02em] text-[#2b251f]">오늘의 툭</h2>
-            <span className="text-[12px] font-medium text-[#8b857e]">{todayLabel}</span>
+          <div className="mb-3">
+            <h2 className="font-['Pretendard'] text-[15px] font-semibold tracking-[-0.02em] text-[#2b251f]">{todaySectionLabel}</h2>
           </div>
           {todayLogs.length > 0 ? (
             <div className="divide-y divide-[#eee6dc]/55">
