@@ -553,6 +553,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
   const [photoData, setPhotoData] = useState(null);
   const [lengthNotice, setLengthNotice] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
+  const [composerOpen, setComposerOpen] = useState(false);
   const draftRef = useRef(null);
   const photoInputRef = useRef(null);
   const currentMeta = getCurrentLogMeta();
@@ -561,13 +562,23 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
   const todayLabel = todayCount === 0 ? "비어 있음" : todayCount === 1 ? "첫 툭" : `${todayCount}툭`;
   const todaySectionLabel = `오늘, ${currentMeta.displayDate} ${currentMeta.day} · ${todayLabel}`;
   const canLeaveTuk = Boolean(draft.trim() || photoData);
+  const composerExpanded = composerOpen || Boolean(draft || photoData);
 
   useEffect(() => {
     const textarea = draftRef.current;
     if (!textarea) return;
-    textarea.style.height = "34px";
-    textarea.style.height = `${Math.min(textarea.scrollHeight, 132)}px`;
-  }, [draft]);
+    const minHeight = composerExpanded ? 86 : 32;
+    const maxHeight = composerExpanded ? 132 : 52;
+    textarea.style.height = `${minHeight}px`;
+    textarea.style.height = `${Math.min(Math.max(textarea.scrollHeight, minHeight), maxHeight)}px`;
+  }, [draft, composerExpanded]);
+
+  useEffect(() => {
+    if (!composerOpen) return;
+    window.requestAnimationFrame(() => {
+      draftRef.current?.focus();
+    });
+  }, [composerOpen]);
 
   const leaveTuk = () => {
     if (isLeaving) return;
@@ -600,6 +611,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
       onShowSaved(todayCount + 1);
       setDraft("");
       setPhotoData(null);
+      setComposerOpen(false);
       setIsLeaving(false);
     }, 260);
   };
@@ -650,28 +662,15 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
       </main>
       <section className="maeumtuk-composer absolute bottom-[calc(78px+env(safe-area-inset-bottom))] left-0 right-0 z-30 border-t border-[#eee6dc] bg-[#fffaf4] px-4 py-1.5 shadow-[0_-8px_22px_rgba(54,42,30,.035)] transition-[bottom] duration-200">
         <div className="mx-auto max-w-[390px]">
-          {photoData && (
-            <div className="mb-2 flex items-start">
-              <div
-                className="relative h-[52px] w-[52px] shrink-0 rounded-[9px] shadow-inner ring-1 ring-black/[.04]"
-                style={{ background: getImageBackground(photoData) }}
-              >
-                <button
-                  onClick={() => setPhotoData(null)}
-                  className="absolute -right-2 -top-2 grid h-7 w-7 place-items-center rounded-full bg-[#fffdf9] text-[#6c6259] shadow-[0_2px_8px_rgba(54,42,30,.12)] ring-1 ring-[#e8dfd5]"
-                  aria-label="첨부 사진 삭제"
-                >
-                  <X size={11} strokeWidth={2} />
-                </button>
-              </div>
-            </div>
-          )}
           <div
             onClick={(event) => {
               if (event.target.closest("button")) return;
+              setComposerOpen(true);
               draftRef.current?.focus();
             }}
-            className={`flex min-h-[48px] items-end gap-1 rounded-[14px] border border-[#eadfd4] bg-[#fffdf9] px-1.5 py-1 shadow-[0_5px_14px_rgba(54,42,30,.035)] transition duration-200 ${
+            className={`rounded-[14px] border border-[#eadfd4] bg-[#fffdf9] shadow-[0_5px_14px_rgba(54,42,30,.035)] transition duration-200 ${
+              composerExpanded ? "min-h-[132px] px-3 py-2.5" : "flex min-h-[48px] items-end gap-1 px-1.5 py-1"
+            } ${
               isLeaving ? "translate-y-0.5 opacity-55" : ""
             }`}
           >
@@ -683,38 +682,110 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
               onChange={(event) => {
                 readImageFile(event.target.files?.[0], setPhotoData);
                 event.target.value = "";
+                setComposerOpen(true);
               }}
             />
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => photoInputRef.current?.click()}
-                className="grid h-8 w-8 shrink-0 place-items-center rounded-[9px] text-[#647856] hover:bg-[#eef4e8]"
-                aria-label="사진 추가"
-              >
-                <Image size={16} strokeWidth={1.8} />
-              </button>
-            </div>
-            <textarea
-              ref={draftRef}
-              value={draft}
-              onChange={(event) => {
-                setDraft(event.target.value);
-                if (lengthNotice) setLengthNotice(false);
-              }}
-              className="maeumtuk-draft-input min-h-[32px] max-h-[124px] min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-0.5 py-[5px] font-['Pretendard'] text-[16px] font-medium leading-[22px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-medium placeholder:text-[#a9a197] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-              placeholder="지금..."
-            />
-            <button
-              onClick={leaveTuk}
-              disabled={isLeaving || !canLeaveTuk}
-              className={`h-8 min-w-[48px] shrink-0 rounded-[9px] px-3 font-['Pretendard'] text-[14px] font-semibold tracking-[-0.02em] transition duration-150 ${
-                canLeaveTuk
-                  ? "border border-[rgba(239,135,92,0.2)] bg-[#ef875c] text-[#fffdf9] shadow-[0_6px_13px_rgba(239,135,92,.14)] hover:bg-[#e77d52] active:scale-[0.98] active:bg-[#dd7349]"
-                  : "border border-[#eadfd4] bg-[#f6eee7] text-[#b39b8d]"
-              }`}
-            >
-              툭
-            </button>
+            {composerExpanded ? (
+              <div className="flex flex-col">
+                <textarea
+                  ref={draftRef}
+                  value={draft}
+                  onFocus={() => setComposerOpen(true)}
+                  onChange={(event) => {
+                    setDraft(event.target.value);
+                    if (lengthNotice) setLengthNotice(false);
+                  }}
+                  className="maeumtuk-draft-input min-h-[86px] max-h-[132px] w-full resize-none overflow-y-auto bg-transparent px-0.5 py-0 font-['Pretendard'] text-[16px] font-medium leading-[24px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-medium placeholder:text-[#a9a197] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  placeholder="지금, 마음을 툭 남겨보세요..."
+                />
+                <div className="mt-2 flex items-end justify-between gap-2 border-t border-[#efe6dc] pt-2">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => photoInputRef.current?.click()}
+                      className="grid h-8 w-8 shrink-0 place-items-center rounded-[9px] text-[#647856] hover:bg-[#eef4e8]"
+                      aria-label="사진 추가"
+                    >
+                      <Image size={16} strokeWidth={1.8} />
+                    </button>
+                    {photoData && (
+                      <div
+                        className="relative h-[38px] w-[38px] shrink-0 rounded-[8px] shadow-inner ring-1 ring-black/[.04]"
+                        style={{ background: getImageBackground(photoData) }}
+                      >
+                        <button
+                          onClick={() => setPhotoData(null)}
+                          className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-[#fffdf9] text-[#6c6259] shadow-[0_2px_8px_rgba(54,42,30,.12)] ring-1 ring-[#e8dfd5]"
+                          aria-label="첨부 사진 삭제"
+                        >
+                          <X size={10} strokeWidth={2} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    {!draft && !photoData && (
+                      <button
+                        onClick={() => {
+                          setComposerOpen(false);
+                          draftRef.current?.blur();
+                        }}
+                        className="h-8 rounded-[9px] px-2.5 text-[12px] font-medium text-[#8b8279] hover:bg-[#f5eee7]"
+                      >
+                        접기
+                      </button>
+                    )}
+                    <button
+                      onClick={leaveTuk}
+                      disabled={isLeaving || !canLeaveTuk}
+                      className={`h-8 min-w-[48px] shrink-0 rounded-[9px] px-3 font-['Pretendard'] text-[14px] font-semibold tracking-[-0.02em] transition duration-150 ${
+                        canLeaveTuk
+                          ? "border border-[rgba(239,135,92,0.2)] bg-[#ef875c] text-[#fffdf9] shadow-[0_6px_13px_rgba(239,135,92,.14)] hover:bg-[#e77d52] active:scale-[0.98] active:bg-[#dd7349]"
+                          : "border border-[#eadfd4] bg-[#f6eee7] text-[#b39b8d]"
+                      }`}
+                    >
+                      툭
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => {
+                      setComposerOpen(true);
+                      photoInputRef.current?.click();
+                    }}
+                    className="grid h-8 w-8 shrink-0 place-items-center rounded-[9px] text-[#647856] hover:bg-[#eef4e8]"
+                    aria-label="사진 추가"
+                  >
+                    <Image size={16} strokeWidth={1.8} />
+                  </button>
+                </div>
+                <textarea
+                  ref={draftRef}
+                  value={draft}
+                  onFocus={() => setComposerOpen(true)}
+                  onChange={(event) => {
+                    setDraft(event.target.value);
+                    if (lengthNotice) setLengthNotice(false);
+                  }}
+                  className="maeumtuk-draft-input min-h-[32px] max-h-[52px] min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-0.5 py-[5px] font-['Pretendard'] text-[16px] font-medium leading-[22px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-medium placeholder:text-[#a9a197] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  placeholder="지금 이 순간은?"
+                />
+                <button
+                  onClick={leaveTuk}
+                  disabled={isLeaving || !canLeaveTuk}
+                  className={`h-8 min-w-[48px] shrink-0 rounded-[9px] px-3 font-['Pretendard'] text-[14px] font-semibold tracking-[-0.02em] transition duration-150 ${
+                    canLeaveTuk
+                      ? "border border-[rgba(239,135,92,0.2)] bg-[#ef875c] text-[#fffdf9] shadow-[0_6px_13px_rgba(239,135,92,.14)] hover:bg-[#e77d52] active:scale-[0.98] active:bg-[#dd7349]"
+                      : "border border-[#eadfd4] bg-[#f6eee7] text-[#b39b8d]"
+                  }`}
+                >
+                  툭
+                </button>
+              </>
+            )}
           </div>
           {lengthNotice && (
             <p className="mt-2 px-1 text-[12px] font-medium text-[#c46b49]">조금 길어요. 툭은 300자 안쪽이 잘 읽혀요.</p>
