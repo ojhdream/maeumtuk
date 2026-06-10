@@ -376,7 +376,7 @@ function AppHeader() {
   return (
     <header className="flex items-center justify-between px-6 pt-6">
       <div className="flex items-center gap-3">
-        <div className="font-['Pretendard'] text-[22px] font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭</div>
+        <div className="font-['SUIT'] text-[22px] font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭</div>
         <div className="flex w-[38px] items-center" aria-hidden="true">
           <span className="h-px flex-1 bg-[#cfc3b7]" />
           <span className="h-2 w-2 rounded-full bg-[#e6bd50]" />
@@ -432,7 +432,7 @@ function getResponseTukMessage(count) {
 
 function ResponseTuk({ children }) {
   return (
-    <div className="mt-2.5 text-[14px] font-semibold leading-6 tracking-[-0.02em] text-[#6f6a5f]">
+    <div className="mt-2.5 font-['SUIT'] text-[14px] font-semibold leading-6 tracking-[-0.02em] text-[#6f6a5f]">
       {children}
     </div>
   );
@@ -605,7 +605,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
 
         <section className="mt-3">
           <div className="mb-2.5">
-            <h2 className="font-['Pretendard'] text-[15px] font-semibold tracking-[-0.02em] text-[#2b251f]">{todaySectionLabel}</h2>
+            <h2 className="font-['SUIT'] text-[15px] font-semibold tracking-[-0.02em] text-[#2b251f]">{todaySectionLabel}</h2>
           </div>
           {todayLogs.length > 0 ? (
             <div className="divide-y divide-[#eee6dc]/55">
