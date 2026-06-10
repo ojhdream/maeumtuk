@@ -526,15 +526,17 @@ function NowFlowItem({ item, sequence, isLatest = false }) {
         <span className="h-2 w-2 rounded-full" style={{ background: dotColor }} />
         {item.time}
       </time>
-      <p className="whitespace-pre-line font-['Pretendard'] text-[17px] font-normal leading-[30px] tracking-[-0.02em] text-[#29241f]">
-        {item.text}
-      </p>
-      {item.image && (
-        <div className="mt-3">
-          <MiniPhoto bg={item.image} size="md" />
-        </div>
-      )}
-      {response && <ResponseTuk>{response}</ResponseTuk>}
+      <div className="ml-4">
+        <p className="whitespace-pre-line font-['Pretendard'] text-[17px] font-normal leading-[30px] tracking-[-0.02em] text-[#29241f]">
+          {item.text}
+        </p>
+        {item.image && (
+          <div className="mt-3">
+            <MiniPhoto bg={item.image} size="md" />
+          </div>
+        )}
+        {response && <ResponseTuk>{response}</ResponseTuk>}
+      </div>
     </article>
   );
 }
