@@ -561,6 +561,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
   const todayCount = todayLogs.length;
   const todayLabel = todayCount === 0 ? "비어 있음" : todayCount === 1 ? "첫 툭" : `${todayCount}툭`;
   const todaySectionLabel = `오늘, ${currentMeta.displayDate} ${currentMeta.day} · ${todayLabel}`;
+  const canLeaveTuk = Boolean(draft.trim() || photoData);
 
   useEffect(() => {
     const textarea = draftRef.current;
@@ -706,8 +707,12 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
             />
             <button
               onClick={leaveTuk}
-              disabled={isLeaving}
-              className="h-9 min-w-[56px] shrink-0 rounded-[10px] border border-[rgba(239,135,92,0.2)] bg-[#ef875c] px-4 font-['Pretendard'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_6px_13px_rgba(239,135,92,.14)] transition duration-150 hover:bg-[#e77d52] active:scale-[0.98] active:bg-[#dd7349]"
+              disabled={isLeaving || !canLeaveTuk}
+              className={`h-9 min-w-[56px] shrink-0 rounded-[10px] px-4 font-['Pretendard'] text-[14px] font-semibold tracking-[-0.02em] transition duration-150 ${
+                canLeaveTuk
+                  ? "border border-[rgba(239,135,92,0.2)] bg-[#ef875c] text-[#fffdf9] shadow-[0_6px_13px_rgba(239,135,92,.14)] hover:bg-[#e77d52] active:scale-[0.98] active:bg-[#dd7349]"
+                  : "border border-[#eadfd4] bg-[#f6eee7] text-[#b39b8d]"
+              }`}
             >
               툭
             </button>
