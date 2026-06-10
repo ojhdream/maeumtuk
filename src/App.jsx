@@ -1486,7 +1486,7 @@ export default function App() {
     saveTimerRef.current = window.setTimeout(() => {
       setSaveOverlayVisible(false);
       saveTimerRef.current = null;
-    }, nextTodayCount === 1 ? 1800 : 1600);
+    }, nextTodayCount === 1 ? 2100 : 1850);
   };
 
   const addLog = (log) => {
