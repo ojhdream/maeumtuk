@@ -671,7 +671,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
                 setDraft(event.target.value);
                 if (lengthNotice) setLengthNotice(false);
               }}
-              className="min-h-[34px] max-h-[132px] min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-1 py-[6px] font-['Pretendard'] text-[16px] font-medium leading-[23px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-medium placeholder:text-[#a9a197] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="maeumtuk-draft-input min-h-[34px] max-h-[132px] min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-1 py-[6px] font-['Pretendard'] text-[16px] font-medium leading-[23px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-medium placeholder:text-[#a9a197] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               placeholder="지금..."
             />
             <button
@@ -1409,6 +1409,12 @@ export default function App() {
   const [saveOverlayVisible, setSaveOverlayVisible] = useState(false);
   const [saveOverlayMessage, setSaveOverlayMessage] = useState(getResponseTukMessage(0));
   const saveTimerRef = useRef(null);
+
+  useEffect(() => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+  }, [tab]);
 
   useEffect(() => {
     window.localStorage.setItem(

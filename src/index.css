@@ -26,17 +26,17 @@ body {
   min-height: 100%;
 }
 
-.maeumtuk-phone:has(textarea:focus) .maeumtuk-bottom-nav {
+.maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-bottom-nav {
   opacity: 0;
   pointer-events: none;
   transform: translateY(100%);
 }
 
-.maeumtuk-phone:has(textarea:focus) .maeumtuk-composer {
+.maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-composer {
   bottom: env(safe-area-inset-bottom);
 }
 
-.maeumtuk-phone:has(textarea:focus) .maeumtuk-scroll {
+.maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-scroll {
   padding-bottom: calc(108px + env(safe-area-inset-bottom));
 }
 
