@@ -529,7 +529,7 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false }) {
   const dotColor = getFlowDotColor(item, sequence);
 
   return (
-    <article className="py-4">
+    <article className={`py-4 ${isLatest ? "maeumtuk-now-settle" : ""}`}>
       <time className="mb-2 flex items-center gap-2 text-[14px] font-medium tracking-[-0.02em] text-[#8a837a]">
         <span className="h-2 w-2 rounded-full" style={{ background: dotColor }} />
         {item.time}
@@ -553,6 +553,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
   const [draft, setDraft] = useState("");
   const [photoData, setPhotoData] = useState(null);
   const [lengthNotice, setLengthNotice] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
   const draftRef = useRef(null);
   const photoInputRef = useRef(null);
   const currentMeta = getCurrentLogMeta();
@@ -569,6 +570,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
   }, [draft]);
 
   const leaveTuk = () => {
+    if (isLeaving) return;
     const text = draft.trim();
     if (!text && !photoData) return;
     if (text.length > 300) {
@@ -590,14 +592,16 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
       note: "",
     };
 
-    onAddLog(nextLog);
-    onShowSaved(todayCount + 1);
+    setIsLeaving(true);
     setLengthNotice(false);
     onHideWritingExample();
     window.setTimeout(() => {
+      onAddLog(nextLog);
+      onShowSaved(todayCount + 1);
       setDraft("");
       setPhotoData(null);
-    }, 180);
+      setIsLeaving(false);
+    }, 260);
   };
 
   return (
@@ -667,7 +671,9 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
               if (event.target.closest("button")) return;
               draftRef.current?.focus();
             }}
-            className="flex min-h-[52px] items-end gap-1.5 rounded-[14px] border border-[#eadfd4] bg-[#fffdf9] px-2 py-1.5 shadow-[0_5px_14px_rgba(54,42,30,.035)]"
+            className={`flex min-h-[52px] items-end gap-1.5 rounded-[14px] border border-[#eadfd4] bg-[#fffdf9] px-2 py-1.5 shadow-[0_5px_14px_rgba(54,42,30,.035)] transition duration-200 ${
+              isLeaving ? "translate-y-0.5 opacity-55" : ""
+            }`}
           >
             <input
               ref={photoInputRef}
@@ -700,6 +706,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
             />
             <button
               onClick={leaveTuk}
+              disabled={isLeaving}
               className="h-9 min-w-[56px] shrink-0 rounded-[10px] border border-[rgba(239,135,92,0.2)] bg-[#ef875c] px-4 font-['Pretendard'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_6px_13px_rgba(239,135,92,.14)] transition duration-150 hover:bg-[#e77d52] active:scale-[0.98] active:bg-[#dd7349]"
             >
               툭

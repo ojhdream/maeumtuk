@@ -56,6 +56,10 @@ body {
   animation: maeumtuk-card-settle 0.28s ease both;
 }
 
+.maeumtuk-now-settle {
+  animation: maeumtuk-now-settle 0.32s ease both;
+}
+
 @keyframes maeumtuk-save-screen {
   0% {
     opacity: 0;
@@ -73,6 +77,17 @@ body {
   0% {
     opacity: 0;
     transform: translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes maeumtuk-now-settle {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
   }
   100% {
     opacity: 1;
