@@ -41,15 +41,23 @@ body {
 }
 
 .maeumtuk-save-screen {
-  animation: maeumtuk-save-screen 0.95s ease both;
+  animation: maeumtuk-save-screen 1.6s ease both;
 }
 
 .maeumtuk-save-pop {
-  animation: maeumtuk-save-pop 0.95s ease both;
+  animation: maeumtuk-save-pop 1.6s ease both;
+}
+
+.maeumtuk-save-symbol {
+  animation: maeumtuk-save-symbol 1.6s ease both;
+}
+
+.maeumtuk-save-title {
+  animation: maeumtuk-save-title 1.6s ease both;
 }
 
 .maeumtuk-save-sub {
-  animation: maeumtuk-save-sub 0.95s ease both;
+  animation: maeumtuk-save-sub 1.6s ease both;
 }
 
 .maeumtuk-log-card {
@@ -64,8 +72,8 @@ body {
   0% {
     opacity: 0;
   }
-  14%,
-  76% {
+  10%,
+  84% {
     opacity: 1;
   }
   100% {
@@ -97,28 +105,59 @@ body {
 
 @keyframes maeumtuk-save-pop {
   0% {
-    opacity: 0;
     transform: translateY(5px);
   }
   18%,
-  78% {
+  82% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes maeumtuk-save-symbol {
+  0%,
+  8% {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+  22%,
+  84% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-2px) scale(1);
+  }
+}
+
+@keyframes maeumtuk-save-title {
+  0%,
+  24% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  42%,
+  84% {
     opacity: 1;
     transform: translateY(0);
   }
   100% {
     opacity: 0;
-    transform: translateY(-3px);
+    transform: translateY(-2px);
   }
 }
 
 @keyframes maeumtuk-save-sub {
   0%,
-  20% {
+  46% {
     opacity: 0;
     transform: translateY(3px);
   }
-  40%,
-  76% {
+  62%,
+  84% {
     opacity: 1;
     transform: translateY(0);
   }
