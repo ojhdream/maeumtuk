@@ -402,12 +402,12 @@ function BottomNav({ tab, setTab }) {
             key={item.id}
             onClick={() => setTab(item.id)}
             className={`flex min-h-[52px] w-20 flex-col items-center gap-1.5 text-[12px] transition ${
-              active ? "text-[#5f7f46]" : "text-[#827b73] hover:text-[#4b443d]"
+              active ? "text-[#4f743b]" : "text-[#746d65] hover:text-[#4b443d]"
             }`}
           >
             <div
               className={`grid h-9 w-9 place-items-center rounded-[10px] transition ${
-                active ? "bg-[#eef4e8] text-[#5f7f46] shadow-[0_6px_14px_rgba(79,111,61,.08)]" : "text-[#777069]"
+                active ? "bg-[#e3efd9] text-[#4f743b] shadow-[0_6px_14px_rgba(79,111,61,.11)]" : "text-[#6f675f]"
               }`}
             >
               {item.icon}
@@ -684,7 +684,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
             />
             <button
               onClick={leaveTuk}
-              className="h-9 min-w-[48px] shrink-0 rounded-[10px] border border-[rgba(231,150,115,0.18)] bg-[#e79673] px-3.5 font-['Pretendard'] text-[13px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_5px_11px_rgba(231,150,115,.11)] transition duration-150 hover:bg-[#df8b68] active:scale-[0.98] active:bg-[#d98260]"
+              className="h-9 min-w-[56px] shrink-0 rounded-[10px] border border-[rgba(239,135,92,0.2)] bg-[#ef875c] px-4 font-['Pretendard'] text-[14px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_6px_13px_rgba(239,135,92,.14)] transition duration-150 hover:bg-[#e77d52] active:scale-[0.98] active:bg-[#dd7349]"
             >
               툭
             </button>
