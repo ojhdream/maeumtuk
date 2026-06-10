@@ -420,13 +420,15 @@ function BottomNav({ tab, setTab }) {
   );
 }
 
-function getResponseTukMessage(count) {
+function getResponseTukMessage(count, { totalCount, isLatest = false } = {}) {
+  if (isLatest && totalCount >= 7 && totalCount % 7 === 0) return "🌙 이번 주를 돌아볼 조각이 모였어요.";
   if (count === 1) return "🍃 첫 툭이 남겨졌어요.";
-  if (count === 3) return "🌱 오늘 생각이 조금씩 쌓이고 있어요.";
+  if (count === 2) return "🌱 이런 생각도 툭이에요.";
+  if (count === 3) return "☁️ 정리되지 않아도 괜찮아요.";
   if (count === 5) return "🍊 벌써 다섯 번째 툭이네요.";
   if (count === 10) return "☁️ 자주 보이는 생각이 생겼어요.";
   if (count === 15) return "🌱 요즘의 이야기가 모였어요.";
-  const messages = ["🍃 툭 남겨졌어요.", "🌱 오늘도 한 조각 남았어요.", "☁️ 생각 하나가 머물렀어요.", "🍊 작은 마음 하나 저장."];
+  const messages = ["🍃 툭, 여기에 남겨졌어요.", "🌱 지금의 조각이 남았어요.", "☁️ 생각 하나가 머물렀어요.", "🍊 작은 마음 하나가 놓였어요."];
   return messages[Math.abs(count) % messages.length];
 }
 
@@ -516,8 +518,9 @@ function EmptyState({ title, body }) {
   );
 }
 
-function NowFlowItem({ item, sequence, isLatest = false }) {
-  const response = isLatest || [1, 3, 5, 10, 15].includes(sequence) ? getResponseTukMessage(sequence) : "";
+function NowFlowItem({ item, sequence, totalSequence, isLatest = false }) {
+  const response =
+    isLatest || [1, 2, 3, 5, 10, 15].includes(sequence) ? getResponseTukMessage(sequence, { totalCount: totalSequence, isLatest }) : "";
   const dotColor = getFlowDotColor(item, sequence);
 
   return (
@@ -541,7 +544,7 @@ function NowFlowItem({ item, sequence, isLatest = false }) {
   );
 }
 
-function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample, onShowSaved }) {
+function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHideWritingExample, onShowSaved }) {
   const [draft, setDraft] = useState("");
   const [photoData, setPhotoData] = useState(null);
   const [lengthNotice, setLengthNotice] = useState(false);
@@ -620,7 +623,13 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
           {todayLogs.length > 0 ? (
             <div className="divide-y divide-[#eee6dc]/55">
               {todayLogs.map((item, index) => (
-                <NowFlowItem key={item.id || `${item.date}-${item.time}`} item={item} sequence={todayLogs.length - index} isLatest={index === 0} />
+                <NowFlowItem
+                  key={item.id || `${item.date}-${item.time}`}
+                  item={item}
+                  sequence={todayLogs.length - index}
+                  totalSequence={Math.max(totalLogCount - index, 0)}
+                  isLatest={index === 0}
+                />
               ))}
             </div>
           ) : (
@@ -1484,6 +1493,7 @@ export default function App() {
       tab === "now" ? (
         <NowTab
           todayLogs={taggedTodayLogs}
+          totalLogCount={taggedAllLogs.length}
           onAddLog={addLog}
           showWritingExample={showWritingExample}
           onHideWritingExample={() => setShowWritingExample(false)}
