@@ -648,7 +648,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
           )}
         </section>
       </main>
-      <section className="maeumtuk-composer absolute bottom-[calc(78px+env(safe-area-inset-bottom))] left-0 right-0 z-30 border-t border-[#eee6dc] bg-[#fffaf4] px-5 py-2 shadow-[0_-8px_22px_rgba(54,42,30,.035)] transition-[bottom] duration-200">
+      <section className="maeumtuk-composer absolute bottom-[calc(78px+env(safe-area-inset-bottom))] left-0 right-0 z-30 border-t border-[#eee6dc] bg-[#fffaf4] px-4 py-1.5 shadow-[0_-8px_22px_rgba(54,42,30,.035)] transition-[bottom] duration-200">
         <div className="mx-auto max-w-[390px]">
           {photoData && (
             <div className="mb-2 flex items-start">
@@ -671,7 +671,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
               if (event.target.closest("button")) return;
               draftRef.current?.focus();
             }}
-            className={`flex min-h-[52px] items-end gap-1.5 rounded-[14px] border border-[#eadfd4] bg-[#fffdf9] px-2 py-1.5 shadow-[0_5px_14px_rgba(54,42,30,.035)] transition duration-200 ${
+            className={`flex min-h-[48px] items-end gap-1 rounded-[14px] border border-[#eadfd4] bg-[#fffdf9] px-1.5 py-1 shadow-[0_5px_14px_rgba(54,42,30,.035)] transition duration-200 ${
               isLeaving ? "translate-y-0.5 opacity-55" : ""
             }`}
           >
@@ -688,10 +688,10 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() => photoInputRef.current?.click()}
-                className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] text-[#647856] hover:bg-[#eef4e8]"
+                className="grid h-8 w-8 shrink-0 place-items-center rounded-[9px] text-[#647856] hover:bg-[#eef4e8]"
                 aria-label="사진 추가"
               >
-                <Image size={17} strokeWidth={1.8} />
+                <Image size={16} strokeWidth={1.8} />
               </button>
             </div>
             <textarea
@@ -701,13 +701,13 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
                 setDraft(event.target.value);
                 if (lengthNotice) setLengthNotice(false);
               }}
-              className="maeumtuk-draft-input min-h-[34px] max-h-[132px] min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-1 py-[6px] font-['Pretendard'] text-[16px] font-medium leading-[23px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-medium placeholder:text-[#a9a197] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="maeumtuk-draft-input min-h-[32px] max-h-[124px] min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-0.5 py-[5px] font-['Pretendard'] text-[16px] font-medium leading-[22px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-medium placeholder:text-[#a9a197] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               placeholder="지금..."
             />
             <button
               onClick={leaveTuk}
               disabled={isLeaving || !canLeaveTuk}
-              className={`h-9 min-w-[56px] shrink-0 rounded-[10px] px-4 font-['Pretendard'] text-[14px] font-semibold tracking-[-0.02em] transition duration-150 ${
+              className={`h-8 min-w-[48px] shrink-0 rounded-[9px] px-3 font-['Pretendard'] text-[14px] font-semibold tracking-[-0.02em] transition duration-150 ${
                 canLeaveTuk
                   ? "border border-[rgba(239,135,92,0.2)] bg-[#ef875c] text-[#fffdf9] shadow-[0_6px_13px_rgba(239,135,92,.14)] hover:bg-[#e77d52] active:scale-[0.98] active:bg-[#dd7349]"
                   : "border border-[#eadfd4] bg-[#f6eee7] text-[#b39b8d]"
