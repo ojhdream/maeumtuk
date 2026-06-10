@@ -459,17 +459,25 @@ function useVisibleViewportHeight() {
     const setViewportHeight = () => {
       const viewport = window.visualViewport;
       const height = viewport?.height || window.innerHeight;
+      const keyboardOpen = viewport ? window.innerHeight - viewport.height > 120 : false;
+
       document.documentElement.style.setProperty("--maeumtuk-vh", `${height}px`);
+      document.documentElement.classList.toggle("maeumtuk-keyboard-open", keyboardOpen);
     };
 
     setViewportHeight();
     window.visualViewport?.addEventListener("resize", setViewportHeight);
     window.visualViewport?.addEventListener("scroll", setViewportHeight);
+    window.addEventListener("focusin", setViewportHeight);
+    window.addEventListener("focusout", setViewportHeight);
     window.addEventListener("resize", setViewportHeight);
 
     return () => {
+      document.documentElement.classList.remove("maeumtuk-keyboard-open");
       window.visualViewport?.removeEventListener("resize", setViewportHeight);
       window.visualViewport?.removeEventListener("scroll", setViewportHeight);
+      window.removeEventListener("focusin", setViewportHeight);
+      window.removeEventListener("focusout", setViewportHeight);
       window.removeEventListener("resize", setViewportHeight);
     };
   }, []);
