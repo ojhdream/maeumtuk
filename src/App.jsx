@@ -372,14 +372,19 @@ function TimeOfDayIcon({ hour }) {
   return <Sun size={22} strokeWidth={1.8} className="text-[#f0bd3f]" />;
 }
 
-function AppHeader() {
+function AppHeader({ subtitle }) {
   return (
-    <header className="flex items-center justify-between px-6 pt-6">
-      <div className="flex items-center gap-3">
-        <div className="font-['SUIT'] text-[22px] font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭</div>
-        <div className="flex w-[38px] items-center" aria-hidden="true">
-          <span className="h-px flex-1 bg-[#cfc3b7]" />
-          <span className="h-2 w-2 rounded-full bg-[#e6bd50]" />
+    <header className="px-6 pt-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-3">
+            <div className="font-['SUIT'] text-[22px] font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭</div>
+            <div className="flex w-[38px] items-center" aria-hidden="true">
+              <span className="h-px flex-1 bg-[#cfc3b7]" />
+              <span className="h-2 w-2 rounded-full bg-[#e6bd50]" />
+            </div>
+          </div>
+          {subtitle && <p className="mt-1.5 text-[12px] font-medium tracking-[-0.02em] text-[#8b857e]">{subtitle}</p>}
         </div>
       </div>
     </header>
@@ -597,7 +602,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
 
   return (
     <>
-      <AppHeader />
+      <AppHeader subtitle="마음이 움직인 순간, 툭." />
       <main className="px-6 pb-[220px] pt-5">
         {todayLogs.length === 0 && showWritingExample && !draft && (
           <section className="mb-3 rounded-[11px] bg-[#fff9f3] px-4 py-3.5 ring-1 ring-[#eee3d8]">
