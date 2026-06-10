@@ -394,7 +394,7 @@ function BottomNav({ tab, setTab }) {
   ];
 
   return (
-    <nav className="maeumtuk-bottom-nav absolute bottom-0 left-0 right-0 flex h-[calc(78px+env(safe-area-inset-bottom))] items-start justify-around border-t border-[#eee7de] bg-[#fffdf9]/92 pt-3 backdrop-blur-xl transition duration-200">
+    <nav className="maeumtuk-bottom-nav absolute bottom-0 left-0 right-0 flex h-[calc(78px+env(safe-area-inset-bottom))] items-start justify-around border-t border-[#eee7de] bg-[#fffdf9] pt-3 transition duration-200">
       {items.map((item) => {
         const active = tab === item.id;
         return (
@@ -402,12 +402,12 @@ function BottomNav({ tab, setTab }) {
             key={item.id}
             onClick={() => setTab(item.id)}
             className={`flex min-h-[52px] w-20 flex-col items-center gap-1.5 text-[12px] transition ${
-              active ? "text-[#4f6f3d]" : "text-[#827b73] hover:text-[#4b443d]"
+              active ? "text-[#5f7f46]" : "text-[#827b73] hover:text-[#4b443d]"
             }`}
           >
             <div
               className={`grid h-9 w-9 place-items-center rounded-[10px] transition ${
-                active ? "bg-[#5f7f46] text-white shadow-[0_7px_16px_rgba(79,111,61,.16)]" : "text-[#777069]"
+                active ? "bg-[#eef4e8] text-[#5f7f46] shadow-[0_6px_14px_rgba(79,111,61,.08)]" : "text-[#777069]"
               }`}
             >
               {item.icon}
@@ -628,7 +628,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
           )}
         </section>
       </main>
-      <section className="maeumtuk-composer absolute bottom-[calc(78px+env(safe-area-inset-bottom))] left-0 right-0 z-30 border-t border-[#eee6dc] bg-[#fffaf4]/96 px-5 py-2 shadow-[0_-8px_22px_rgba(54,42,30,.045)] backdrop-blur-xl transition-[bottom] duration-200">
+      <section className="maeumtuk-composer absolute bottom-[calc(78px+env(safe-area-inset-bottom))] left-0 right-0 z-30 border-t border-[#eee6dc] bg-[#fffaf4] px-5 py-2 shadow-[0_-8px_22px_rgba(54,42,30,.035)] transition-[bottom] duration-200">
         <div className="mx-auto max-w-[390px]">
           {photoData && (
             <div className="mb-2 flex items-start">
@@ -684,7 +684,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
             />
             <button
               onClick={leaveTuk}
-              className="h-9 min-w-[48px] shrink-0 rounded-[10px] border border-[rgba(232,139,103,0.18)] bg-[#e88b67] px-3.5 font-['Pretendard'] text-[13px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_5px_11px_rgba(232,139,103,.12)] transition duration-150 hover:bg-[#df805e] active:scale-[0.98] active:bg-[#d77755]"
+              className="h-9 min-w-[48px] shrink-0 rounded-[10px] border border-[rgba(231,150,115,0.18)] bg-[#e79673] px-3.5 font-['Pretendard'] text-[13px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_5px_11px_rgba(231,150,115,.11)] transition duration-150 hover:bg-[#df8b68] active:scale-[0.98] active:bg-[#d98260]"
             >
               툭
             </button>
