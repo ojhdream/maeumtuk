@@ -303,7 +303,7 @@ function getTimeDotColor(hour) {
   return "#8c8798";
 }
 
-const flowDotColors = ["#86a36f", "#d9aa45", "#e58665", "#a99bd2", "#8193a8"];
+const flowDotColors = ["#d9aa45", "#86a36f", "#87a8bd", "#e7a37b", "#a99bd2"];
 
 function getFlowDotColor(item, sequence = 0) {
   const source = `${item.id || ""}${item.date || ""}${item.time || ""}${item.text || ""}${sequence}`;
@@ -317,8 +317,7 @@ function getFlowDotColor(item, sequence = 0) {
 }
 
 function getLogDotColor(item) {
-  const hour = getHourFromTimeLabel(item.time);
-  return hour === null ? item.dot : getTimeDotColor(hour);
+  return getFlowDotColor(item);
 }
 
 function getMomentTitle(item) {
@@ -838,14 +837,14 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
   };
 
   return (
-    <article className="maeumtuk-log-card relative rounded-[13px] border border-[#eee4d9] bg-[#fffaf5] p-4 shadow-[0_7px_18px_rgba(54,42,30,.032)]">
+    <article className="maeumtuk-log-card relative rounded-[13px] border border-[#eee4d9] bg-[#fffaf5] px-3.5 py-3 shadow-none">
       {showManage && (
         <button
           onClick={() => {
             setMenuOpen((open) => !open);
             setConfirmDelete(false);
           }}
-          className="absolute right-2 top-2 z-10 grid h-10 w-10 place-items-center rounded-[10px] text-[#8b857e] hover:bg-[#f5eee7]"
+          className="absolute right-1.5 top-1.5 z-10 grid h-8 w-8 place-items-center rounded-[9px] text-[#8b857e] hover:bg-[#f5eee7]"
           aria-label="툭 관리"
         >
           <MoreHorizontal size={17} />
@@ -890,7 +889,7 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
         </div>
       )}
       <div className="font-['Pretendard']">
-          <div className="mb-2 flex items-center gap-1.5 pr-8 text-[12px] text-[#77716a]">
+          <div className="mb-1.5 flex items-center gap-1.5 pr-8 text-[12px] text-[#77716a]">
             <span className="h-2 w-2 rounded-full" style={{ background: getLogDotColor(item) }} />
             <span>{item.time}</span>
           </div>
@@ -1035,31 +1034,25 @@ function EnvelopeInteraction({ note, onChange }) {
   };
 
   return (
-    <div className="mt-3 border-t border-[#f3ede6] pt-2.5">
+    <div className="mt-2.5">
       {!open && !sent && (
         <button
           onClick={() => setOpen(true)}
-          className="ml-auto flex h-10 items-center gap-1 rounded-[9px] px-3 text-[11px] font-medium text-[#8b8279] hover:bg-[#f5eee7]"
+          className="ml-auto flex h-8 items-center gap-1 rounded-[8px] px-2.5 text-[12px] font-medium text-[#81786f] hover:bg-[#f5eee7]"
         >
-          <Plus size={13} strokeWidth={1.9} />
-          툭더하기
+          <ChevronDown size={13} strokeWidth={1.9} />
+          툭 하나 더
         </button>
       )}
       {open && !sent && (
-        <div className="rounded-[10px] border border-[#dfe8d5] bg-[#fbfcf7]/78 px-3 py-2.5">
-          <div className="mb-0.5 flex items-center justify-between">
-            <p className="text-[11px] font-semibold text-[#5f744f]">그 후의 생각이나 이야기</p>
-            <button
-              onClick={() => {
-                setMessage("");
-                setOpen(false);
-              }}
-              className="grid h-7 w-7 place-items-center rounded-[8px] text-[#707f66] hover:bg-[#eef4e8]"
-              aria-label="툭더하기 접기"
-            >
-              <ChevronUp size={15} strokeWidth={1.9} />
+        <div className="rounded-[10px] border border-[#dfe8d5] bg-[#fbfcf7] px-3 py-2.5">
+          <div className="mb-1 flex items-center">
+            <button onClick={() => setOpen(false)} className="inline-flex items-center gap-1 text-[12px] font-semibold text-[#5f744f]">
+              <ChevronUp size={13} strokeWidth={1.9} />
+              툭 하나 더
             </button>
           </div>
+          <p className="mb-1.5 text-[12px] font-medium text-[#8b8279]">그때와 지금은 어떤가요?</p>
           <textarea
             value={message}
             onChange={(event) => setMessage(event.target.value)}
@@ -1076,15 +1069,27 @@ function EnvelopeInteraction({ note, onChange }) {
           </div>
         </div>
       )}
-      {sent && (
-        <div className="relative rounded-[10px] bg-[#f8fbf2] px-3.5 py-3 text-[13px] leading-6 text-[#3f4638]">
+      {sent && !open && (
+        <button
+          onClick={() => setOpen(true)}
+          className="ml-auto flex h-8 items-center gap-1 rounded-[8px] px-2.5 text-[12px] font-semibold text-[#5f744f] hover:bg-[#eef4e8]"
+        >
+          <ChevronDown size={13} strokeWidth={1.9} />
+          🌱 이어진 생각 1개
+        </button>
+      )}
+      {sent && open && (
+        <div className="relative rounded-[10px] bg-[#f8fbf2] px-3 py-2.5 text-[13px] leading-6 text-[#3f4638]">
           <div className="mb-1 flex items-center justify-between gap-2">
-            <p className="text-[11px] font-semibold text-[#5f7f46]">툭더하기</p>
+            <button onClick={() => setOpen(false)} className="inline-flex items-center gap-1 text-[12px] font-semibold text-[#5f7f46]">
+              <ChevronUp size={13} strokeWidth={1.9} />
+              🌱 이어진 생각 1개
+            </button>
             {!editing && !confirmDelete && (
               <button
                 onClick={() => setMenuOpen((open) => !open)}
                 className="grid h-9 w-9 place-items-center rounded-[9px] text-[#707f66] hover:bg-[#eef4e8]"
-                aria-label="툭더하기 관리"
+                aria-label="이어진 생각 관리"
               >
                 <MoreHorizontal size={16} />
               </button>
