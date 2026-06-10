@@ -518,7 +518,7 @@ function NowFlowItem({ item, sequence, isLatest = false }) {
         <span className="h-2 w-2 rounded-full" style={{ background: dotColor }} />
         {item.time}
       </time>
-      <p className="whitespace-pre-line font-['Pretendard'] text-[18px] font-medium leading-[32px] tracking-[-0.02em] text-[#29241f]">
+      <p className="whitespace-pre-line font-['Pretendard'] text-[17px] font-normal leading-[30px] tracking-[-0.02em] text-[#29241f]">
         {item.text}
       </p>
       {item.image && (
@@ -671,7 +671,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
                 setDraft(event.target.value);
                 if (lengthNotice) setLengthNotice(false);
               }}
-              className="min-h-[34px] max-h-[132px] min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-1 py-[7px] font-['Pretendard'] text-[15px] font-medium leading-[22px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-normal placeholder:text-[#b5aea6] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="min-h-[34px] max-h-[132px] min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-1 py-[6px] font-['Pretendard'] text-[16px] font-medium leading-[23px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-medium placeholder:text-[#a9a197] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               placeholder="지금..."
             />
             <button
