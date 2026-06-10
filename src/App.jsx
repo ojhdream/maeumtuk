@@ -5,7 +5,6 @@ import {
   ChevronUp,
   FileText,
   Image,
-  Leaf,
   MoreHorizontal,
   Moon,
   PencilLine,
@@ -304,6 +303,19 @@ function getTimeDotColor(hour) {
   return "#8c8798";
 }
 
+const flowDotColors = ["#86a36f", "#d9aa45", "#e58665", "#a99bd2", "#8193a8"];
+
+function getFlowDotColor(item, sequence = 0) {
+  const source = `${item.id || ""}${item.date || ""}${item.time || ""}${item.text || ""}${sequence}`;
+  let hash = 0;
+
+  for (let index = 0; index < source.length; index += 1) {
+    hash = (hash + source.charCodeAt(index) * (index + 1)) % flowDotColors.length;
+  }
+
+  return flowDotColors[hash];
+}
+
 function getLogDotColor(item) {
   const hour = getHourFromTimeLabel(item.time);
   return hour === null ? item.dot : getTimeDotColor(hour);
@@ -409,18 +421,18 @@ function BottomNav({ tab, setTab }) {
 }
 
 function getResponseTukMessage(count) {
-  if (count === 1) return "첫 툭이 남겨졌어요.";
-  if (count === 3) return "오늘 생각이 조금씩 쌓이고 있어요.";
-  if (count === 5) return "벌써 다섯 번째 툭이네요.";
-  if (count === 10) return "자주 보이는 생각이 생겼어요.";
-  if (count === 15) return "요즘의 이야기가 모였어요.";
-  return "툭 남겨졌어요.";
+  if (count === 1) return "🍃 첫 툭이 남겨졌어요.";
+  if (count === 3) return "🌱 오늘 생각이 조금씩 쌓이고 있어요.";
+  if (count === 5) return "🍊 벌써 다섯 번째 툭이네요.";
+  if (count === 10) return "☁️ 자주 보이는 생각이 생겼어요.";
+  if (count === 15) return "🌱 요즘의 이야기가 모였어요.";
+  const messages = ["🍃 툭 남겨졌어요.", "🌱 오늘도 한 조각 남았어요.", "☁️ 생각 하나가 머물렀어요.", "🍊 작은 마음 하나 저장."];
+  return messages[Math.abs(count) % messages.length];
 }
 
 function ResponseTuk({ children }) {
   return (
-    <div className="mt-2 flex items-center gap-1.5 text-[13px] font-medium text-[#777064]">
-      <Leaf size={14} strokeWidth={1.9} className="text-[#6f925b]" />
+    <div className="mt-2.5 text-[14px] font-semibold leading-6 tracking-[-0.02em] text-[#6f6a5f]">
       {children}
     </div>
   );
@@ -498,11 +510,15 @@ function EmptyState({ title, body }) {
 
 function NowFlowItem({ item, sequence, isLatest = false }) {
   const response = isLatest || [1, 3, 5, 10, 15].includes(sequence) ? getResponseTukMessage(sequence) : "";
+  const dotColor = getFlowDotColor(item, sequence);
 
   return (
     <article className="py-4">
-      <time className="mb-2 block text-[12px] font-medium text-[#8b857e]">{item.time}</time>
-      <p className="whitespace-pre-line font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f]">
+      <time className="mb-2 flex items-center gap-2 text-[14px] font-medium tracking-[-0.02em] text-[#8a837a]">
+        <span className="h-2 w-2 rounded-full" style={{ background: dotColor }} />
+        {item.time}
+      </time>
+      <p className="whitespace-pre-line font-['Pretendard'] text-[18px] font-medium leading-[32px] tracking-[-0.02em] text-[#29241f]">
         {item.text}
       </p>
       {item.image && (
@@ -569,7 +585,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
   return (
     <>
       <AppHeader />
-      <main className="px-6 pb-[220px] pt-8">
+      <main className="px-6 pb-[220px] pt-5">
         {todayLogs.length === 0 && showWritingExample && !draft && (
           <section className="mb-3 rounded-[11px] bg-[#fff9f3] px-4 py-3.5 ring-1 ring-[#eee3d8]">
             <p className="whitespace-pre-line text-[14px] font-normal leading-6 text-[#514840]">
@@ -587,8 +603,8 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
           </section>
         )}
 
-        <section className="mt-5">
-          <div className="mb-3">
+        <section className="mt-3">
+          <div className="mb-2.5">
             <h2 className="font-['Pretendard'] text-[15px] font-semibold tracking-[-0.02em] text-[#2b251f]">{todaySectionLabel}</h2>
           </div>
           {todayLogs.length > 0 ? (
@@ -604,7 +620,7 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
           )}
         </section>
       </main>
-      <section className="maeumtuk-composer absolute bottom-[calc(78px+env(safe-area-inset-bottom))] left-0 right-0 z-30 border-t border-[#eee6dc] bg-[#fffaf4]/96 px-5 py-2.5 shadow-[0_-8px_22px_rgba(54,42,30,.045)] backdrop-blur-xl transition-[bottom] duration-200">
+      <section className="maeumtuk-composer absolute bottom-[calc(78px+env(safe-area-inset-bottom))] left-0 right-0 z-30 border-t border-[#eee6dc] bg-[#fffaf4]/96 px-5 py-2 shadow-[0_-8px_22px_rgba(54,42,30,.045)] backdrop-blur-xl transition-[bottom] duration-200">
         <div className="mx-auto max-w-[390px]">
           {photoData && (
             <div className="mb-2 flex items-start">
@@ -655,12 +671,12 @@ function NowTab({ todayLogs, onAddLog, showWritingExample, onHideWritingExample,
                 setDraft(event.target.value);
                 if (lengthNotice) setLengthNotice(false);
               }}
-              className="min-h-[34px] max-h-[132px] min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-1 py-[7px] font-['Pretendard'] text-[15px] font-medium leading-[22px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-normal placeholder:text-[#9a9289] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="min-h-[34px] max-h-[132px] min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-1 py-[7px] font-['Pretendard'] text-[15px] font-medium leading-[22px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-normal placeholder:text-[#b5aea6] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               placeholder="지금..."
             />
             <button
               onClick={leaveTuk}
-              className="h-9 min-w-[48px] shrink-0 rounded-[10px] border border-[rgba(221,111,81,0.18)] bg-[#dd6f51] px-3.5 font-['Pretendard'] text-[13px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_5px_11px_rgba(221,111,81,.12)] transition duration-150 hover:bg-[#d86448] active:scale-[0.98] active:bg-[#c85e43]"
+              className="h-9 min-w-[48px] shrink-0 rounded-[10px] border border-[rgba(232,139,103,0.18)] bg-[#e88b67] px-3.5 font-['Pretendard'] text-[13px] font-semibold tracking-[-0.02em] text-[#fffdf9] shadow-[0_5px_11px_rgba(232,139,103,.12)] transition duration-150 hover:bg-[#df805e] active:scale-[0.98] active:bg-[#d77755]"
             >
               툭
             </button>
