@@ -446,15 +446,15 @@ function ResponseTuk({ children }) {
 
 function SaveOverlay({ message }) {
   return (
-    <div className="maeumtuk-save-screen pointer-events-none absolute inset-0 z-50 grid place-items-center bg-[#fffaf4]/96 backdrop-blur-[2px]">
+    <div className="maeumtuk-save-screen pointer-events-none absolute inset-0 z-50 grid place-items-center bg-[#fffaf4]">
       <div className="maeumtuk-save-pop flex flex-col items-center">
-        <div className="maeumtuk-save-symbol mb-5 flex w-[82px] items-center" aria-hidden="true">
-          <span className="h-px flex-1 bg-[#c8baad]" />
-          <span className="h-3 w-3 rounded-full bg-[#e6bd50]" />
-          <span className="h-px flex-1 bg-[#c8baad]" />
+        <div className="maeumtuk-save-symbol mb-5 flex w-[92px] items-center" aria-hidden="true">
+          <span className="h-px flex-1 bg-[#b9aa9c]" />
+          <span className="h-4 w-4 rounded-full bg-[#e4bd46]" />
+          <span className="h-px flex-1 bg-[#b9aa9c]" />
         </div>
-        <p className="maeumtuk-save-title font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2d2119]">{message}</p>
-        <p className="maeumtuk-save-sub mt-3 text-[14px] font-medium tracking-[-0.02em] text-[#8b857e]">마음이 여기 머물러요.</p>
+        <p className="maeumtuk-save-title font-['Pretendard'] text-[22px] font-semibold tracking-[-0.02em] text-[#241d18]">{message}</p>
+        <p className="maeumtuk-save-sub mt-3 text-[15px] font-medium tracking-[-0.02em] text-[#746d65]">마음이 여기 머물러요.</p>
       </div>
     </div>
   );
