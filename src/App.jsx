@@ -908,7 +908,7 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
               <textarea
                 value={editText}
                 onChange={(event) => setEditText(event.target.value)}
-                className="h-[112px] w-full resize-none rounded-[10px] border border-[#e7ded2] bg-[#fffaf4] p-3 text-[15px] leading-7 tracking-[-0.02em] text-[#211c17] outline-none"
+                className="h-[112px] w-full resize-none rounded-[10px] border border-[#e7ded2] bg-[#fffaf4] p-3 font-['Pretendard'] text-[17px] font-normal leading-[30px] tracking-[-0.02em] text-[#211c17] outline-none"
               />
               <div className="mt-3 border-t border-[#f0e8df] pt-3">
                 {editImage ? (
@@ -953,7 +953,7 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
               </div>
             </div>
           ) : (
-            <p className="whitespace-pre-line font-['Pretendard'] text-[15px] font-normal leading-[27px] tracking-[-0.01em] text-[#29241f]">{item.text}</p>
+            <p className="whitespace-pre-line font-['Pretendard'] text-[17px] font-normal leading-[30px] tracking-[-0.02em] text-[#29241f]">{item.text}</p>
           )}
           {confirmDelete && (
             <div className="mt-3 rounded-[10px] bg-[#fff5ee] p-3 text-[13px] text-[#4a3d34]">
