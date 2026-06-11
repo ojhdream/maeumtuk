@@ -245,7 +245,9 @@ function uniqueWords(words) {
 }
 
 function extractAutoTags(text) {
-  return extractCategoryTags(text).slice(0, 3);
+  // Auto tag generation is paused for the current MVP pass.
+  // return extractCategoryTags(text).slice(0, 3);
+  return [];
 }
 
 function getGeneratedTags(item, personalTagSet) {
@@ -256,14 +258,16 @@ function getGeneratedTags(item, personalTagSet) {
 }
 
 function enrichLogsWithTags(logItems, personalTagSet = getPersonalTagSet(logItems)) {
+  // Auto tag enrichment is paused. Keep manually stored tags only.
+  return logItems;
 
-  return logItems.map((item) => {
-    if (item.tagsManaged) {
-      return { ...item, tags: uniqueWords(item.tags || []).slice(0, 6) };
-    }
-
-    return { ...item, tags: getGeneratedTags(item, personalTagSet) };
-  });
+  // return logItems.map((item) => {
+  //   if (item.tagsManaged) {
+  //     return { ...item, tags: uniqueWords(item.tags || []).slice(0, 6) };
+  //   }
+  //
+  //   return { ...item, tags: getGeneratedTags(item, personalTagSet) };
+  // });
 }
 
 function getCurrentLogMeta() {
@@ -562,7 +566,7 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, onUpdate
   const saveEdit = () => {
     const nextText = editText.trim();
     if (!nextText) return;
-    onUpdate?.(item, { text: nextText, tags: item.tagsManaged ? item.tags : extractAutoTags(nextText) });
+    onUpdate?.(item, { text: nextText, tags: item.tags || [] });
     setEditing(false);
     setMenuOpen(false);
   };
@@ -692,8 +696,6 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
       setLengthNotice(true);
       return;
     }
-    const autoTags = extractAutoTags(text);
-
     const nextLog = {
       id: `log-${Date.now()}`,
       date: currentMeta.date,
@@ -702,7 +704,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
       operationalKey: currentMeta.operationalKey,
       createdAt: new Date().toISOString(),
       text: text || "사진으로 남긴 툭",
-      tags: autoTags,
+      tags: [],
       mood: "남김",
       dot: currentMeta.dot,
       image: photoData,
@@ -1026,7 +1028,7 @@ function RecentCard({
     if (!nextText) return;
     onUpdate?.(item, {
       text: nextText,
-      tags: item.tagsManaged ? item.tags : extractAutoTags(nextText),
+      tags: item.tags || [],
       mood: item.mood || "남김",
       image: editImage,
     });
@@ -1082,7 +1084,8 @@ function RecentCard({
           >
             기록 수정
           </button>
-          <button
+          {/* Tag management is paused while auto tags are hidden from Tuklog. */}
+          {/* <button
             onClick={() => {
               setTagEditing(true);
               setEditing(false);
@@ -1092,7 +1095,7 @@ function RecentCard({
             className="block w-full rounded-[8px] px-3 py-2 text-left text-[#4b443d] hover:bg-[#f5eee7]"
           >
             태그 관리
-          </button>
+          </button> */}
           <button
             onClick={() => {
               setConfirmDelete(true);
@@ -1185,7 +1188,8 @@ function RecentCard({
               </div>
             </div>
           )}
-          {!editing && !confirmDelete && showManage && tagEditing && (
+          {/* Tuklog tag display/editor is paused for now. */}
+          {/* {!editing && !confirmDelete && showManage && tagEditing && (
             <AutoTagEditor
               key={`${getLogKey(item)}-${tagEditing}`}
               item={item}
@@ -1193,7 +1197,7 @@ function RecentCard({
               editing={tagEditing}
               onDone={() => setTagEditing(false)}
             />
-          )}
+          )} */}
         {!compact && !editing && item.image && (
           <div className="mt-3">
             <MiniPhoto bg={item.image} />
@@ -1482,25 +1486,24 @@ function LogTab({ logItems, customEmotions = [], onAddEmotion, onUpdateLog, onDe
   const [visibleCount, setVisibleCount] = useState(LOG_PAGE_SIZE);
   const [selectedTag, setSelectedTag] = useState("");
   const hasLogs = logItems.length > 0;
-  const tagCounts = logItems.reduce((counts, item) => {
-    (item.tags || []).forEach((tag) => {
-      const word = normalizeWord(tag);
-      counts[word] = (counts[word] || 0) + 1;
-    });
-    return counts;
-  }, {});
-  const frequentTags = Object.entries(tagCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 6)
-    .map(([tag]) => tag);
-  const recentTags = [...new Set(logItems.flatMap((item) => (item.tags || []).map(normalizeWord)))].slice(0, 6);
-  const filterTags = [...new Set([...frequentTags, ...recentTags])].slice(0, 5);
-  const filteredLogs = selectedTag
-    ? logItems.filter((item) => (item.tags || []).some((tag) => normalizeWord(tag) === selectedTag))
-    : logItems;
+  // Tuklog tag filters are paused for now.
+  // const tagCounts = logItems.reduce((counts, item) => {
+  //   (item.tags || []).forEach((tag) => {
+  //     const word = normalizeWord(tag);
+  //     counts[word] = (counts[word] || 0) + 1;
+  //   });
+  //   return counts;
+  // }, {});
+  // const frequentTags = Object.entries(tagCounts)
+  //   .sort((a, b) => b[1] - a[1])
+  //   .slice(0, 6)
+  //   .map(([tag]) => tag);
+  // const recentTags = [...new Set(logItems.flatMap((item) => (item.tags || []).map(normalizeWord)))].slice(0, 6);
+  // const filterTags = [...new Set([...frequentTags, ...recentTags])].slice(0, 5);
+  const filteredLogs = logItems;
   const visibleLogs = filteredLogs.slice(0, visibleCount);
   const hasMoreLogs = visibleCount < filteredLogs.length;
-  const resultLabel = selectedTag ? `${selectedTag}와 함께한 순간 ${filteredLogs.length}개` : `전체 툭 ${filteredLogs.length}개`;
+  // const resultLabel = selectedTag ? `${selectedTag}와 함께한 순간 ${filteredLogs.length}개` : `전체 툭 ${filteredLogs.length}개`;
   const groupedLogs = visibleLogs.reduce((groups, item) => {
     const key = `${item.date}-${item.day}`;
     const existing = groups.find((group) => group.key === key);
@@ -1522,7 +1525,8 @@ function LogTab({ logItems, customEmotions = [], onAddEmotion, onUpdateLog, onDe
           <h1 className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">툭로그</h1>
           <p className="mt-1 text-[13px] font-medium text-[#938a82]">마음을 지나간 순간들</p>
         </div>
-        <section className="mb-5">
+        {/* Tuklog tag filter chips are paused while auto tags are disabled. */}
+        {/* <section className="mb-5">
           <div className="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <button
               onClick={() => {
@@ -1553,7 +1557,7 @@ function LogTab({ logItems, customEmotions = [], onAddEmotion, onUpdateLog, onDe
             ))}
           </div>
           {hasLogs && <p className="mt-2 px-1 text-[12px] font-medium text-[#9a9188]">{resultLabel}</p>}
-        </section>
+        </section> */}
         {hasLogs ? (
           filteredLogs.length > 0 ? (
           <div className="space-y-6">
