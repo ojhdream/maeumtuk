@@ -658,7 +658,7 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResp
             <textarea
               value={editText}
               onChange={(event) => setEditText(event.target.value)}
-              className="maeumtuk-record-body h-[92px] w-full resize-none bg-transparent text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f] outline-none"
+              className="h-[92px] w-full resize-none bg-transparent font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f] outline-none"
             />
             <div className="mt-2 flex justify-end gap-2">
               <button onClick={() => setEditing(false)} className="h-9 rounded-[8px] px-3 text-[12px] font-medium text-[#746d65]">
@@ -670,7 +670,7 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResp
             </div>
           </div>
         ) : (
-          <p className="maeumtuk-record-body whitespace-pre-line pr-7 text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f]">
+          <p className="whitespace-pre-line pr-7 font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f]">
             {item.text}
           </p>
         )}
@@ -774,7 +774,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
       <main className="px-6 pb-[220px] pt-5">
         {todayLogs.length === 0 && showWritingExample && !draft && (
           <section className="mb-3 rounded-[11px] bg-[#fff9f3] px-4 py-3.5 ring-1 ring-[#eee3d8]">
-            <p className="maeumtuk-record-body whitespace-pre-line text-[14px] font-normal leading-6 text-[#514840]">
+            <p className="whitespace-pre-line font-['Pretendard'] text-[14px] font-normal leading-6 text-[#514840]">
               커피 마셨는데도 졸리다. 왜지.
             </p>
             <div className="mt-2 flex items-center justify-between">
@@ -1173,7 +1173,7 @@ function RecentCard({
               <textarea
                 value={editText}
                 onChange={(event) => setEditText(event.target.value)}
-                className="maeumtuk-record-body h-[112px] w-full resize-none rounded-[10px] border border-[#e7ded2] bg-[#fffaf4] p-3 text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#211c17] outline-none"
+                className="h-[112px] w-full resize-none rounded-[10px] border border-[#e7ded2] bg-[#fffaf4] p-3 font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#211c17] outline-none"
               />
               <div className="mt-3 border-t border-[#f0e8df] pt-3">
                 {editImage ? (
@@ -1218,7 +1218,7 @@ function RecentCard({
               </div>
             </div>
           ) : (
-            <p className="maeumtuk-record-body whitespace-pre-line text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f]">{item.text}</p>
+            <p className="whitespace-pre-line font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f]">{item.text}</p>
           )}
           {confirmDelete && (
             <div className="mt-3 rounded-[10px] bg-[#fff5ee] p-3 text-[13px] text-[#4a3d34]">
