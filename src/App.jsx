@@ -841,13 +841,19 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
           </div>
         )}
         <div className="w-full">
+          <div className="mb-2 flex items-center gap-2 px-0.5">
+            <PencilLine size={15} strokeWidth={1.8} className="text-[#d87955]" aria-hidden="true" />
+            <p className="font-['Pretendard'] text-[14px] font-semibold tracking-[-0.02em] text-[#5b5048]">
+              떠오른 생각을 툭 남겨보세요.
+            </p>
+          </div>
           <div
             onClick={(event) => {
               if (event.target.closest("button")) return;
               setComposerOpen(true);
               draftRef.current?.focus();
             }}
-            className={`rounded-[8px] bg-[#fff7f1] transition duration-200 ${
+            className={`rounded-[8px] border border-[#eed8ca] bg-[#fff8f3] shadow-[inset_0_1px_0_rgba(255,255,255,.75),0_3px_10px_rgba(87,58,37,.025)] transition duration-200 focus-within:border-[#e5b9a3] focus-within:bg-[#fffaf6] ${
               composerExpanded ? "min-h-[132px] px-3 py-2.5" : "flex min-h-[48px] items-center gap-1 px-1.5 py-1"
             } ${
               isLeaving ? "translate-y-0.5 opacity-55" : ""
