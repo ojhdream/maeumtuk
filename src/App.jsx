@@ -405,7 +405,7 @@ function TimeOfDayIcon({ hour }) {
   return <Sun size={22} strokeWidth={1.8} className="text-[#f0bd3f]" />;
 }
 
-function AppHeader({ subtitle = "마음이 움직인 순간, 툭." }) {
+function AppHeader() {
   return (
     <header className="px-6 pt-6">
       <div className="flex items-center justify-between">
@@ -417,7 +417,6 @@ function AppHeader({ subtitle = "마음이 움직인 순간, 툭." }) {
               <span className="h-2 w-2 rounded-full bg-[#e6bd50]" />
             </div>
           </div>
-          <p className="mt-1.5 text-[12px] font-medium tracking-[-0.02em] text-[#8b857e]">{subtitle}</p>
         </div>
       </div>
     </header>
@@ -671,7 +670,7 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResp
             </div>
           </div>
         ) : (
-          <p className="whitespace-pre-line pr-7 font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f]">
+          <p className="whitespace-pre-line font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f]">
             {item.text}
           </p>
         )}
@@ -841,7 +840,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
             {saveNotice.showSubtext && <p className="mt-0.5 text-[12px] font-medium text-[#8a8178]">마음이 여기 머물러요.</p>}
           </div>
         )}
-        <div className="mx-auto w-full max-w-[390px]">
+        <div className="w-full">
           <div
             onClick={(event) => {
               if (event.target.closest("button")) return;
@@ -875,7 +874,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
                     setDraft(event.target.value);
                     if (lengthNotice) setLengthNotice(false);
                   }}
-                  className="maeumtuk-draft-input min-h-[86px] max-h-[132px] w-full resize-none overflow-y-auto bg-transparent px-0.5 py-0 font-['Pretendard'] text-[16px] font-medium leading-[24px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-medium placeholder:text-[#a9a197] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  className="maeumtuk-draft-input min-h-[86px] max-h-[132px] w-full resize-none overflow-y-auto bg-transparent pb-0 pl-4 pr-1 pt-0 font-['Pretendard'] text-[16px] font-medium leading-[24px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-medium placeholder:text-[#a9a197] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                   placeholder="지금, 마음을 툭 남겨보세요..."
                 />
                 <div className="mt-1.5 flex items-center justify-between gap-2 border-t border-[#eadfd5] pt-1.5">
