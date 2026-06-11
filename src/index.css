@@ -42,9 +42,29 @@ body {
   animation: maeumtuk-response-caret 0.75s steps(1, end) infinite;
 }
 
+.maeumtuk-save-toast {
+  animation: maeumtuk-save-toast 1.45s ease both;
+}
+
 @keyframes maeumtuk-response-caret {
   50% {
     opacity: 0;
+  }
+}
+
+@keyframes maeumtuk-save-toast {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 6px);
+  }
+  14%,
+  72% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -3px);
   }
 }
 

@@ -496,7 +496,7 @@ function ResponseTuk({ children, typing = false }) {
           return count + 1;
         });
       }, 58);
-    }, 420);
+    }, 900);
 
     return () => {
       window.clearTimeout(startTimer);
@@ -703,10 +703,12 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
   const [photoData, setPhotoData] = useState(null);
   const [lengthNotice, setLengthNotice] = useState(false);
   const [typingResponseId, setTypingResponseId] = useState(null);
+  const [saveNotice, setSaveNotice] = useState(null);
   const [isLeaving, setIsLeaving] = useState(false);
   const [composerOpen, setComposerOpen] = useState(false);
   const draftRef = useRef(null);
   const photoInputRef = useRef(null);
+  const saveNoticeTimerRef = useRef(null);
   const currentMeta = getCurrentLogMeta();
   const draftLength = draft.trim().length;
   const todayCount = todayLogs.length;
@@ -730,6 +732,12 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
       draftRef.current?.focus();
     });
   }, [composerOpen]);
+
+  useEffect(() => {
+    return () => {
+      if (saveNoticeTimerRef.current) window.clearTimeout(saveNoticeTimerRef.current);
+    };
+  }, []);
 
   const leaveTuk = () => {
     if (isLeaving) return;
@@ -761,6 +769,12 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
       onAddLog(nextLog);
       // onShowSaved(todayCount + 1);
       setTypingResponseId(nextLog.id);
+      if (saveNoticeTimerRef.current) window.clearTimeout(saveNoticeTimerRef.current);
+      setSaveNotice({ showSubtext: todayCount === 0 });
+      saveNoticeTimerRef.current = window.setTimeout(() => {
+        setSaveNotice(null);
+        saveNoticeTimerRef.current = null;
+      }, 1450);
       setDraft("");
       setPhotoData(null);
       setComposerOpen(false);
@@ -816,6 +830,12 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
         </section>
       </main>
       <section className="maeumtuk-composer absolute bottom-[calc(78px+env(safe-area-inset-bottom))] left-0 right-0 z-30 border-t border-[#eee6dc] bg-[#fffaf4] px-4 py-1.5 shadow-[0_-8px_22px_rgba(54,42,30,.035)] transition-[bottom] duration-200">
+        {saveNotice && (
+          <div className="maeumtuk-save-toast pointer-events-none absolute bottom-[calc(100%+10px)] left-1/2 w-max max-w-[calc(100%-48px)] -translate-x-1/2 rounded-[10px] border border-[#eadfd4] bg-[#fffdf9] px-4 py-2.5 text-center shadow-[0_7px_20px_rgba(54,42,30,.08)]">
+            <p className="text-[14px] font-semibold tracking-[-0.02em] text-[#514940]">툭, 남겨졌어요.</p>
+            {saveNotice.showSubtext && <p className="mt-0.5 text-[12px] font-medium text-[#8a8178]">마음이 여기 머물러요.</p>}
+          </div>
+        )}
         <div className="mx-auto max-w-[390px]">
           <div
             onClick={(event) => {
