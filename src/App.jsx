@@ -404,19 +404,19 @@ function TimeOfDayIcon({ hour }) {
   return <Sun size={22} strokeWidth={1.8} className="text-[#f0bd3f]" />;
 }
 
-function AppHeader({ subtitle }) {
+function AppHeader({ subtitle = "마음이 움직인 순간, 툭." }) {
   return (
     <header className="px-6 pt-6">
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="maeumtuk-brand-title text-[24px] font-normal tracking-[-0.01em] text-[#2d2119]">마음툭</div>
+            <div className="maeumtuk-brand-title text-[23px] font-bold tracking-[-0.01em] text-[#2d2119]">마음툭</div>
             <div className="flex w-[38px] items-center" aria-hidden="true">
               <span className="h-px flex-1 bg-[#cfc3b7]" />
               <span className="h-2 w-2 rounded-full bg-[#e6bd50]" />
             </div>
           </div>
-          {subtitle && <p className="mt-1.5 text-[12px] font-medium tracking-[-0.02em] text-[#8b857e]">{subtitle}</p>}
+          <p className="mt-1.5 text-[12px] font-medium tracking-[-0.02em] text-[#8b857e]">{subtitle}</p>
         </div>
       </div>
     </header>
@@ -784,7 +784,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
 
   return (
     <>
-      <AppHeader subtitle="마음이 움직인 순간, 툭." />
+      <AppHeader />
       <main className="px-6 pb-[220px] pt-5">
         {todayLogs.length === 0 && showWritingExample && !draft && (
           <section className="mb-3 rounded-[11px] bg-[#fff9f3] px-4 py-3.5 ring-1 ring-[#eee3d8]">
@@ -803,9 +803,9 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
           </section>
         )}
 
-        <section className="mt-3">
-          <div className="mb-2.5">
-            <h2 className="font-['SUIT'] text-[15px] font-semibold tracking-[-0.02em] text-[#2b251f]">{todaySectionLabel}</h2>
+        <section>
+          <div className="mb-4 flex min-h-[48px] items-center">
+            <h1 className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">{todaySectionLabel}</h1>
           </div>
           {todayLogs.length > 0 ? (
             <div className="space-y-2.5">
@@ -1585,8 +1585,8 @@ function LogTab({ logItems, customEmotions = [], onAddEmotion, onUpdateLog, onDe
   return (
     <>
       <AppHeader />
-      <main className="px-6 pt-8">
-        <div className="mb-3">
+      <main className="px-6 pt-5">
+        <div className="mb-4 flex min-h-[48px] flex-col justify-center">
           <h1 className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">툭로그</h1>
           <p className="mt-1 text-[13px] font-medium text-[#938a82]">마음을 지나간 순간들</p>
         </div>
@@ -1750,8 +1750,8 @@ function TodayTab({ logItems }) {
   return (
     <>
       <AppHeader />
-      <main className="px-6 pt-8 font-['Pretendard']">
-        <div className="relative mb-5 flex items-center justify-between">
+      <main className="px-6 pt-5 font-['Pretendard']">
+        <div className="relative mb-4 flex min-h-[48px] items-center justify-between">
           <h1 className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">요즘</h1>
           <button
             onClick={() => setPeriodOpen((open) => !open)}
