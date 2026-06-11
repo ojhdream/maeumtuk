@@ -62,10 +62,6 @@ body {
   transform: translateY(100%);
 }
 
-.maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-composer {
-  bottom: env(safe-area-inset-bottom);
-}
-
 .maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-scroll {
   padding-bottom: calc(176px + env(safe-area-inset-bottom));
 }

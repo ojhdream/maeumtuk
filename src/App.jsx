@@ -784,9 +784,10 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
   return (
     <>
       <AppHeader />
-      <main className="px-6 pb-[220px] pt-5">
+      <div className="flex flex-col">
+      <main className="contents">
         {todayLogs.length === 0 && showWritingExample && !draft && (
-          <section className="mb-3 rounded-[11px] bg-[#fff9f3] px-4 py-3.5 ring-1 ring-[#eee3d8]">
+          <section className="order-3 mx-6 mb-4 rounded-[11px] bg-[#fff9f3] px-4 py-3.5 ring-1 ring-[#eee3d8]">
             <p className="whitespace-pre-line font-['Pretendard'] text-[14px] font-normal leading-6 text-[#514840]">
               커피 마셨는데도 졸리다. 왜지.
             </p>
@@ -802,13 +803,15 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
           </section>
         )}
 
-        <section>
+        <section className="order-1 px-6 pt-5">
           <div className="mb-4 flex min-h-[48px] flex-col justify-center">
             <h1 className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">오늘</h1>
             <p className="mt-1 text-[13px] font-medium tracking-[-0.02em] text-[#938a82]">
               {currentMeta.displayDate} {currentMeta.day} · {todayCount > 0 ? `${todayCount}툭` : "아직 남긴 툭이 없어요"}
             </p>
           </div>
+        </section>
+        <section className="order-4 px-6 pb-[120px]">
           {todayLogs.length > 0 ? (
             <div className="space-y-2.5">
               {todayLogs.map((item, index) => (
@@ -831,14 +834,14 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
           )}
         </section>
       </main>
-      <section className="maeumtuk-composer absolute bottom-[calc(78px+env(safe-area-inset-bottom))] left-0 right-0 z-30 border-t border-[#eee6dc] bg-[#fffaf4] px-4 py-1.5 shadow-[0_-8px_22px_rgba(54,42,30,.035)] transition-[bottom] duration-200">
+      <section className="maeumtuk-composer relative order-2 z-20 mb-5 px-6">
         {saveNotice && (
           <div className="maeumtuk-save-toast pointer-events-none absolute bottom-[calc(100%+10px)] left-1/2 w-max max-w-[calc(100%-48px)] -translate-x-1/2 rounded-[10px] border border-[#eadfd4] bg-[#fffdf9] px-4 py-2.5 text-center shadow-[0_7px_20px_rgba(54,42,30,.08)]">
             <p className="text-[14px] font-semibold tracking-[-0.02em] text-[#514940]">툭, 남겨졌어요.</p>
             {saveNotice.showSubtext && <p className="mt-0.5 text-[12px] font-medium text-[#8a8178]">마음이 여기 머물러요.</p>}
           </div>
         )}
-        <div className="mx-auto max-w-[390px]">
+        <div className="mx-auto w-full max-w-[390px]">
           <div
             onClick={(event) => {
               if (event.target.closest("button")) return;
@@ -969,6 +972,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
           )}
         </div>
       </section>
+      </div>
     </>
   );
 }
