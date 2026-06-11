@@ -848,8 +848,8 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
               setComposerOpen(true);
               draftRef.current?.focus();
             }}
-            className={`rounded-[14px] border border-[#eadfd4] bg-[#fffdf9] shadow-[0_5px_14px_rgba(54,42,30,.035)] transition duration-200 ${
-              composerExpanded ? "min-h-[132px] px-3 py-2.5" : "flex min-h-[48px] items-end gap-1 px-1.5 py-1"
+            className={`rounded-[8px] bg-[#fff7f1] transition duration-200 ${
+              composerExpanded ? "min-h-[132px] px-3 py-2.5" : "flex min-h-[48px] items-center gap-1 px-1.5 py-1"
             } ${
               isLeaving ? "translate-y-0.5 opacity-55" : ""
             }`}
@@ -878,7 +878,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
                   className="maeumtuk-draft-input min-h-[86px] max-h-[132px] w-full resize-none overflow-y-auto bg-transparent px-0.5 py-0 font-['Pretendard'] text-[16px] font-medium leading-[24px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-medium placeholder:text-[#a9a197] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                   placeholder="지금, 마음을 툭 남겨보세요..."
                 />
-                <div className="mt-2 flex items-end justify-between gap-2 border-t border-[#efe6dc] pt-2">
+                <div className="mt-1.5 flex items-center justify-between gap-2 border-t border-[#eadfd5] pt-1.5">
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => photoInputRef.current?.click()}
@@ -950,13 +950,13 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
                     setDraft(event.target.value);
                     if (lengthNotice) setLengthNotice(false);
                   }}
-                  className="maeumtuk-draft-input min-h-[32px] max-h-[52px] min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-0.5 py-[5px] font-['Pretendard'] text-[16px] font-medium leading-[22px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-medium placeholder:text-[#a9a197] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  className="maeumtuk-draft-input min-h-[32px] max-h-[52px] min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-0.5 py-[4px] font-['Pretendard'] text-[16px] font-medium leading-[22px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-medium placeholder:text-[#aaa096] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                   placeholder="지금 이 순간은?"
                 />
                 <button
                   onClick={leaveTuk}
                   disabled={isLeaving || !canLeaveTuk}
-                  className={`h-8 min-w-[48px] shrink-0 rounded-[9px] px-3 font-['Pretendard'] text-[14px] font-semibold tracking-[-0.02em] transition duration-150 ${
+                  className={`h-8 min-w-[48px] shrink-0 self-center rounded-[9px] px-3 font-['Pretendard'] text-[14px] font-semibold leading-none tracking-[-0.02em] transition duration-150 ${
                     canLeaveTuk
                       ? "border border-[rgba(239,135,92,0.2)] bg-[#ef875c] text-[#fffdf9] shadow-[0_6px_13px_rgba(239,135,92,.14)] hover:bg-[#e77d52] active:scale-[0.98] active:bg-[#dd7349]"
                       : "border border-[#eadfd4] bg-[#f6eee7] text-[#b39b8d]"
