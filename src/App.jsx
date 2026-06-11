@@ -410,7 +410,7 @@ function AppHeader({ subtitle = "마음이 움직인 순간, 툭." }) {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="maeumtuk-brand-title text-[23px] font-bold tracking-[-0.01em] text-[#2d2119]">마음툭</div>
+            <div className="font-['Pretendard'] text-[22px] font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭</div>
             <div className="flex w-[38px] items-center" aria-hidden="true">
               <span className="h-px flex-1 bg-[#cfc3b7]" />
               <span className="h-2 w-2 rounded-full bg-[#e6bd50]" />
@@ -712,8 +712,6 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
   const currentMeta = getCurrentLogMeta();
   const draftLength = draft.trim().length;
   const todayCount = todayLogs.length;
-  const todayLabel = todayCount === 0 ? "비어 있음" : todayCount === 1 ? "첫 툭" : `${todayCount}툭`;
-  const todaySectionLabel = `오늘, ${currentMeta.displayDate} ${currentMeta.day} · ${todayLabel}`;
   const canLeaveTuk = Boolean(draft.trim() || photoData);
   const composerExpanded = composerOpen || Boolean(draft || photoData);
 
@@ -804,8 +802,11 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
         )}
 
         <section>
-          <div className="mb-4 flex min-h-[48px] items-center">
-            <h1 className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">{todaySectionLabel}</h1>
+          <div className="mb-4 flex min-h-[48px] flex-col justify-center">
+            <h1 className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">오늘</h1>
+            <p className="mt-1 text-[13px] font-medium tracking-[-0.02em] text-[#938a82]">
+              {currentMeta.displayDate} {currentMeta.day} · {todayCount > 0 ? `${todayCount}툭` : "아직 남긴 툭이 없어요"}
+            </p>
           </div>
           {todayLogs.length > 0 ? (
             <div className="space-y-2.5">
