@@ -9,6 +9,7 @@ import {
   Moon,
   PencilLine,
   Plus,
+  Search,
   Sun,
   Sunset,
   X,
@@ -1551,6 +1552,9 @@ function EnvelopeInteraction({ note, onChange }) {
 function LogTab({ logItems, customEmotions = [], onAddEmotion, onUpdateLog, onDeleteLog }) {
   const [visibleCount, setVisibleCount] = useState(LOG_PAGE_SIZE);
   const [selectedTag, setSelectedTag] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef(null);
   const hasLogs = logItems.length > 0;
   // Tuklog tag filters are paused for now.
   // const tagCounts = logItems.reduce((counts, item) => {
@@ -1566,7 +1570,16 @@ function LogTab({ logItems, customEmotions = [], onAddEmotion, onUpdateLog, onDe
   //   .map(([tag]) => tag);
   // const recentTags = [...new Set(logItems.flatMap((item) => (item.tags || []).map(normalizeWord)))].slice(0, 6);
   // const filterTags = [...new Set([...frequentTags, ...recentTags])].slice(0, 5);
-  const filteredLogs = logItems;
+  const normalizedQuery = searchQuery.trim().toLocaleLowerCase("ko-KR");
+  const filteredLogs = normalizedQuery
+    ? logItems.filter((item) => {
+        const searchableText = [item.text, item.note, item.mood, item.date, item.day, item.time, ...(item.tags || [])]
+          .filter(Boolean)
+          .join(" ")
+          .toLocaleLowerCase("ko-KR");
+        return searchableText.includes(normalizedQuery);
+      })
+    : logItems;
   const visibleLogs = filteredLogs.slice(0, visibleCount);
   const hasMoreLogs = visibleCount < filteredLogs.length;
   // const resultLabel = selectedTag ? `${selectedTag}와 함께한 순간 ${filteredLogs.length}개` : `전체 툭 ${filteredLogs.length}개`;
@@ -1583,14 +1596,62 @@ function LogTab({ logItems, customEmotions = [], onAddEmotion, onUpdateLog, onDe
     return groups;
   }, []);
 
+  useEffect(() => {
+    setVisibleCount(LOG_PAGE_SIZE);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (!searchOpen) return;
+    window.requestAnimationFrame(() => searchInputRef.current?.focus());
+  }, [searchOpen]);
+
   return (
     <>
       <AppHeader />
       <main className="px-6 pt-5">
-        <div className="mb-4 flex min-h-[48px] flex-col justify-center">
-          <h1 className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">툭로그</h1>
-          <p className="mt-1 text-[13px] font-medium text-[#938a82]">마음을 지나간 순간들</p>
+        <div className="mb-4 flex min-h-[48px] items-center justify-between gap-3">
+          <div>
+            <h1 className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">툭로그</h1>
+            <p className="mt-1 text-[13px] font-medium text-[#938a82]">마음을 지나간 순간들</p>
+          </div>
+          <button
+            onClick={() => {
+              if (searchOpen) setSearchQuery("");
+              setSearchOpen((open) => !open);
+            }}
+            className={`grid h-10 w-10 shrink-0 place-items-center rounded-[10px] border transition ${
+              searchOpen ? "border-[#d9cbbd] bg-[#f4eee8] text-[#514940]" : "border-[#e8dfd5] bg-[#fffdf9] text-[#766f68] hover:bg-[#f8f4ef]"
+            }`}
+            aria-label={searchOpen ? "검색 닫기" : "툭로그 검색"}
+          >
+            {searchOpen ? <X size={17} strokeWidth={1.9} /> : <Search size={17} strokeWidth={1.9} />}
+          </button>
         </div>
+        {searchOpen && (
+          <section className="mb-4">
+            <div className="flex h-11 items-center gap-2 rounded-[11px] border border-[#e5dbd0] bg-[#fffdf9] px-3 shadow-[0_4px_12px_rgba(54,42,30,.025)]">
+              <Search size={16} strokeWidth={1.8} className="shrink-0 text-[#8a8178]" />
+              <input
+                ref={searchInputRef}
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                className="min-w-0 flex-1 bg-transparent font-['Pretendard'] text-[14px] font-medium text-[#302a25] outline-none placeholder:text-[#aaa198]"
+                placeholder="기록 속 단어를 찾아보세요"
+                aria-label="툭로그 검색어"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-[#91887f] hover:bg-[#f3ece5]"
+                  aria-label="검색어 지우기"
+                >
+                  <X size={14} strokeWidth={1.9} />
+                </button>
+              )}
+            </div>
+            {normalizedQuery && <p className="mt-2 px-1 text-[12px] font-medium text-[#91887f]">{filteredLogs.length}개의 툭을 찾았어요.</p>}
+          </section>
+        )}
         {/* Tuklog tag filter chips are paused while auto tags are disabled. */}
         {/* <section className="mb-5">
           <div className="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -1661,7 +1722,10 @@ function LogTab({ logItems, customEmotions = [], onAddEmotion, onUpdateLog, onDe
             )}
           </div>
           ) : (
-            <EmptyState title={`${selectedTag}이 남은 툭은 아직 없어요.`} body="다른 태그를 골라보거나 전체 기록으로 돌아가보세요." />
+            <EmptyState
+              title={normalizedQuery ? `“${searchQuery.trim()}”이 담긴 툭을 찾지 못했어요.` : `${selectedTag}이 남은 툭은 아직 없어요.`}
+              body={normalizedQuery ? "다른 단어로 다시 찾아보세요." : "다른 태그를 골라보거나 전체 기록으로 돌아가보세요."}
+            />
           )
         ) : (
           <EmptyState title="아직 남긴 툭이 없어요." body="문득 떠오른 말이나 장면을 지금 탭에서 짧게 남겨보세요." />
