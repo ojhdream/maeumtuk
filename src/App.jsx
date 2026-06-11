@@ -410,7 +410,7 @@ function AppHeader({ subtitle }) {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <div className="font-['SUIT'] text-[22px] font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭</div>
+            <div className="maeumtuk-brand-title text-[24px] font-normal tracking-[-0.01em] text-[#2d2119]">마음툭</div>
             <div className="flex w-[38px] items-center" aria-hidden="true">
               <span className="h-px flex-1 bg-[#cfc3b7]" />
               <span className="h-2 w-2 rounded-full bg-[#e6bd50]" />
@@ -522,12 +522,13 @@ function useVisibleViewportHeight() {
   }, []);
 }
 
-function Phone({ children, tab, setTab, saveOverlayVisible, saveOverlayMessage }) {
+function Phone({ children, tab, setTab }) {
   return (
     <div className="maeumtuk-phone relative h-[var(--maeumtuk-vh,100dvh)] max-h-[var(--maeumtuk-vh,100dvh)] w-full max-w-[430px] overflow-hidden bg-[#f8f6f2] sm:h-[min(820px,calc(var(--maeumtuk-vh,100dvh)-48px))] sm:max-h-[820px] sm:w-[390px] sm:rounded-[26px] sm:shadow-[0_16px_55px_rgba(63,47,30,.08)] sm:ring-1 sm:ring-[#ebe2d8]">
       <div className="maeumtuk-scroll h-full overflow-y-auto pb-[calc(106px+env(safe-area-inset-bottom))] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">{children}</div>
       <BottomNav tab={tab} setTab={setTab} />
-      {saveOverlayVisible && <SaveOverlay message={saveOverlayMessage} />}
+      {/* 저장 완료 전체 화면 애니메이션은 추후 재검토를 위해 보존합니다. */}
+      {/* {saveOverlayVisible && <SaveOverlay message={saveOverlayMessage} />} */}
     </div>
   );
 }
@@ -660,7 +661,7 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, onUpdate
   );
 }
 
-function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, showWritingExample, onHideWritingExample, onShowSaved }) {
+function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, showWritingExample, onHideWritingExample }) {
   const [draft, setDraft] = useState("");
   const [photoData, setPhotoData] = useState(null);
   const [lengthNotice, setLengthNotice] = useState(false);
@@ -720,7 +721,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
     onHideWritingExample();
     window.setTimeout(() => {
       onAddLog(nextLog);
-      onShowSaved(todayCount + 1);
+      // onShowSaved(todayCount + 1);
       setDraft("");
       setPhotoData(null);
       setComposerOpen(false);
@@ -1775,9 +1776,11 @@ export default function App() {
   const [allLogs, setAllLogs] = useState(() => storedAppState?.allLogs || [...initialTodayLogItems, ...initialLogItems]);
   const [showWritingExample, setShowWritingExample] = useState(() => storedAppState?.showWritingExample ?? true);
   const [customEmotions, setCustomEmotions] = useState(() => storedAppState?.customEmotions || []);
+  /* 저장 완료 전체 화면 애니메이션을 다시 사용할 때 복원합니다.
   const [saveOverlayVisible, setSaveOverlayVisible] = useState(false);
   const [saveOverlayMessage, setSaveOverlayMessage] = useState(getResponseTukMessage(0));
   const saveTimerRef = useRef(null);
+  */
   const todayLogs = allLogs.filter(isCurrentOperationalLog);
 
   useEffect(() => {
@@ -1797,6 +1800,7 @@ export default function App() {
     );
   }, [allLogs, showWritingExample, customEmotions]);
 
+  /*
   useEffect(() => {
     return () => {
       if (saveTimerRef.current) {
@@ -1817,6 +1821,7 @@ export default function App() {
       saveTimerRef.current = null;
     }, nextTodayCount === 1 ? 3100 : 2800);
   };
+  */
 
   const addLog = (log) => {
     setAllLogs((current) => [log, ...current]);
@@ -1857,7 +1862,7 @@ export default function App() {
           onDeleteLog={deleteLog}
           showWritingExample={showWritingExample}
           onHideWritingExample={() => setShowWritingExample(false)}
-          onShowSaved={showSaveOverlay}
+          /* onShowSaved={showSaveOverlay} */
         />
       ) : tab === "log" ? (
         <LogTab
@@ -1876,7 +1881,7 @@ export default function App() {
   return (
     <div className="h-[var(--maeumtuk-vh,100dvh)] overflow-hidden bg-[#f8f6f2] p-0 font-['Pretendard'] text-[#211b16] sm:p-6">
       <div className="mx-auto flex h-full max-w-[1260px] items-stretch justify-center gap-7 sm:items-start">
-        <Phone tab={tab} setTab={setTab} saveOverlayVisible={saveOverlayVisible} saveOverlayMessage={saveOverlayMessage}>{screen}</Phone>
+        <Phone tab={tab} setTab={setTab}>{screen}</Phone>
         <div className="hidden max-w-[520px] rounded-[18px] bg-[#fffdf9]/78 p-7 text-sm leading-7 text-[#4b443d] shadow-[0_7px_18px_rgba(54,42,30,.035)] ring-1 ring-[#eee7de] lg:block">
           <h2 className="mb-4 font-['Pretendard'] text-lg font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭 UI 메모</h2>
           <p>
