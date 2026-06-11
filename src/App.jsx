@@ -853,7 +853,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
               setComposerOpen(true);
               draftRef.current?.focus();
             }}
-            className={`rounded-[8px] border border-[#eed8ca] bg-[#fff8f3] shadow-[inset_0_1px_0_rgba(255,255,255,.75),0_3px_10px_rgba(87,58,37,.025)] transition duration-200 focus-within:border-[#e5b9a3] focus-within:bg-[#fffaf6] ${
+            className={`rounded-[8px] border border-[#eee5dc] bg-white shadow-[0_4px_12px_rgba(72,52,35,.055)] transition duration-200 focus-within:border-[#e4c5b3] focus-within:shadow-[0_5px_15px_rgba(72,52,35,.075)] ${
               composerExpanded ? "min-h-[132px] px-3 py-2.5" : "flex min-h-[48px] items-center gap-1 px-1.5 py-1"
             } ${
               isLeaving ? "translate-y-0.5 opacity-55" : ""
