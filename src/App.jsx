@@ -469,10 +469,47 @@ function getResponseTukMessage(count, { totalCount, isLatest = false } = {}) {
   return messages[Math.abs(count) % messages.length];
 }
 
-function ResponseTuk({ children }) {
+function ResponseTuk({ children, typing = false }) {
+  const characters = Array.from(String(children));
+  const [visibleCount, setVisibleCount] = useState(typing ? 0 : characters.length);
+
+  useEffect(() => {
+    if (!typing) {
+      setVisibleCount(characters.length);
+      return undefined;
+    }
+
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      setVisibleCount(characters.length);
+      return undefined;
+    }
+
+    setVisibleCount(0);
+    let intervalId;
+    const startTimer = window.setTimeout(() => {
+      intervalId = window.setInterval(() => {
+        setVisibleCount((count) => {
+          if (count >= characters.length) {
+            window.clearInterval(intervalId);
+            return count;
+          }
+          return count + 1;
+        });
+      }, 58);
+    }, 420);
+
+    return () => {
+      window.clearTimeout(startTimer);
+      if (intervalId) window.clearInterval(intervalId);
+    };
+  }, [children, typing]);
+
+  const isTyping = typing && visibleCount < characters.length;
+
   return (
     <div className="mt-2.5 font-['SUIT'] text-[14px] font-semibold leading-6 tracking-[-0.02em] text-[#6f6a5f]">
-      {children}
+      <span>{characters.slice(0, visibleCount).join("")}</span>
+      {isTyping && <span className="maeumtuk-response-caret ml-0.5 inline-block h-[15px] w-px align-[-2px] bg-[#9b927f]" aria-hidden="true" />}
     </div>
   );
 }
@@ -556,7 +593,7 @@ function EmptyState({ title, body }) {
   );
 }
 
-function NowFlowItem({ item, sequence, totalSequence, isLatest = false, onUpdate, onDelete }) {
+function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResponse = false, onUpdate, onDelete }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState(item.text);
@@ -655,7 +692,7 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, onUpdate
             </div>
           </div>
         )}
-        {response && <ResponseTuk>{response}</ResponseTuk>}
+        {response && <ResponseTuk typing={typeResponse}>{response}</ResponseTuk>}
       </div>
     </article>
   );
@@ -665,6 +702,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
   const [draft, setDraft] = useState("");
   const [photoData, setPhotoData] = useState(null);
   const [lengthNotice, setLengthNotice] = useState(false);
+  const [typingResponseId, setTypingResponseId] = useState(null);
   const [isLeaving, setIsLeaving] = useState(false);
   const [composerOpen, setComposerOpen] = useState(false);
   const draftRef = useRef(null);
@@ -722,6 +760,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
     window.setTimeout(() => {
       onAddLog(nextLog);
       // onShowSaved(todayCount + 1);
+      setTypingResponseId(nextLog.id);
       setDraft("");
       setPhotoData(null);
       setComposerOpen(false);
@@ -763,6 +802,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
                   sequence={todayLogs.length - index}
                   totalSequence={Math.max(totalLogCount - index, 0)}
                   isLatest={index === 0}
+                  typeResponse={item.id === typingResponseId}
                   onUpdate={onUpdateLog}
                   onDelete={onDeleteLog}
                 />

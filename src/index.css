@@ -42,6 +42,16 @@ body {
   font-family: "SchoolSafetyWing", "Pretendard", sans-serif;
 }
 
+.maeumtuk-response-caret {
+  animation: maeumtuk-response-caret 0.75s steps(1, end) infinite;
+}
+
+@keyframes maeumtuk-response-caret {
+  50% {
+    opacity: 0;
+  }
+}
+
 .maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-bottom-nav {
   opacity: 0;
   pointer-events: none;
