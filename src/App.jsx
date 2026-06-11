@@ -268,20 +268,49 @@ function enrichLogsWithTags(logItems, personalTagSet = getPersonalTagSet(logItem
 
 function getCurrentLogMeta() {
   const now = new Date();
+  const operationalDate = getOperationalDate(now);
   const days = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
   const hour = now.getHours();
   const minute = String(now.getMinutes()).padStart(2, "0");
   const hour12 = hour % 12 || 12;
 
   return {
-    date: `${String(now.getMonth() + 1).padStart(2, "0")}.${String(now.getDate()).padStart(2, "0")}`,
-    displayDate: `${now.getMonth() + 1}월 ${now.getDate()}일`,
-    day: days[now.getDay()],
+    date: formatShortDate(operationalDate),
+    displayDate: `${operationalDate.getMonth() + 1}월 ${operationalDate.getDate()}일`,
+    day: days[operationalDate.getDay()],
     greeting: getTimeGreeting(hour),
     hour,
     dot: getTimeDotColor(hour),
     time: `${hour < 12 ? "오전" : "오후"} ${hour12}:${minute}`,
+    operationalKey: formatOperationalKey(operationalDate),
   };
+}
+
+function getOperationalDate(source = new Date()) {
+  const date = new Date(source);
+  if (date.getHours() < 4) {
+    date.setDate(date.getDate() - 1);
+  }
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+function formatShortDate(date) {
+  return `${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function formatOperationalKey(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function getCurrentOperationalKey() {
+  return formatOperationalKey(getOperationalDate());
+}
+
+function isCurrentOperationalLog(log) {
+  const currentKey = getCurrentOperationalKey();
+  if (log.operationalKey) return log.operationalKey === currentKey;
+  return log.date === formatShortDate(getOperationalDate());
 }
 
 function getHourFromTimeLabel(time) {
@@ -522,24 +551,99 @@ function EmptyState({ title, body }) {
   );
 }
 
-function NowFlowItem({ item, sequence, totalSequence, isLatest = false }) {
+function NowFlowItem({ item, sequence, totalSequence, isLatest = false, onUpdate, onDelete }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editText, setEditText] = useState(item.text);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const response =
     isLatest || [1, 2, 3, 5, 10, 15].includes(sequence) ? getResponseTukMessage(sequence, { totalCount: totalSequence, isLatest }) : "";
   const dotColor = getFlowDotColor(item, sequence);
+  const saveEdit = () => {
+    const nextText = editText.trim();
+    if (!nextText) return;
+    onUpdate?.(item, { text: nextText, tags: item.tagsManaged ? item.tags : extractAutoTags(nextText) });
+    setEditing(false);
+    setMenuOpen(false);
+  };
 
   return (
-    <article className={`py-4 ${isLatest ? "maeumtuk-now-settle" : ""}`}>
+    <article className={`relative py-4 ${isLatest ? "maeumtuk-now-settle" : ""}`}>
+      <button
+        onClick={() => {
+          setMenuOpen((open) => !open);
+          setConfirmDelete(false);
+        }}
+        className="absolute right-0 top-3 grid h-8 w-8 place-items-center rounded-[9px] text-[#9a9188] hover:bg-[#f5eee7]"
+        aria-label="오늘 툭 관리"
+      >
+        <MoreHorizontal size={16} />
+      </button>
+      {menuOpen && (
+        <div className="absolute right-0 top-11 z-20 w-[104px] rounded-[10px] border border-[#eee6dc] bg-[#fffdf9] p-1.5 text-[13px] shadow-[0_10px_24px_rgba(54,42,30,.08)]">
+          <button
+            onClick={() => {
+              setEditText(item.text);
+              setEditing(true);
+              setMenuOpen(false);
+            }}
+            className="block w-full rounded-[8px] px-3 py-2 text-left text-[#4b443d] hover:bg-[#f5eee7]"
+          >
+            수정
+          </button>
+          <button
+            onClick={() => {
+              setConfirmDelete(true);
+              setMenuOpen(false);
+            }}
+            className="block w-full rounded-[8px] px-3 py-2 text-left text-[#b65b43] hover:bg-[#fff1ea]"
+          >
+            삭제
+          </button>
+        </div>
+      )}
       <time className="mb-2 flex items-center gap-2 text-[14px] font-medium tracking-[-0.02em] text-[#8a837a]">
         <span className="h-2 w-2 rounded-full" style={{ background: dotColor }} />
         {item.time}
       </time>
       <div className="ml-4">
-        <p className="whitespace-pre-line font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f]">
-          {item.text}
-        </p>
+        {editing ? (
+          <div className="rounded-[10px] border border-[#eadfd4] bg-[#fffdf9] p-3">
+            <textarea
+              value={editText}
+              onChange={(event) => setEditText(event.target.value)}
+              className="h-[92px] w-full resize-none bg-transparent font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f] outline-none"
+            />
+            <div className="mt-2 flex justify-end gap-2">
+              <button onClick={() => setEditing(false)} className="h-9 rounded-[8px] px-3 text-[12px] font-medium text-[#746d65]">
+                취소
+              </button>
+              <button onClick={saveEdit} className="h-9 rounded-[8px] bg-[#5f7f46] px-3 text-[12px] font-semibold text-white">
+                저장
+              </button>
+            </div>
+          </div>
+        ) : (
+          <p className="whitespace-pre-line pr-8 font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f]">
+            {item.text}
+          </p>
+        )}
         {item.image && (
           <div className="mt-3">
             <MiniPhoto bg={item.image} size="md" />
+          </div>
+        )}
+        {confirmDelete && (
+          <div className="mt-3 rounded-[10px] bg-[#fff5ee] p-3 text-[13px] text-[#4a3d34]">
+            <p className="mb-2">이 툭을 지울까요?</p>
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setConfirmDelete(false)} className="h-9 rounded-[8px] px-3 text-[12px] font-medium text-[#746d65]">
+                취소
+              </button>
+              <button onClick={() => onDelete?.(item)} className="h-9 rounded-[8px] bg-[#b65b43] px-3 text-[12px] font-semibold text-white">
+                지우기
+              </button>
+            </div>
           </div>
         )}
         {response && <ResponseTuk>{response}</ResponseTuk>}
@@ -548,7 +652,7 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false }) {
   );
 }
 
-function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHideWritingExample, onShowSaved }) {
+function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, showWritingExample, onHideWritingExample, onShowSaved }) {
   const [draft, setDraft] = useState("");
   const [photoData, setPhotoData] = useState(null);
   const [lengthNotice, setLengthNotice] = useState(false);
@@ -595,6 +699,8 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
       date: currentMeta.date,
       day: currentMeta.day,
       time: currentMeta.time,
+      operationalKey: currentMeta.operationalKey,
+      createdAt: new Date().toISOString(),
       text: text || "사진으로 남긴 툭",
       tags: autoTags,
       mood: "남김",
@@ -650,6 +756,8 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
                   sequence={todayLogs.length - index}
                   totalSequence={Math.max(totalLogCount - index, 0)}
                   isLatest={index === 0}
+                  onUpdate={onUpdateLog}
+                  onDelete={onDeleteLog}
                 />
               ))}
             </div>
@@ -796,6 +904,8 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, showWritingExample, onHide
   );
 }
 
+const baseEmotionOptions = ["심난함", "복잡함", "질투", "시기", "뭉클함"];
+
 function AutoTagEditor({ item, onUpdate, editing, onDone }) {
   const [nextTags, setNextTags] = useState(item.tags || []);
   const [tagInput, setTagInput] = useState("");
@@ -885,14 +995,31 @@ function AutoTagEditor({ item, onUpdate, editing, onDone }) {
   );
 }
 
-function RecentCard({ item, compact = false, showEnvelope = false, showManage = false, onUpdate, onDelete }) {
+function RecentCard({
+  item,
+  compact = false,
+  showEnvelope = false,
+  showManage = false,
+  emotionOptions = baseEmotionOptions,
+  onAddEmotion,
+  onUpdate,
+  onDelete,
+}) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [tagEditing, setTagEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [emotionOpen, setEmotionOpen] = useState(false);
+  const [customEmotion, setCustomEmotion] = useState("");
+  const [noteOpen, setNoteOpen] = useState(false);
+  const [noteDraft, setNoteDraft] = useState("");
   const [editText, setEditText] = useState(item.text);
   const [editImage, setEditImage] = useState(item.image);
   const editImageInputRef = useRef(null);
+  const hasEmotion = Boolean(item.mood && item.mood !== "남김");
+  const hasNote = Boolean(item.note);
+  const hasAfterData = hasEmotion || hasNote;
 
   const saveEdit = () => {
     const nextText = editText.trim();
@@ -905,6 +1032,25 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
     });
     setEditing(false);
     setMenuOpen(false);
+  };
+
+  const saveEmotion = (emotion) => {
+    const nextEmotion = emotion.trim();
+    if (!nextEmotion) return;
+    onUpdate?.(item, { mood: nextEmotion });
+    onAddEmotion?.(nextEmotion);
+    setCustomEmotion("");
+    setEmotionOpen(false);
+    setDrawerOpen(false);
+  };
+
+  const saveInlineNote = () => {
+    const nextNote = noteDraft.trim();
+    if (!nextNote) return;
+    onUpdate?.(item, { note: nextNote });
+    setNoteDraft("");
+    setNoteOpen(false);
+    setDrawerOpen(false);
   };
 
   return (
@@ -1039,7 +1185,7 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
               </div>
             </div>
           )}
-          {!editing && !confirmDelete && showManage && (
+          {!editing && !confirmDelete && showManage && tagEditing && (
             <AutoTagEditor
               key={`${getLogKey(item)}-${tagEditing}`}
               item={item}
@@ -1053,8 +1199,108 @@ function RecentCard({ item, compact = false, showEnvelope = false, showManage = 
             <MiniPhoto bg={item.image} />
           </div>
         )}
+        {!editing && !confirmDelete && showEnvelope && (
+          <div className="mt-3">
+            {hasAfterData ? (
+              <div className="space-y-2">
+                {hasEmotion && (
+                  <span className="inline-flex rounded-full bg-[#eef4e8] px-2.5 py-1 text-[12px] font-medium text-[#526f43]">
+                    {item.mood}
+                  </span>
+                )}
+                {hasNote && (
+                  <div className="border-l border-[#cbd8bd] pl-3">
+                    <div className="rounded-[10px] border border-[#e7eee0] bg-[#fbfcf7] px-3 py-2.5 text-[13px] leading-6 text-[#3f4638]">
+                      {item.note}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : drawerOpen ? (
+              <div className="rounded-[10px] border border-[#eadfd4] bg-[#fffdf9] px-3 py-2.5">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-[12px] font-semibold text-[#5d554d]">이 생각을 조금 정리할까요?</span>
+                  <button onClick={() => setDrawerOpen(false)} className="grid h-7 w-7 place-items-center rounded-[8px] text-[#8b8279] hover:bg-[#f5eee7]">
+                    <ChevronUp size={14} strokeWidth={1.9} />
+                  </button>
+                </div>
+                <div className="flex gap-1.5">
+                  <button
+                    onClick={() => {
+                      setEmotionOpen((open) => !open);
+                      setNoteOpen(false);
+                    }}
+                    className="rounded-full border border-[#dfe8d3] bg-[#f7faf3] px-3 py-1.5 text-[12px] font-medium text-[#5f744f]"
+                  >
+                    + 감정 남기기
+                  </button>
+                  <button
+                    onClick={() => {
+                      setNoteOpen((open) => !open);
+                      setEmotionOpen(false);
+                    }}
+                    className="rounded-full border border-[#eadfd4] bg-[#fff8f1] px-3 py-1.5 text-[12px] font-medium text-[#8a6555]"
+                  >
+                    + 덧붙이기
+                  </button>
+                </div>
+                {emotionOpen && (
+                  <div className="mt-3 rounded-[9px] bg-[#f8f4ef] p-2.5">
+                    <div className="mb-2 flex flex-wrap gap-1.5">
+                      {emotionOptions.map((emotion) => (
+                        <button
+                          key={emotion}
+                          onClick={() => saveEmotion(emotion)}
+                          className="rounded-full bg-[#fffdf9] px-2.5 py-1 text-[12px] font-medium text-[#4d453e] ring-1 ring-[#e8dfd5]"
+                        >
+                          {emotion}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex gap-1.5">
+                      <input
+                        value={customEmotion}
+                        onChange={(event) => setCustomEmotion(event.target.value)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") saveEmotion(customEmotion);
+                        }}
+                        className="min-w-0 flex-1 rounded-[8px] border border-[#e0d6cc] bg-[#fffdf9] px-2.5 py-1.5 text-[12px] outline-none"
+                        placeholder="내 마음대로 이름 붙이기"
+                      />
+                      <button onClick={() => saveEmotion(customEmotion)} className="rounded-[8px] bg-[#5f7f46] px-3 text-[12px] font-semibold text-white">
+                        저장
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {noteOpen && (
+                  <div className="mt-3 rounded-[9px] bg-[#fbfcf7] p-2.5">
+                    <textarea
+                      value={noteDraft}
+                      onChange={(event) => setNoteDraft(event.target.value)}
+                      className="h-[74px] w-full resize-none bg-transparent text-[13px] leading-6 text-[#2a2e24] outline-none placeholder:text-[#9ca494]"
+                      placeholder="조금 지나서 떠오른 생각을 덧붙여요."
+                    />
+                    <div className="mt-1.5 flex justify-end">
+                      <button onClick={saveInlineNote} className="rounded-[8px] bg-[#5f7f46] px-3 py-1.5 text-[12px] font-semibold text-white">
+                        남기기
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => setDrawerOpen(true)}
+                className="ml-auto flex h-7 w-7 items-center justify-center rounded-[8px] text-[#b3aa9f] hover:bg-[#f5eee7]"
+                aria-label="생각 정리 열기"
+              >
+                <ChevronDown size={15} strokeWidth={1.8} />
+              </button>
+            )}
+          </div>
+        )}
       </div>
-      {showEnvelope && <EnvelopeInteraction note={item.note} onChange={(nextNote) => onUpdate?.(item, { note: nextNote })} />}
     </article>
   );
 }
@@ -1232,7 +1478,7 @@ function EnvelopeInteraction({ note, onChange }) {
   );
 }
 
-function LogTab({ logItems, onUpdateLog, onDeleteLog }) {
+function LogTab({ logItems, customEmotions = [], onAddEmotion, onUpdateLog, onDeleteLog }) {
   const [visibleCount, setVisibleCount] = useState(LOG_PAGE_SIZE);
   const [selectedTag, setSelectedTag] = useState("");
   const hasLogs = logItems.length > 0;
@@ -1326,6 +1572,8 @@ function LogTab({ logItems, onUpdateLog, onDeleteLog }) {
                       item={item}
                       showEnvelope
                       showManage
+                      emotionOptions={[...new Set([...baseEmotionOptions, ...customEmotions])]}
+                      onAddEmotion={onAddEmotion}
                       onUpdate={onUpdateLog}
                       onDelete={onDeleteLog}
                     />
@@ -1513,14 +1761,16 @@ function TodayTab({ logItems }) {
 
 export default function App() {
   useVisibleViewportHeight();
+  const storedAppState = loadStoredAppState();
 
   const [tab, setTab] = useState("now");
-  const [todayLogs, setTodayLogs] = useState(() => loadStoredAppState()?.todayLogs || initialTodayLogItems);
-  const [allLogs, setAllLogs] = useState(() => loadStoredAppState()?.allLogs || initialLogItems);
-  const [showWritingExample, setShowWritingExample] = useState(() => loadStoredAppState()?.showWritingExample ?? true);
+  const [allLogs, setAllLogs] = useState(() => storedAppState?.allLogs || [...initialTodayLogItems, ...initialLogItems]);
+  const [showWritingExample, setShowWritingExample] = useState(() => storedAppState?.showWritingExample ?? true);
+  const [customEmotions, setCustomEmotions] = useState(() => storedAppState?.customEmotions || []);
   const [saveOverlayVisible, setSaveOverlayVisible] = useState(false);
   const [saveOverlayMessage, setSaveOverlayMessage] = useState(getResponseTukMessage(0));
   const saveTimerRef = useRef(null);
+  const todayLogs = allLogs.filter(isCurrentOperationalLog);
 
   useEffect(() => {
     if (document.activeElement instanceof HTMLElement) {
@@ -1532,12 +1782,12 @@ export default function App() {
     window.localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({
-        todayLogs,
         allLogs,
         showWritingExample,
+        customEmotions,
       }),
     );
-  }, [todayLogs, allLogs, showWritingExample]);
+  }, [allLogs, showWritingExample, customEmotions]);
 
   useEffect(() => {
     return () => {
@@ -1561,7 +1811,6 @@ export default function App() {
   };
 
   const addLog = (log) => {
-    setTodayLogs((current) => [log, ...current]);
     setAllLogs((current) => [log, ...current]);
   };
 
@@ -1569,7 +1818,6 @@ export default function App() {
     const targetKey = getLogKey(target);
     const applyUpdate = (log) => (getLogKey(log) === targetKey ? { ...log, ...changes } : log);
 
-    setTodayLogs((current) => current.map(applyUpdate));
     setAllLogs((current) => current.map(applyUpdate));
   };
 
@@ -1577,8 +1825,13 @@ export default function App() {
     const targetKey = getLogKey(target);
     const keepOtherLogs = (log) => getLogKey(log) !== targetKey;
 
-    setTodayLogs((current) => current.filter(keepOtherLogs));
     setAllLogs((current) => current.filter(keepOtherLogs));
+  };
+
+  const addCustomEmotion = (emotion) => {
+    const nextEmotion = emotion.trim();
+    if (!nextEmotion) return;
+    setCustomEmotions((current) => [nextEmotion, ...current.filter((item) => item !== nextEmotion)].slice(0, 12));
   };
 
   const personalTagSet = useMemo(() => getPersonalTagSet(allLogs), [allLogs]);
@@ -1592,16 +1845,24 @@ export default function App() {
           todayLogs={taggedTodayLogs}
           totalLogCount={taggedAllLogs.length}
           onAddLog={addLog}
+          onUpdateLog={updateLog}
+          onDeleteLog={deleteLog}
           showWritingExample={showWritingExample}
           onHideWritingExample={() => setShowWritingExample(false)}
           onShowSaved={showSaveOverlay}
         />
       ) : tab === "log" ? (
-        <LogTab logItems={taggedAllLogs} onUpdateLog={updateLog} onDeleteLog={deleteLog} />
+        <LogTab
+          logItems={taggedAllLogs}
+          customEmotions={customEmotions}
+          onAddEmotion={addCustomEmotion}
+          onUpdateLog={updateLog}
+          onDeleteLog={deleteLog}
+        />
       ) : (
         <TodayTab logItems={taggedAllLogs} />
       ),
-    [tab, taggedTodayLogs, taggedAllLogs, showWritingExample],
+    [tab, taggedTodayLogs, taggedAllLogs, showWritingExample, customEmotions],
   );
 
   return (
