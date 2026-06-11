@@ -572,19 +572,23 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, onUpdate
   };
 
   return (
-    <article className={`relative py-4 ${isLatest ? "maeumtuk-now-settle" : ""}`}>
+    <article
+      className={`relative rounded-[12px] border border-[#eee5dc] bg-[#fffdf9] px-3.5 py-3 shadow-[0_2px_8px_rgba(54,42,30,.025)] ${
+        isLatest ? "maeumtuk-now-settle" : ""
+      }`}
+    >
       <button
         onClick={() => {
           setMenuOpen((open) => !open);
           setConfirmDelete(false);
         }}
-        className="absolute right-0 top-3 grid h-8 w-8 place-items-center rounded-[9px] text-[#9a9188] hover:bg-[#f5eee7]"
+        className="absolute right-1.5 top-1.5 grid h-8 w-8 place-items-center rounded-[9px] text-[#9a9188] hover:bg-[#f5eee7]"
         aria-label="오늘 툭 관리"
       >
         <MoreHorizontal size={16} />
       </button>
       {menuOpen && (
-        <div className="absolute right-0 top-11 z-20 w-[104px] rounded-[10px] border border-[#eee6dc] bg-[#fffdf9] p-1.5 text-[13px] shadow-[0_10px_24px_rgba(54,42,30,.08)]">
+        <div className="absolute right-2 top-10 z-20 w-[104px] rounded-[10px] border border-[#eee6dc] bg-[#fffdf9] p-1.5 text-[13px] shadow-[0_10px_24px_rgba(54,42,30,.08)]">
           <button
             onClick={() => {
               setEditText(item.text);
@@ -606,11 +610,11 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, onUpdate
           </button>
         </div>
       )}
-      <time className="mb-2 flex items-center gap-2 text-[14px] font-medium tracking-[-0.02em] text-[#8a837a]">
+      <time className="mb-1.5 flex items-center gap-2 pr-8 text-[13px] font-medium tracking-[-0.02em] text-[#8a837a]">
         <span className="h-2 w-2 rounded-full" style={{ background: dotColor }} />
         {item.time}
       </time>
-      <div className="ml-4">
+      <div className="pl-4">
         {editing ? (
           <div className="rounded-[10px] border border-[#eadfd4] bg-[#fffdf9] p-3">
             <textarea
@@ -628,7 +632,7 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, onUpdate
             </div>
           </div>
         ) : (
-          <p className="whitespace-pre-line pr-8 font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f]">
+          <p className="whitespace-pre-line pr-7 font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f]">
             {item.text}
           </p>
         )}
@@ -750,7 +754,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
             <h2 className="font-['SUIT'] text-[15px] font-semibold tracking-[-0.02em] text-[#2b251f]">{todaySectionLabel}</h2>
           </div>
           {todayLogs.length > 0 ? (
-            <div className="divide-y divide-[#eee6dc]/55">
+            <div className="space-y-2.5">
               {todayLogs.map((item, index) => (
                 <NowFlowItem
                   key={item.id || `${item.date}-${item.time}`}
