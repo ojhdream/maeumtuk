@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Check,
   ChevronDown,
@@ -620,6 +621,57 @@ function MiniPhoto({ bg, size = "md" }) {
     md: "h-[64px] w-[64px] rounded-[10px]",
     lg: "h-[76px] w-[76px] rounded-[11px]",
   }[size];
+  const isPhotoSource = typeof bg === "string" && /^(data:|blob:|https?:)/.test(bg);
+
+  useEffect(() => {
+    if (!expanded) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    const closeWithEscape = (event) => {
+      if (event.key === "Escape") setExpanded(false);
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", closeWithEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeWithEscape);
+    };
+  }, [expanded]);
+
+  const viewer = expanded ? (
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#171512]/90 px-3 pb-[calc(18px+env(safe-area-inset-bottom))] pt-[calc(64px+env(safe-area-inset-top))] backdrop-blur-[2px]"
+      onClick={() => setExpanded(false)}
+      role="dialog"
+      aria-modal="true"
+      aria-label="사진 크게 보기"
+    >
+      <button
+        type="button"
+        onClick={() => setExpanded(false)}
+        className="fixed right-4 top-[calc(12px+env(safe-area-inset-top))] grid h-11 w-11 place-items-center rounded-full bg-black/45 text-white ring-1 ring-white/15 backdrop-blur-sm"
+        aria-label="사진 닫기"
+      >
+        <X size={23} strokeWidth={1.8} />
+      </button>
+      {isPhotoSource ? (
+        <img
+          src={bg}
+          alt="확대된 기록 사진"
+          className="max-h-full max-w-full rounded-[10px] object-contain shadow-[0_20px_60px_rgba(0,0,0,.35)]"
+          onClick={(event) => event.stopPropagation()}
+        />
+      ) : (
+        <div
+          className="h-[min(72vh,620px)] w-full max-w-[720px] rounded-[10px] bg-contain bg-center bg-no-repeat shadow-[0_20px_60px_rgba(0,0,0,.35)]"
+          style={{ backgroundImage: getImageBackground(bg)?.replace("center / cover no-repeat ", "") }}
+          onClick={(event) => event.stopPropagation()}
+        />
+      )}
+    </div>
+  ) : null;
 
   return (
     <>
@@ -630,23 +682,7 @@ function MiniPhoto({ bg, size = "md" }) {
         style={{ background: getImageBackground(bg) }}
         aria-label="사진 크게 보기"
       />
-      {expanded && (
-        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/75 p-5" onClick={() => setExpanded(false)}>
-          <button
-            type="button"
-            onClick={() => setExpanded(false)}
-            className="absolute right-5 top-5 grid h-11 w-11 place-items-center rounded-full bg-white/12 text-white backdrop-blur-sm"
-            aria-label="사진 닫기"
-          >
-            <X size={22} strokeWidth={1.8} />
-          </button>
-          <div
-            className="h-[min(72vh,620px)] w-full max-w-[720px] rounded-[14px] bg-contain bg-center bg-no-repeat shadow-2xl"
-            style={{ backgroundImage: getImageBackground(bg)?.replace("center / cover no-repeat ", "") }}
-            onClick={(event) => event.stopPropagation()}
-          />
-        </div>
-      )}
+      {viewer && createPortal(viewer, document.body)}
     </>
   );
 }
