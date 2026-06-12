@@ -194,6 +194,16 @@ function extractCandidateWords(text) {
 }
 
 function parseLogDate(item) {
+  if (item.operationalKey) {
+    const [year, month, day] = item.operationalKey.split("-").map(Number);
+    if (year && month && day) return new Date(year, month - 1, day);
+  }
+
+  if (item.createdAt) {
+    const createdDate = new Date(item.createdAt);
+    if (!Number.isNaN(createdDate.getTime())) return createdDate;
+  }
+
   const match = item.date?.match(/^(\d{2})\.(\d{2})$/);
   if (!match) return null;
 
@@ -204,6 +214,17 @@ function parseLogDate(item) {
   }
 
   return parsed;
+}
+
+function getLogMonthMeta(item) {
+  const date = parseLogDate(item) || new Date();
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+
+  return {
+    key: `${year}-${String(month).padStart(2, "0")}`,
+    label: `${year}년 ${month}월`,
+  };
 }
 
 function getPersonalTagSet(logItems) {
@@ -1717,7 +1738,10 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
   const [selectedTag, setSelectedTag] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [pendingMonth, setPendingMonth] = useState("");
   const searchInputRef = useRef(null);
+  const monthSectionRefs = useRef(new Map());
   const hasLogs = logItems.length > 0;
   // Tuklog tag filters are paused for now.
   // const tagCounts = logItems.reduce((counts, item) => {
@@ -1745,6 +1769,12 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
     : logItems;
   const visibleLogs = filteredLogs.slice(0, visibleCount);
   const hasMoreLogs = visibleCount < filteredLogs.length;
+  const monthOptions = filteredLogs.reduce((months, item) => {
+    const month = getLogMonthMeta(item);
+    if (!months.some((entry) => entry.key === month.key)) months.push(month);
+    return months;
+  }, []);
+  const activeMonth = monthOptions.some((month) => month.key === selectedMonth) ? selectedMonth : monthOptions[0]?.key || "";
   // const resultLabel = selectedTag ? `${selectedTag}와 함께한 순간 ${filteredLogs.length}개` : `전체 툭 ${filteredLogs.length}개`;
   const groupedLogs = visibleLogs.reduce((groups, item) => {
     const key = `${item.date}-${item.day}`;
@@ -1758,6 +1788,27 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
 
     return groups;
   }, []);
+  const monthGroups = groupedLogs.reduce((months, dayGroup) => {
+    const month = getLogMonthMeta(dayGroup.items[0]);
+    const existing = months.find((entry) => entry.key === month.key);
+
+    if (existing) {
+      existing.days.push(dayGroup);
+    } else {
+      months.push({ ...month, days: [dayGroup] });
+    }
+
+    return months;
+  }, []);
+
+  const moveToMonth = (monthKey) => {
+    setSelectedMonth(monthKey);
+    const targetIndex = filteredLogs.findIndex((item) => getLogMonthMeta(item).key === monthKey);
+    if (targetIndex < 0) return;
+
+    setVisibleCount((count) => Math.max(count, targetIndex + LOG_PAGE_SIZE));
+    setPendingMonth(monthKey);
+  };
 
   useEffect(() => {
     setVisibleCount(LOG_PAGE_SIZE);
@@ -1767,6 +1818,18 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
     if (!searchOpen) return;
     window.requestAnimationFrame(() => searchInputRef.current?.focus());
   }, [searchOpen]);
+
+  useEffect(() => {
+    if (!pendingMonth) return;
+    const frame = window.requestAnimationFrame(() => {
+      const section = monthSectionRefs.current.get(pendingMonth);
+      if (!section) return;
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+      setPendingMonth("");
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [pendingMonth, visibleCount]);
 
   return (
     <>
@@ -1815,6 +1878,24 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
             {normalizedQuery && <p className="mt-2 px-1 text-[12px] font-medium text-[#91887f]">{filteredLogs.length}개의 툭을 찾았어요.</p>}
           </section>
         )}
+        {monthOptions.length > 0 && (
+          <div className="mb-5 flex items-center justify-between border-y border-[#eee6dc] py-2.5">
+            <span className="text-[12px] font-medium text-[#9a9188]">월별로 건너가기</span>
+            <label className="relative inline-flex items-center">
+              <select
+                value={activeMonth}
+                onChange={(event) => moveToMonth(event.target.value)}
+                className="h-9 appearance-none rounded-[9px] bg-transparent py-0 pl-3 pr-8 font-['Pretendard'] text-[13px] font-semibold text-[#4d453e] outline-none hover:bg-[#f4eee8]"
+                aria-label="툭로그 연월 선택"
+              >
+                {monthOptions.map((month) => (
+                  <option key={month.key} value={month.key}>{month.label}</option>
+                ))}
+              </select>
+              <ChevronDown size={14} strokeWidth={1.8} className="pointer-events-none absolute right-2.5 text-[#8e857c]" />
+            </label>
+          </div>
+        )}
         {/* Tuklog tag filter chips are paused while auto tags are disabled. */}
         {/* <section className="mb-5">
           <div className="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -1850,27 +1931,44 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
         </section> */}
         {hasLogs ? (
           filteredLogs.length > 0 ? (
-          <div className="space-y-6">
-            {groupedLogs.map((group) => (
-              <section key={group.key}>
-                <div className="mb-2.5 flex items-center gap-2 px-1">
-                  <span className="font-['Pretendard'] text-[13px] font-semibold tracking-[-0.01em] text-[#4d453e]">{group.date}</span>
-                  <span className="text-[12px] font-medium text-[#8b857e]">{group.day}</span>
-                  <span className="h-px flex-1 bg-[#eee6dc]" />
-                  <span className="text-[11px] font-medium text-[#9a9188]">{group.items.length}툭</span>
+          <div className="space-y-8">
+            {monthGroups.map((month) => (
+              <section
+                key={month.key}
+                ref={(node) => {
+                  if (node) monthSectionRefs.current.set(month.key, node);
+                  else monthSectionRefs.current.delete(month.key);
+                }}
+                className="scroll-mt-5"
+              >
+                <div className="mb-4 flex items-center gap-3">
+                  <h2 className="shrink-0 font-['Pretendard'] text-[17px] font-semibold tracking-[-0.02em] text-[#332c26]">{month.label}</h2>
+                  <span className="h-px flex-1 bg-[#e9dfd5]" />
                 </div>
-                <div className="space-y-2.5">
-                  {group.items.map((item) => (
-                    <RecentCard
-                      key={getLogKey(item)}
-                      item={item}
-                      showEnvelope
-                      showManage
-                      onAddDetails={onAddDetails}
-                      onEdit={onEditLog}
-                      onUpdate={onUpdateLog}
-                      onDelete={onDeleteLog}
-                    />
+                <div className="space-y-6">
+                  {month.days.map((group) => (
+                    <section key={group.key}>
+                      <div className="mb-2.5 flex items-center gap-2 px-1">
+                        <span className="font-['Pretendard'] text-[13px] font-semibold tracking-[-0.01em] text-[#4d453e]">{group.date}</span>
+                        <span className="text-[12px] font-medium text-[#8b857e]">{group.day}</span>
+                        <span className="h-px flex-1 bg-[#eee6dc]" />
+                        <span className="text-[11px] font-medium text-[#9a9188]">{group.items.length}툭</span>
+                      </div>
+                      <div className="space-y-2.5">
+                        {group.items.map((item) => (
+                          <RecentCard
+                            key={getLogKey(item)}
+                            item={item}
+                            showEnvelope
+                            showManage
+                            onAddDetails={onAddDetails}
+                            onEdit={onEditLog}
+                            onUpdate={onUpdateLog}
+                            onDelete={onDeleteLog}
+                          />
+                        ))}
+                      </div>
+                    </section>
                   ))}
                 </div>
               </section>
