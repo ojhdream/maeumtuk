@@ -1091,13 +1091,14 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
         <section className="order-1 px-6 pt-5">
           <div className="mb-4">
             <div className="flex items-center gap-2.5">
-              <h1 className="text-[18px] font-semibold tracking-[-0.02em] text-[#2b251f]">마음툭</h1>
+              <div className="text-[15px] font-semibold tracking-[-0.02em] text-[#5a5149]">마음툭</div>
               <div className="flex w-[32px] items-center" aria-hidden="true">
                 <span className="h-px flex-1 bg-[#cfc3b7]" />
                 <span className="h-2 w-2 rounded-full bg-[#e6bd50]" />
               </div>
             </div>
-            <p className="mt-2 text-[13px] font-medium tracking-[-0.02em] text-[#938a82]">
+            <h1 className="mt-3 text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">오늘</h1>
+            <p className="mt-1 text-[13px] font-medium tracking-[-0.02em] text-[#938a82]">
               {currentMeta.displayDate} {currentMeta.day} · {todayCount > 0 ? `${todayCount}툭` : "아직 남긴 툭이 없어요"}
             </p>
           </div>
@@ -1134,12 +1135,6 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
           </div>
         )}
         <div className="w-full">
-          <div className="mb-2 flex items-center gap-2 px-0.5">
-            <PencilLine size={15} strokeWidth={1.8} className="text-[#d87955]" aria-hidden="true" />
-            <p className="font-['Pretendard'] text-[14px] font-semibold tracking-[-0.02em] text-[#5b5048]">
-              떠오른 생각을 툭 남겨보세요.
-            </p>
-          </div>
           <div
             onClick={(event) => {
               if (event.target.closest("button")) return;
@@ -1166,17 +1161,20 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
             />
             {composerExpanded ? (
               <div className="flex flex-col">
-                <textarea
-                  ref={draftRef}
-                  value={draft}
-                  onFocus={() => setComposerOpen(true)}
-                  onChange={(event) => {
-                    setDraft(event.target.value);
-                    if (lengthNotice) setLengthNotice(false);
-                  }}
-                  className="maeumtuk-draft-input min-h-[86px] max-h-[132px] w-full resize-none overflow-y-auto bg-transparent pb-0 pl-4 pr-1 pt-0 font-['Pretendard'] text-[16px] font-medium leading-[24px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-medium placeholder:text-[#a9a197] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                  placeholder="지금, 마음을 툭 남겨보세요..."
-                />
+                <div className="relative">
+                  <PencilLine size={16} strokeWidth={1.8} className="pointer-events-none absolute left-0 top-1 text-[#c97857]" aria-hidden="true" />
+                  <textarea
+                    ref={draftRef}
+                    value={draft}
+                    onFocus={() => setComposerOpen(true)}
+                    onChange={(event) => {
+                      setDraft(event.target.value);
+                      if (lengthNotice) setLengthNotice(false);
+                    }}
+                    className="maeumtuk-draft-input min-h-[86px] max-h-[132px] w-full resize-none overflow-y-auto bg-transparent pb-0 pl-7 pr-1 pt-0 font-['Pretendard'] text-[16px] font-medium leading-[24px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-medium placeholder:text-[#a9a197] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                    placeholder="지금, 마음을 툭 남겨보세요..."
+                  />
+                </div>
                 <div className="mt-1.5 flex items-center justify-between gap-2 border-t border-[#eadfd5] pt-1.5">
                   <div className="flex items-center gap-2">
                     <button
@@ -1229,18 +1227,9 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
               </div>
             ) : (
               <>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={() => {
-                      setComposerOpen(true);
-                      photoInputRef.current?.click();
-                    }}
-                    className="grid h-8 w-8 shrink-0 place-items-center rounded-[9px] text-[#647856] hover:bg-[#eef4e8]"
-                    aria-label="사진 추가"
-                  >
-                    <Image size={16} strokeWidth={1.8} />
-                  </button>
-                </div>
+                <span className="grid h-8 w-8 shrink-0 place-items-center text-[#c97857]" aria-hidden="true">
+                  <PencilLine size={16} strokeWidth={1.8} />
+                </span>
                 <textarea
                   ref={draftRef}
                   value={draft}
