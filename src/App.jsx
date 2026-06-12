@@ -450,24 +450,6 @@ function TimeOfDayIcon({ hour }) {
   return <Sun size={22} strokeWidth={1.8} className="text-[#f0bd3f]" />;
 }
 
-function AppHeader() {
-  return (
-    <header className="px-6 pt-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-3">
-            <div className="font-['Pretendard'] text-[22px] font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭</div>
-            <div className="flex w-[38px] items-center" aria-hidden="true">
-              <span className="h-px flex-1 bg-[#cfc3b7]" />
-              <span className="h-2 w-2 rounded-full bg-[#e6bd50]" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
-  );
-}
-
 function BottomNav({ tab, setTab }) {
   const items = [
     { id: "now", label: "지금", icon: <PencilLine size={20} strokeWidth={1.85} /> },
@@ -1087,7 +1069,6 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
 
   return (
     <>
-      <AppHeader />
       <div className="flex flex-col">
       <main className="contents">
         {todayLogs.length === 0 && showWritingExample && !draft && (
@@ -1108,9 +1089,15 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
         )}
 
         <section className="order-1 px-6 pt-5">
-          <div className="mb-4 flex min-h-[48px] flex-col justify-center">
-            <h1 className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">오늘</h1>
-            <p className="mt-1 text-[13px] font-medium tracking-[-0.02em] text-[#938a82]">
+          <div className="mb-4">
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-[18px] font-semibold tracking-[-0.02em] text-[#2b251f]">마음툭</h1>
+              <div className="flex w-[32px] items-center" aria-hidden="true">
+                <span className="h-px flex-1 bg-[#cfc3b7]" />
+                <span className="h-2 w-2 rounded-full bg-[#e6bd50]" />
+              </div>
+            </div>
+            <p className="mt-2 text-[13px] font-medium tracking-[-0.02em] text-[#938a82]">
               {currentMeta.displayDate} {currentMeta.day} · {todayCount > 0 ? `${todayCount}툭` : "아직 남긴 툭이 없어요"}
             </p>
           </div>
@@ -1890,8 +1877,7 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
 
   return (
     <>
-      <AppHeader />
-      <main className="px-6 pt-5">
+      <main className="px-6 pt-6">
         <div className="mb-4 flex min-h-[48px] items-center justify-between gap-3">
           <div>
             <h1 className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">툭로그</h1>
@@ -2177,8 +2163,7 @@ function TodayTab({ logItems }) {
 
   return (
     <>
-      <AppHeader />
-      <main className="px-6 pt-5 font-['Pretendard']">
+      <main className="px-6 pt-6 font-['Pretendard']">
         <div className="relative mb-4 flex min-h-[48px] items-center justify-between">
           <h1 className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">요즘</h1>
           <button
