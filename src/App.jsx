@@ -1460,6 +1460,7 @@ function RecentCard({
             <span className="h-2 w-2 rounded-full" style={{ background: getLogDotColor(item) }} />
             <span>{item.time}</span>
           </div>
+        <div className="pl-4">
           {editing ? (
             <div>
               <input
@@ -1566,6 +1567,7 @@ function RecentCard({
             )}
           </div>
         )}
+        </div>
       </div>
     </article>
   );
