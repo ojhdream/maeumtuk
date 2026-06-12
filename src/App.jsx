@@ -10,6 +10,7 @@ import {
   PencilLine,
   Plus,
   Search,
+  Sprout,
   Sun,
   Sunset,
   X,
@@ -580,11 +581,12 @@ function useVisibleViewportHeight() {
   }, []);
 }
 
-function Phone({ children, tab, setTab, hideNav = false }) {
+function Phone({ children, tab, setTab, hideNav = false, overlay = null }) {
   return (
     <div className="maeumtuk-phone relative h-[var(--maeumtuk-vh,100dvh)] max-h-[var(--maeumtuk-vh,100dvh)] w-full max-w-[430px] overflow-hidden bg-[#f8f6f2] sm:h-[min(820px,calc(var(--maeumtuk-vh,100dvh)-48px))] sm:max-h-[820px] sm:w-[390px] sm:rounded-[26px] sm:shadow-[0_16px_55px_rgba(63,47,30,.08)] sm:ring-1 sm:ring-[#ebe2d8]">
       <div className={`maeumtuk-scroll h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${hideNav ? "pb-[env(safe-area-inset-bottom)]" : "pb-[calc(106px+env(safe-area-inset-bottom))]"}`}>{children}</div>
       {!hideNav && <BottomNav tab={tab} setTab={setTab} />}
+      {overlay}
       {/* 저장 완료 전체 화면 애니메이션은 추후 재검토를 위해 보존합니다. */}
       {/* {saveOverlayVisible && <SaveOverlay message={saveOverlayMessage} />} */}
     </div>
@@ -592,12 +594,40 @@ function Phone({ children, tab, setTab, hideNav = false }) {
 }
 
 function MiniPhoto({ bg, size = "md" }) {
+  const [expanded, setExpanded] = useState(false);
   const sizeClass = {
     md: "h-[64px] w-[64px] rounded-[10px]",
     lg: "h-[76px] w-[76px] rounded-[11px]",
   }[size];
 
-  return <div className={`${sizeClass} shrink-0 shadow-inner ring-1 ring-black/[.03]`} style={{ background: getImageBackground(bg) }} />;
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setExpanded(true)}
+        className={`${sizeClass} shrink-0 shadow-inner ring-1 ring-black/[.03]`}
+        style={{ background: getImageBackground(bg) }}
+        aria-label="사진 크게 보기"
+      />
+      {expanded && (
+        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/75 p-5" onClick={() => setExpanded(false)}>
+          <button
+            type="button"
+            onClick={() => setExpanded(false)}
+            className="absolute right-5 top-5 grid h-11 w-11 place-items-center rounded-full bg-white/12 text-white backdrop-blur-sm"
+            aria-label="사진 닫기"
+          >
+            <X size={22} strokeWidth={1.8} />
+          </button>
+          <div
+            className="h-[min(72vh,620px)] w-full max-w-[720px] rounded-[14px] bg-contain bg-center bg-no-repeat shadow-2xl"
+            style={{ backgroundImage: getImageBackground(bg)?.replace("center / cover no-repeat ", "") }}
+            onClick={(event) => event.stopPropagation()}
+          />
+        </div>
+      )}
+    </>
+  );
 }
 
 function EmptyState({ title, body }) {
@@ -696,18 +726,147 @@ function RecordEditScreen({ item, onClose, onSave }) {
   );
 }
 
-function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResponse = false, onEdit, onDelete }) {
+function RecordAddSheet({ item, emotionOptions, onAddEmotion, onClose, onUpdate }) {
+  const [mode, setMode] = useState("menu");
+  const [customEmotion, setCustomEmotion] = useState("");
+  const [note, setNote] = useState(item.note || "");
+
+  const saveEmotion = (emotion) => {
+    const nextEmotion = emotion.trim();
+    if (!nextEmotion) return;
+    onUpdate(item, { mood: nextEmotion });
+    onAddEmotion(nextEmotion);
+    onClose();
+  };
+
+  const saveNote = () => {
+    const nextNote = note.trim();
+    if (!nextNote) return;
+    onUpdate(item, { note: nextNote });
+    onClose();
+  };
+
+  return (
+    <div className="absolute inset-0 z-[70] flex items-end bg-[#2b241f]/28 backdrop-blur-[1px]" onClick={onClose}>
+      <section
+        className="w-full rounded-t-[20px] bg-[#fffdf9] px-5 pb-[calc(24px+env(safe-area-inset-bottom))] pt-3 shadow-[0_-18px_44px_rgba(44,34,26,.16)]"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="mx-auto mb-4 h-1 w-9 rounded-full bg-[#d8d0c8]" />
+
+        {mode === "menu" && (
+          <>
+            <div className="mb-4 px-1">
+              <h2 className="text-[17px] font-semibold tracking-[-0.02em] text-[#2b251f]">마음을 조금 더 들여다보기</h2>
+              <p className="mt-1 text-[12px] font-medium text-[#91887f]">지금 다시 떠오르는 것을 가볍게 더해보세요.</p>
+            </div>
+            <div className="space-y-2">
+              <button onClick={() => setMode("emotion")} className="flex w-full items-center gap-3 rounded-[12px] bg-[#f5f1ec] px-4 py-4 text-left">
+                <span className="grid h-10 w-10 place-items-center rounded-full bg-[#edf3e8] text-[#628052]">
+                  <Sprout size={19} strokeWidth={1.8} />
+                </span>
+                <span>
+                  <b className="block text-[15px] font-semibold text-[#3c352f]">이때의 마음</b>
+                  <span className="mt-0.5 block text-[12px] text-[#8b8279]">뒤늦게 알게 된 마음에 이름 붙이기</span>
+                </span>
+              </button>
+              <button onClick={() => setMode("note")} className="flex w-full items-center gap-3 rounded-[12px] bg-[#fff4ed] px-4 py-4 text-left">
+                <span className="grid h-10 w-10 place-items-center rounded-full bg-[#ffe9dc] text-[#cf724e]">
+                  <Plus size={19} strokeWidth={1.9} />
+                </span>
+                <span>
+                  <b className="block text-[15px] font-semibold text-[#3c352f]">툭 하나 더</b>
+                  <span className="mt-0.5 block text-[12px] text-[#8b8279]">그 후의 생각이나 이야기를 이어 쓰기</span>
+                </span>
+              </button>
+            </div>
+          </>
+        )}
+
+        {mode === "emotion" && (
+          <>
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h2 className="text-[17px] font-semibold text-[#2b251f]">이때의 마음</h2>
+                <p className="mt-1 text-[12px] text-[#91887f]">가장 가까운 단어 하나면 충분해요.</p>
+              </div>
+              <button onClick={() => setMode("menu")} className="h-9 rounded-[9px] px-2 text-[12px] font-medium text-[#746d65]">뒤로</button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {emotionOptions.map((emotion) => (
+                <button key={emotion} onClick={() => saveEmotion(emotion)} className="rounded-full border border-[#dfe8d3] bg-[#f4f8ef] px-3 py-2 text-[13px] font-medium text-[#567148]">
+                  {emotion}
+                </button>
+              ))}
+            </div>
+            <div className="mt-4 flex gap-2">
+              <input
+                value={customEmotion}
+                onChange={(event) => setCustomEmotion(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") saveEmotion(customEmotion);
+                }}
+                className="h-11 min-w-0 flex-1 rounded-[10px] border border-[#e5dbd0] bg-white px-3 text-[14px] outline-none focus:border-[#c8b5a4]"
+                placeholder="내 마음대로 이름 붙이기"
+                autoFocus
+              />
+              <button onClick={() => saveEmotion(customEmotion)} className="h-11 rounded-[10px] bg-[#6f895d] px-4 text-[13px] font-semibold text-white">남기기</button>
+            </div>
+          </>
+        )}
+
+        {mode === "note" && (
+          <>
+            <div className="mb-3 flex items-center justify-between">
+              <div>
+                <h2 className="text-[17px] font-semibold text-[#2b251f]">툭 하나 더</h2>
+                <p className="mt-1 text-[12px] text-[#91887f]">그 후의 생각이나 이야기를 남겨보세요.</p>
+              </div>
+              <button onClick={() => setMode("menu")} className="h-9 rounded-[9px] px-2 text-[12px] font-medium text-[#746d65]">뒤로</button>
+            </div>
+            <textarea
+              value={note}
+              onChange={(event) => setNote(event.target.value)}
+              className="min-h-[112px] w-full resize-none rounded-[11px] border border-[#eadfd4] bg-[#fffaf5] p-3 text-[15px] leading-6 outline-none focus:border-[#ddbca9]"
+              placeholder="지금 다시 떠오르는 생각은?"
+              autoFocus
+            />
+            <button onClick={saveNote} disabled={!note.trim()} className="mt-3 h-11 w-full rounded-[10px] bg-[#ef875c] text-[14px] font-semibold text-white disabled:opacity-35">
+              남기기
+            </button>
+          </>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResponse = false, onAddDetails, onEdit, onDelete }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const response =
     isLatest || [1, 2, 3, 5, 10, 15].includes(sequence) ? getResponseTukMessage(sequence, { totalCount: totalSequence, isLatest }) : "";
   const dotColor = getFlowDotColor(item, sequence);
+  const hasEmotion = Boolean(item.mood && item.mood !== "남김");
+  const hasNote = Boolean(item.note);
   return (
     <article
       className={`relative rounded-[12px] border border-[#eee5dc] bg-[#fffdf9] px-3.5 py-3 shadow-[0_2px_8px_rgba(54,42,30,.025)] ${
         isLatest ? "maeumtuk-now-settle" : ""
       }`}
     >
+      <button
+        type="button"
+        onClick={() => {
+          setMenuOpen(false);
+          onAddDetails?.(item);
+        }}
+        className="absolute right-10 top-1.5 inline-flex h-8 items-center gap-1 rounded-[9px] px-2 text-[#718261] hover:bg-[#f1f5ec]"
+        aria-label="이 기록에 마음이나 생각 더하기"
+      >
+        <Sprout size={14} strokeWidth={1.9} />
+        <span className="text-[11px] font-semibold">더하기</span>
+      </button>
       <button
         onClick={() => {
           setMenuOpen((open) => !open);
@@ -740,7 +899,7 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResp
           </button>
         </div>
       )}
-      <time className="mb-1.5 flex items-center gap-2 pr-8 text-[13px] font-medium tracking-[-0.02em] text-[#8a837a]">
+      <time className="mb-1.5 flex items-center gap-2 pr-28 text-[13px] font-medium tracking-[-0.02em] text-[#8a837a]">
         <span className="h-2 w-2 rounded-full" style={{ background: dotColor }} />
         {item.time}
       </time>
@@ -751,6 +910,20 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResp
         {item.image && (
           <div className="mt-3">
             <MiniPhoto bg={item.image} size="md" />
+          </div>
+        )}
+        {(hasEmotion || hasNote) && (
+          <div className="mt-3 space-y-2">
+            {hasEmotion && (
+              <span className="inline-flex rounded-full bg-[#eef4e8] px-2.5 py-1 text-[12px] font-medium text-[#526f43]">
+                {item.mood}
+              </span>
+            )}
+            {hasNote && (
+              <div className="border-l border-[#cbd8bd] pl-3">
+                <p className="rounded-[9px] bg-[#f8faf5] px-3 py-2 text-[13px] leading-6 text-[#46503f]">{item.note}</p>
+              </div>
+            )}
           </div>
         )}
         {confirmDelete && (
@@ -772,7 +945,7 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResp
   );
 }
 
-function NowTab({ todayLogs, totalLogCount, onAddLog, onEditLog, onDeleteLog, showWritingExample, onHideWritingExample }) {
+function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, onDeleteLog, showWritingExample, onHideWritingExample }) {
   const [draft, setDraft] = useState("");
   const [photoData, setPhotoData] = useState(null);
   const [photoError, setPhotoError] = useState("");
@@ -896,6 +1069,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onEditLog, onDeleteLog, sh
                   totalSequence={Math.max(totalLogCount - index, 0)}
                   isLatest={index === 0}
                   typeResponse={item.id === typingResponseId}
+                  onAddDetails={onAddDetails}
                   onEdit={onEditLog}
                   onDelete={onDeleteLog}
                 />
@@ -1155,8 +1329,7 @@ function RecentCard({
   compact = false,
   showEnvelope = false,
   showManage = false,
-  emotionOptions = baseEmotionOptions,
-  onAddEmotion,
+  onAddDetails,
   onEdit,
   onUpdate,
   onDelete,
@@ -1165,11 +1338,6 @@ function RecentCard({
   const [editing, setEditing] = useState(false);
   const [tagEditing, setTagEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [emotionOpen, setEmotionOpen] = useState(false);
-  const [customEmotion, setCustomEmotion] = useState("");
-  const [noteOpen, setNoteOpen] = useState(false);
-  const [noteDraft, setNoteDraft] = useState("");
   const [editText, setEditText] = useState(item.text);
   const [editImage, setEditImage] = useState(item.image);
   const editImageInputRef = useRef(null);
@@ -1190,27 +1358,22 @@ function RecentCard({
     setMenuOpen(false);
   };
 
-  const saveEmotion = (emotion) => {
-    const nextEmotion = emotion.trim();
-    if (!nextEmotion) return;
-    onUpdate?.(item, { mood: nextEmotion });
-    onAddEmotion?.(nextEmotion);
-    setCustomEmotion("");
-    setEmotionOpen(false);
-    setDrawerOpen(false);
-  };
-
-  const saveInlineNote = () => {
-    const nextNote = noteDraft.trim();
-    if (!nextNote) return;
-    onUpdate?.(item, { note: nextNote });
-    setNoteDraft("");
-    setNoteOpen(false);
-    setDrawerOpen(false);
-  };
-
   return (
     <article className="maeumtuk-log-card relative rounded-[13px] border border-[#eee4d9] bg-[#fffaf5] px-3.5 py-3 shadow-none">
+      {showManage && (
+        <button
+          type="button"
+          onClick={() => {
+            setMenuOpen(false);
+            onAddDetails?.(item);
+          }}
+          className="absolute right-10 top-1.5 z-10 inline-flex h-8 items-center gap-1 rounded-[9px] px-2 text-[#718261] hover:bg-[#f1f5ec]"
+          aria-label="이 기록에 마음이나 생각 더하기"
+        >
+          <Sprout size={14} strokeWidth={1.9} />
+          <span className="text-[11px] font-semibold">더하기</span>
+        </button>
+      )}
       {showManage && (
         <button
           onClick={() => {
@@ -1261,7 +1424,7 @@ function RecentCard({
         </div>
       )}
       <div className="font-['Pretendard']">
-          <div className="mb-1.5 flex items-center gap-1.5 pr-8 text-[12px] text-[#77716a]">
+          <div className="mb-1.5 flex items-center gap-1.5 pr-28 text-[12px] text-[#77716a]">
             <span className="h-2 w-2 rounded-full" style={{ background: getLogDotColor(item) }} />
             <span>{item.time}</span>
           </div>
@@ -1355,104 +1518,19 @@ function RecentCard({
             <MiniPhoto bg={item.image} />
           </div>
         )}
-        {!editing && !confirmDelete && showEnvelope && (
-          <div className="mt-3">
-            {hasAfterData ? (
-              <div className="space-y-2">
-                {hasEmotion && (
-                  <span className="inline-flex rounded-full bg-[#eef4e8] px-2.5 py-1 text-[12px] font-medium text-[#526f43]">
-                    {item.mood}
-                  </span>
-                )}
-                {hasNote && (
-                  <div className="border-l border-[#cbd8bd] pl-3">
-                    <div className="rounded-[10px] border border-[#e7eee0] bg-[#fbfcf7] px-3 py-2.5 text-[13px] leading-6 text-[#3f4638]">
-                      {item.note}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : drawerOpen ? (
-              <div className="rounded-[10px] border border-[#eadfd4] bg-[#fffdf9] px-3 py-2.5">
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="text-[12px] font-semibold text-[#5d554d]">이 생각을 조금 정리할까요?</span>
-                  <button onClick={() => setDrawerOpen(false)} className="grid h-7 w-7 place-items-center rounded-[8px] text-[#8b8279] hover:bg-[#f5eee7]">
-                    <ChevronUp size={14} strokeWidth={1.9} />
-                  </button>
+        {!editing && !confirmDelete && showEnvelope && hasAfterData && (
+          <div className="mt-3 space-y-2">
+            {hasEmotion && (
+              <span className="inline-flex rounded-full bg-[#eef4e8] px-2.5 py-1 text-[12px] font-medium text-[#526f43]">
+                {item.mood}
+              </span>
+            )}
+            {hasNote && (
+              <div className="border-l border-[#cbd8bd] pl-3">
+                <div className="rounded-[10px] border border-[#e7eee0] bg-[#fbfcf7] px-3 py-2.5 text-[13px] leading-6 text-[#3f4638]">
+                  {item.note}
                 </div>
-                <div className="flex gap-1.5">
-                  <button
-                    onClick={() => {
-                      setEmotionOpen((open) => !open);
-                      setNoteOpen(false);
-                    }}
-                    className="rounded-full border border-[#dfe8d3] bg-[#f7faf3] px-3 py-1.5 text-[12px] font-medium text-[#5f744f]"
-                  >
-                    + 감정 남기기
-                  </button>
-                  <button
-                    onClick={() => {
-                      setNoteOpen((open) => !open);
-                      setEmotionOpen(false);
-                    }}
-                    className="rounded-full border border-[#eadfd4] bg-[#fff8f1] px-3 py-1.5 text-[12px] font-medium text-[#8a6555]"
-                  >
-                    + 덧붙이기
-                  </button>
-                </div>
-                {emotionOpen && (
-                  <div className="mt-3 rounded-[9px] bg-[#f8f4ef] p-2.5">
-                    <div className="mb-2 flex flex-wrap gap-1.5">
-                      {emotionOptions.map((emotion) => (
-                        <button
-                          key={emotion}
-                          onClick={() => saveEmotion(emotion)}
-                          className="rounded-full bg-[#fffdf9] px-2.5 py-1 text-[12px] font-medium text-[#4d453e] ring-1 ring-[#e8dfd5]"
-                        >
-                          {emotion}
-                        </button>
-                      ))}
-                    </div>
-                    <div className="flex gap-1.5">
-                      <input
-                        value={customEmotion}
-                        onChange={(event) => setCustomEmotion(event.target.value)}
-                        onKeyDown={(event) => {
-                          if (event.key === "Enter") saveEmotion(customEmotion);
-                        }}
-                        className="min-w-0 flex-1 rounded-[8px] border border-[#e0d6cc] bg-[#fffdf9] px-2.5 py-1.5 text-[12px] outline-none"
-                        placeholder="내 마음대로 이름 붙이기"
-                      />
-                      <button onClick={() => saveEmotion(customEmotion)} className="rounded-[8px] bg-[#5f7f46] px-3 text-[12px] font-semibold text-white">
-                        저장
-                      </button>
-                    </div>
-                  </div>
-                )}
-                {noteOpen && (
-                  <div className="mt-3 rounded-[9px] bg-[#fbfcf7] p-2.5">
-                    <textarea
-                      value={noteDraft}
-                      onChange={(event) => setNoteDraft(event.target.value)}
-                      className="h-[74px] w-full resize-none bg-transparent text-[13px] leading-6 text-[#2a2e24] outline-none placeholder:text-[#9ca494]"
-                      placeholder="조금 지나서 떠오른 생각을 덧붙여요."
-                    />
-                    <div className="mt-1.5 flex justify-end">
-                      <button onClick={saveInlineNote} className="rounded-[8px] bg-[#5f7f46] px-3 py-1.5 text-[12px] font-semibold text-white">
-                        남기기
-                      </button>
-                    </div>
-                  </div>
-                )}
               </div>
-            ) : (
-              <button
-                onClick={() => setDrawerOpen(true)}
-                className="ml-auto flex h-7 w-7 items-center justify-center rounded-[8px] text-[#b3aa9f] hover:bg-[#f5eee7]"
-                aria-label="생각 정리 열기"
-              >
-                <ChevronDown size={15} strokeWidth={1.8} />
-              </button>
             )}
           </div>
         )}
@@ -1634,7 +1712,7 @@ function EnvelopeInteraction({ note, onChange }) {
   );
 }
 
-function LogTab({ logItems, customEmotions = [], onAddEmotion, onEditLog, onUpdateLog, onDeleteLog }) {
+function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog }) {
   const [visibleCount, setVisibleCount] = useState(LOG_PAGE_SIZE);
   const [selectedTag, setSelectedTag] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -1788,8 +1866,7 @@ function LogTab({ logItems, customEmotions = [], onAddEmotion, onEditLog, onUpda
                       item={item}
                       showEnvelope
                       showManage
-                      emotionOptions={[...new Set([...baseEmotionOptions, ...customEmotions])]}
-                      onAddEmotion={onAddEmotion}
+                      onAddDetails={onAddDetails}
                       onEdit={onEditLog}
                       onUpdate={onUpdateLog}
                       onDelete={onDeleteLog}
@@ -1988,6 +2065,7 @@ export default function App() {
   const [showWritingExample, setShowWritingExample] = useState(() => storedAppState?.showWritingExample ?? true);
   const [customEmotions, setCustomEmotions] = useState(() => storedAppState?.customEmotions || []);
   const [editTarget, setEditTarget] = useState(null);
+  const [addTarget, setAddTarget] = useState(null);
   const [storageError, setStorageError] = useState("");
   /* 저장 완료 전체 화면 애니메이션을 다시 사용할 때 복원합니다.
   const [saveOverlayVisible, setSaveOverlayVisible] = useState(false);
@@ -2084,6 +2162,7 @@ export default function App() {
           todayLogs={taggedTodayLogs}
           totalLogCount={taggedAllLogs.length}
           onAddLog={addLog}
+          onAddDetails={setAddTarget}
           onEditLog={setEditTarget}
           onDeleteLog={deleteLog}
           showWritingExample={showWritingExample}
@@ -2093,8 +2172,7 @@ export default function App() {
       ) : tab === "log" ? (
         <LogTab
           logItems={taggedAllLogs}
-          customEmotions={customEmotions}
-          onAddEmotion={addCustomEmotion}
+          onAddDetails={setAddTarget}
           onEditLog={setEditTarget}
           onUpdateLog={updateLog}
           onDeleteLog={deleteLog}
@@ -2111,10 +2189,20 @@ export default function App() {
     screen
   );
 
+  const addSheet = addTarget ? (
+    <RecordAddSheet
+      item={addTarget}
+      emotionOptions={[...new Set([...baseEmotionOptions, ...customEmotions])]}
+      onAddEmotion={addCustomEmotion}
+      onClose={() => setAddTarget(null)}
+      onUpdate={updateLog}
+    />
+  ) : null;
+
   return (
     <div className="h-[var(--maeumtuk-vh,100dvh)] overflow-hidden bg-[#f8f6f2] p-0 font-['Pretendard'] text-[#211b16] sm:p-6">
       <div className="mx-auto flex h-full max-w-[1260px] items-stretch justify-center gap-7 sm:items-start">
-        <Phone tab={tab} setTab={setTab} hideNav={Boolean(editTarget)}>
+        <Phone tab={tab} setTab={setTab} hideNav={Boolean(editTarget)} overlay={addSheet}>
           {storageError && !editTarget && (
             <div className="mx-6 mt-3 rounded-[10px] border border-[#f0d4c8] bg-[#fff4ee] px-3 py-2 text-[12px] font-medium leading-5 text-[#a6533c]">
               {storageError}
