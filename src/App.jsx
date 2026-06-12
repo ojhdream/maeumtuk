@@ -363,15 +363,36 @@ function getMomentTitle(item) {
   return firstLine.length > 10 ? `${firstLine.slice(0, 10)}...` : firstLine;
 }
 
-function readImageFile(file, onLoad) {
+function readImageFile(file, onLoad, onError) {
   if (!file || !file.type.startsWith("image/")) return;
 
   const reader = new FileReader();
   reader.onload = () => {
-    if (typeof reader.result === "string") {
-      onLoad(reader.result);
-    }
+    if (typeof reader.result !== "string") return;
+
+    const image = new window.Image();
+    image.onload = () => {
+      const maxSide = 1280;
+      const scale = Math.min(1, maxSide / Math.max(image.naturalWidth, image.naturalHeight));
+      const width = Math.max(1, Math.round(image.naturalWidth * scale));
+      const height = Math.max(1, Math.round(image.naturalHeight * scale));
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext("2d");
+
+      if (!context) {
+        onError?.("사진을 처리하지 못했어요. 다른 사진으로 다시 시도해 주세요.");
+        return;
+      }
+
+      context.drawImage(image, 0, 0, width, height);
+      onLoad(canvas.toDataURL("image/jpeg", 0.78));
+    };
+    image.onerror = () => onError?.("사진을 불러오지 못했어요. 다른 사진으로 다시 시도해 주세요.");
+    image.src = reader.result;
   };
+  reader.onerror = () => onError?.("사진을 읽지 못했어요. 다시 시도해 주세요.");
   reader.readAsDataURL(file);
 }
 
@@ -559,11 +580,11 @@ function useVisibleViewportHeight() {
   }, []);
 }
 
-function Phone({ children, tab, setTab }) {
+function Phone({ children, tab, setTab, hideNav = false }) {
   return (
     <div className="maeumtuk-phone relative h-[var(--maeumtuk-vh,100dvh)] max-h-[var(--maeumtuk-vh,100dvh)] w-full max-w-[430px] overflow-hidden bg-[#f8f6f2] sm:h-[min(820px,calc(var(--maeumtuk-vh,100dvh)-48px))] sm:max-h-[820px] sm:w-[390px] sm:rounded-[26px] sm:shadow-[0_16px_55px_rgba(63,47,30,.08)] sm:ring-1 sm:ring-[#ebe2d8]">
-      <div className="maeumtuk-scroll h-full overflow-y-auto pb-[calc(106px+env(safe-area-inset-bottom))] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">{children}</div>
-      <BottomNav tab={tab} setTab={setTab} />
+      <div className={`maeumtuk-scroll h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${hideNav ? "pb-[env(safe-area-inset-bottom)]" : "pb-[calc(106px+env(safe-area-inset-bottom))]"}`}>{children}</div>
+      {!hideNav && <BottomNav tab={tab} setTab={setTab} />}
       {/* 저장 완료 전체 화면 애니메이션은 추후 재검토를 위해 보존합니다. */}
       {/* {saveOverlayVisible && <SaveOverlay message={saveOverlayMessage} />} */}
     </div>
@@ -593,22 +614,94 @@ function EmptyState({ title, body }) {
   );
 }
 
-function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResponse = false, onUpdate, onDelete }) {
+function RecordEditScreen({ item, onClose, onSave }) {
+  const [text, setText] = useState(item.text || "");
+  const [image, setImage] = useState(item.image || null);
+  const [imageError, setImageError] = useState("");
+  const imageInputRef = useRef(null);
+  const canSave = Boolean(text.trim() || image);
+
+  const save = () => {
+    if (!canSave) return;
+    onSave(item, {
+      text: text.trim() || "사진으로 남긴 툭",
+      image,
+      tags: item.tags || [],
+      mood: item.mood || "남김",
+    });
+  };
+
+  return (
+    <section className="min-h-full bg-[#f8f6f2] px-6 pb-10 pt-6 font-['Pretendard']">
+      <div className="flex h-11 items-center justify-between">
+        <button onClick={onClose} className="grid h-10 w-10 place-items-center rounded-[10px] text-[#655d56] hover:bg-[#eee8e1]" aria-label="수정 취소">
+          <X size={20} strokeWidth={1.8} />
+        </button>
+        <h1 className="text-[17px] font-semibold tracking-[-0.02em] text-[#2b251f]">기록 수정</h1>
+        <button
+          onClick={save}
+          disabled={!canSave}
+          className={`h-9 rounded-[9px] px-3.5 text-[13px] font-semibold ${
+            canSave ? "bg-[#ef875c] text-white" : "bg-[#eee7e0] text-[#b0a69d]"
+          }`}
+        >
+          저장
+        </button>
+      </div>
+
+      <div className="mt-6 border-t border-[#e9dfd5] pt-5">
+        <p className="mb-3 text-[12px] font-medium text-[#938a82]">{item.date} {item.day} · {item.time}</p>
+        <textarea
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+          autoFocus
+          className="min-h-[210px] w-full resize-none bg-transparent font-['Pretendard'] text-[17px] font-normal leading-[30px] tracking-[-0.02em] text-[#29241f] outline-none placeholder:text-[#aaa198]"
+          placeholder="그때의 생각을 다시 적어보세요."
+        />
+      </div>
+
+      <input
+        ref={imageInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(event) => {
+          setImageError("");
+          readImageFile(event.target.files?.[0], setImage, setImageError);
+          event.target.value = "";
+        }}
+      />
+      <div className="mt-4 border-t border-[#e9dfd5] pt-4">
+        {image ? (
+          <div className="flex items-center gap-3">
+            <MiniPhoto bg={image} size="lg" />
+            <div className="flex gap-1.5">
+              <button onClick={() => imageInputRef.current?.click()} className="h-10 rounded-[9px] border border-[#e2d8cd] bg-[#fffdf9] px-3 text-[12px] font-medium text-[#5d554d]">
+                사진 바꾸기
+              </button>
+              <button onClick={() => setImage(null)} className="h-10 rounded-[9px] px-3 text-[12px] font-medium text-[#b65b43]">
+                지우기
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button onClick={() => imageInputRef.current?.click()} className="flex h-10 items-center gap-2 rounded-[9px] text-[13px] font-medium text-[#647856]">
+            <Image size={17} strokeWidth={1.8} />
+            사진 추가
+          </button>
+        )}
+        {imageError && <p className="mt-2 text-[12px] font-medium text-[#bd6649]">{imageError}</p>}
+      </div>
+    </section>
+  );
+}
+
+function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResponse = false, onEdit, onDelete }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [editText, setEditText] = useState(item.text);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const response =
     isLatest || [1, 2, 3, 5, 10, 15].includes(sequence) ? getResponseTukMessage(sequence, { totalCount: totalSequence, isLatest }) : "";
   const dotColor = getFlowDotColor(item, sequence);
-  const saveEdit = () => {
-    const nextText = editText.trim();
-    if (!nextText) return;
-    onUpdate?.(item, { text: nextText, tags: item.tags || [] });
-    setEditing(false);
-    setMenuOpen(false);
-  };
-
   return (
     <article
       className={`relative rounded-[12px] border border-[#eee5dc] bg-[#fffdf9] px-3.5 py-3 shadow-[0_2px_8px_rgba(54,42,30,.025)] ${
@@ -629,8 +722,7 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResp
         <div className="absolute right-2 top-10 z-20 w-[104px] rounded-[10px] border border-[#eee6dc] bg-[#fffdf9] p-1.5 text-[13px] shadow-[0_10px_24px_rgba(54,42,30,.08)]">
           <button
             onClick={() => {
-              setEditText(item.text);
-              setEditing(true);
+              onEdit?.(item);
               setMenuOpen(false);
             }}
             className="block w-full rounded-[8px] px-3 py-2 text-left text-[#4b443d] hover:bg-[#f5eee7]"
@@ -653,27 +745,9 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResp
         {item.time}
       </time>
       <div className="pl-4">
-        {editing ? (
-          <div className="rounded-[10px] border border-[#eadfd4] bg-[#fffdf9] p-3">
-            <textarea
-              value={editText}
-              onChange={(event) => setEditText(event.target.value)}
-              className="h-[92px] w-full resize-none bg-transparent font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f] outline-none"
-            />
-            <div className="mt-2 flex justify-end gap-2">
-              <button onClick={() => setEditing(false)} className="h-9 rounded-[8px] px-3 text-[12px] font-medium text-[#746d65]">
-                취소
-              </button>
-              <button onClick={saveEdit} className="h-9 rounded-[8px] bg-[#5f7f46] px-3 text-[12px] font-semibold text-white">
-                저장
-              </button>
-            </div>
-          </div>
-        ) : (
-          <p className="whitespace-pre-line font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f]">
-            {item.text}
-          </p>
-        )}
+        <p className="whitespace-pre-line font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f]">
+          {item.text}
+        </p>
         {item.image && (
           <div className="mt-3">
             <MiniPhoto bg={item.image} size="md" />
@@ -698,9 +772,10 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResp
   );
 }
 
-function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, showWritingExample, onHideWritingExample }) {
+function NowTab({ todayLogs, totalLogCount, onAddLog, onEditLog, onDeleteLog, showWritingExample, onHideWritingExample }) {
   const [draft, setDraft] = useState("");
   const [photoData, setPhotoData] = useState(null);
+  const [photoError, setPhotoError] = useState("");
   const [lengthNotice, setLengthNotice] = useState(false);
   const [typingResponseId, setTypingResponseId] = useState(null);
   const [saveNotice, setSaveNotice] = useState(null);
@@ -821,7 +896,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
                   totalSequence={Math.max(totalLogCount - index, 0)}
                   isLatest={index === 0}
                   typeResponse={item.id === typingResponseId}
-                  onUpdate={onUpdateLog}
+                  onEdit={onEditLog}
                   onDelete={onDeleteLog}
                 />
               ))}
@@ -865,7 +940,8 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
               accept="image/*"
               className="hidden"
               onChange={(event) => {
-                readImageFile(event.target.files?.[0], setPhotoData);
+                setPhotoError("");
+                readImageFile(event.target.files?.[0], setPhotoData, setPhotoError);
                 event.target.value = "";
                 setComposerOpen(true);
               }}
@@ -975,6 +1051,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onUpdateLog, onDeleteLog, 
           {lengthNotice && (
             <p className="mt-2 px-1 text-[12px] font-medium text-[#c46b49]">조금 길어요. 툭은 300자 안쪽이 잘 읽혀요.</p>
           )}
+          {photoError && <p className="mt-2 px-1 text-[12px] font-medium text-[#c46b49]">{photoError}</p>}
         </div>
       </section>
       </div>
@@ -1080,6 +1157,7 @@ function RecentCard({
   showManage = false,
   emotionOptions = baseEmotionOptions,
   onAddEmotion,
+  onEdit,
   onUpdate,
   onDelete,
 }) {
@@ -1149,9 +1227,7 @@ function RecentCard({
         <div className="absolute right-3 top-11 z-20 w-[124px] rounded-[10px] border border-[#eee6dc] bg-[#fffdf9] p-1.5 text-[13px] shadow-[0_10px_24px_rgba(54,42,30,.08)]">
           <button
             onClick={() => {
-              setEditText(item.text);
-              setEditImage(item.image);
-              setEditing(true);
+              onEdit?.(item);
               setTagEditing(false);
               setMenuOpen(false);
               setConfirmDelete(false);
@@ -1558,7 +1634,7 @@ function EnvelopeInteraction({ note, onChange }) {
   );
 }
 
-function LogTab({ logItems, customEmotions = [], onAddEmotion, onUpdateLog, onDeleteLog }) {
+function LogTab({ logItems, customEmotions = [], onAddEmotion, onEditLog, onUpdateLog, onDeleteLog }) {
   const [visibleCount, setVisibleCount] = useState(LOG_PAGE_SIZE);
   const [selectedTag, setSelectedTag] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -1714,6 +1790,7 @@ function LogTab({ logItems, customEmotions = [], onAddEmotion, onUpdateLog, onDe
                       showManage
                       emotionOptions={[...new Set([...baseEmotionOptions, ...customEmotions])]}
                       onAddEmotion={onAddEmotion}
+                      onEdit={onEditLog}
                       onUpdate={onUpdateLog}
                       onDelete={onDeleteLog}
                     />
@@ -1910,6 +1987,8 @@ export default function App() {
   const [allLogs, setAllLogs] = useState(() => storedAppState?.allLogs || [...initialTodayLogItems, ...initialLogItems]);
   const [showWritingExample, setShowWritingExample] = useState(() => storedAppState?.showWritingExample ?? true);
   const [customEmotions, setCustomEmotions] = useState(() => storedAppState?.customEmotions || []);
+  const [editTarget, setEditTarget] = useState(null);
+  const [storageError, setStorageError] = useState("");
   /* 저장 완료 전체 화면 애니메이션을 다시 사용할 때 복원합니다.
   const [saveOverlayVisible, setSaveOverlayVisible] = useState(false);
   const [saveOverlayMessage, setSaveOverlayMessage] = useState(getResponseTukMessage(0));
@@ -1924,14 +2003,22 @@ export default function App() {
   }, [tab]);
 
   useEffect(() => {
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        allLogs,
-        showWritingExample,
-        customEmotions,
-      }),
-    );
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          allLogs,
+          showWritingExample,
+          customEmotions,
+        }),
+      );
+      window.setTimeout(() => setStorageError(""), 0);
+    } catch {
+      window.setTimeout(
+        () => setStorageError("저장 공간이 부족해 사진을 보관하지 못했어요. 기존 사진을 줄이거나 삭제해 주세요."),
+        0,
+      );
+    }
   }, [allLogs, showWritingExample, customEmotions]);
 
   /*
@@ -1968,6 +2055,11 @@ export default function App() {
     setAllLogs((current) => current.map(applyUpdate));
   };
 
+  const saveEditedLog = (target, changes) => {
+    updateLog(target, changes);
+    setEditTarget(null);
+  };
+
   const deleteLog = (target) => {
     const targetKey = getLogKey(target);
     const keepOtherLogs = (log) => getLogKey(log) !== targetKey;
@@ -1992,7 +2084,7 @@ export default function App() {
           todayLogs={taggedTodayLogs}
           totalLogCount={taggedAllLogs.length}
           onAddLog={addLog}
-          onUpdateLog={updateLog}
+          onEditLog={setEditTarget}
           onDeleteLog={deleteLog}
           showWritingExample={showWritingExample}
           onHideWritingExample={() => setShowWritingExample(false)}
@@ -2003,6 +2095,7 @@ export default function App() {
           logItems={taggedAllLogs}
           customEmotions={customEmotions}
           onAddEmotion={addCustomEmotion}
+          onEditLog={setEditTarget}
           onUpdateLog={updateLog}
           onDeleteLog={deleteLog}
         />
@@ -2012,10 +2105,23 @@ export default function App() {
     [tab, taggedTodayLogs, taggedAllLogs, showWritingExample, customEmotions],
   );
 
+  const activeScreen = editTarget ? (
+    <RecordEditScreen item={editTarget} onClose={() => setEditTarget(null)} onSave={saveEditedLog} />
+  ) : (
+    screen
+  );
+
   return (
     <div className="h-[var(--maeumtuk-vh,100dvh)] overflow-hidden bg-[#f8f6f2] p-0 font-['Pretendard'] text-[#211b16] sm:p-6">
       <div className="mx-auto flex h-full max-w-[1260px] items-stretch justify-center gap-7 sm:items-start">
-        <Phone tab={tab} setTab={setTab}>{screen}</Phone>
+        <Phone tab={tab} setTab={setTab} hideNav={Boolean(editTarget)}>
+          {storageError && !editTarget && (
+            <div className="mx-6 mt-3 rounded-[10px] border border-[#f0d4c8] bg-[#fff4ee] px-3 py-2 text-[12px] font-medium leading-5 text-[#a6533c]">
+              {storageError}
+            </div>
+          )}
+          {activeScreen}
+        </Phone>
         <div className="hidden max-w-[520px] rounded-[18px] bg-[#fffdf9]/78 p-7 text-sm leading-7 text-[#4b443d] shadow-[0_7px_18px_rgba(54,42,30,.035)] ring-1 ring-[#eee7de] lg:block">
           <h2 className="mb-4 font-['Pretendard'] text-lg font-semibold tracking-[-0.02em] text-[#2d2119]">마음툭 UI 메모</h2>
           <p>
