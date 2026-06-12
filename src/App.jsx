@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   Check,
+  BookOpen,
   ChevronDown,
   ChevronUp,
   FileText,
@@ -1774,6 +1775,7 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
   const [pendingMonth, setPendingMonth] = useState("");
+  const [monthPickerOpen, setMonthPickerOpen] = useState(false);
   const searchInputRef = useRef(null);
   const monthSectionRefs = useRef(new Map());
   const hasLogs = logItems.length > 0;
@@ -1805,10 +1807,13 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
   const hasMoreLogs = visibleCount < filteredLogs.length;
   const monthOptions = filteredLogs.reduce((months, item) => {
     const month = getLogMonthMeta(item);
-    if (!months.some((entry) => entry.key === month.key)) months.push(month);
+    const existing = months.find((entry) => entry.key === month.key);
+    if (existing) existing.count += 1;
+    else months.push({ ...month, count: 1 });
     return months;
   }, []);
   const activeMonth = monthOptions.some((month) => month.key === selectedMonth) ? selectedMonth : monthOptions[0]?.key || "";
+  const activeMonthLabel = monthOptions.find((month) => month.key === activeMonth)?.label || "기록 월 선택";
   // const resultLabel = selectedTag ? `${selectedTag}와 함께한 순간 ${filteredLogs.length}개` : `전체 툭 ${filteredLogs.length}개`;
   const groupedLogs = visibleLogs.reduce((groups, item) => {
     const key = `${item.date}-${item.day}`;
@@ -1837,6 +1842,7 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
 
   const moveToMonth = (monthKey) => {
     setSelectedMonth(monthKey);
+    setMonthPickerOpen(false);
     const targetIndex = filteredLogs.findIndex((item) => getLogMonthMeta(item).key === monthKey);
     if (targetIndex < 0) return;
 
@@ -1864,6 +1870,23 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
 
     return () => window.cancelAnimationFrame(frame);
   }, [pendingMonth, visibleCount]);
+
+  useEffect(() => {
+    if (!monthPickerOpen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    const closeWithEscape = (event) => {
+      if (event.key === "Escape") setMonthPickerOpen(false);
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", closeWithEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeWithEscape);
+    };
+  }, [monthPickerOpen]);
 
   return (
     <>
@@ -1913,21 +1936,17 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
           </section>
         )}
         {monthOptions.length > 0 && (
-          <div className="mb-5 flex items-center justify-between border-y border-[#eee6dc] py-2.5">
-            <span className="text-[12px] font-medium text-[#9a9188]">월별로 건너가기</span>
-            <label className="relative inline-flex items-center">
-              <select
-                value={activeMonth}
-                onChange={(event) => moveToMonth(event.target.value)}
-                className="h-9 appearance-none rounded-[9px] bg-transparent py-0 pl-3 pr-8 font-['Pretendard'] text-[13px] font-semibold text-[#4d453e] outline-none hover:bg-[#f4eee8]"
-                aria-label="툭로그 연월 선택"
-              >
-                {monthOptions.map((month) => (
-                  <option key={month.key} value={month.key}>{month.label}</option>
-                ))}
-              </select>
-              <ChevronDown size={14} strokeWidth={1.8} className="pointer-events-none absolute right-2.5 text-[#8e857c]" />
-            </label>
+          <div className="mb-5 border-y border-[#eee6dc] py-2.5">
+            <button
+              type="button"
+              onClick={() => setMonthPickerOpen(true)}
+              className="inline-flex h-10 items-center gap-2 rounded-[9px] bg-[#fffaf5] px-3 text-[#4d453e] ring-1 ring-[#e9dfd5] transition hover:bg-[#f7f1eb]"
+              aria-label="기록 월 펼치기"
+            >
+              <span className="text-[15px]" aria-hidden="true">📖</span>
+              <span className="font-['Pretendard'] text-[13px] font-semibold tracking-[-0.01em]">{activeMonthLabel}</span>
+              <ChevronDown size={14} strokeWidth={1.8} className="text-[#8e857c]" />
+            </button>
           </div>
         )}
         {/* Tuklog tag filter chips are paused while auto tags are disabled. */}
@@ -2026,6 +2045,55 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
           <EmptyState title="아직 남긴 툭이 없어요." body="문득 떠오른 말이나 장면을 지금 탭에서 짧게 남겨보세요." />
         )}
       </main>
+      {monthPickerOpen && createPortal(
+        <div
+          className="fixed inset-0 z-[9998] flex items-end justify-center bg-[#2b241f]/34 backdrop-blur-[1px]"
+          onClick={() => setMonthPickerOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="월별 기록 펼치기"
+        >
+          <section
+            className="w-full max-w-[430px] rounded-t-[20px] bg-[#fffdf9] px-5 pb-[calc(24px+env(safe-area-inset-bottom))] pt-3 shadow-[0_-18px_44px_rgba(44,34,26,.16)]"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mx-auto mb-4 h-1 w-9 rounded-full bg-[#d8d0c8]" />
+            <div className="mb-4 flex items-center gap-3 px-1">
+              <span className="grid h-10 w-10 place-items-center rounded-full bg-[#f2eee7] text-[#6e7762]">
+                <BookOpen size={19} strokeWidth={1.7} />
+              </span>
+              <div>
+                <h2 className="font-['Pretendard'] text-[17px] font-semibold tracking-[-0.02em] text-[#2b251f]">기록이 있는 달</h2>
+                <p className="mt-0.5 text-[12px] font-medium text-[#91887f]">펼쳐볼 달을 골라보세요.</p>
+              </div>
+            </div>
+            <div className="max-h-[min(52vh,420px)] overflow-y-auto rounded-[12px] border border-[#eee5dc] bg-[#fffaf6] p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {monthOptions.map((month) => {
+                const selected = month.key === activeMonth;
+                return (
+                  <button
+                    key={month.key}
+                    type="button"
+                    onClick={() => moveToMonth(month.key)}
+                    className={`flex min-h-12 w-full items-center justify-between rounded-[9px] px-3.5 py-2.5 text-left transition ${
+                      selected ? "bg-[#eef3e9]" : "hover:bg-[#f5efe9]"
+                    }`}
+                  >
+                    <span className={`text-[14px] font-semibold ${selected ? "text-[#526d45]" : "text-[#443d36]"}`}>{month.label}</span>
+                    <span className="flex items-center gap-2">
+                      <span className="text-[11px] font-medium text-[#9a9188]">{month.count}툭</span>
+                      <span className={`grid h-6 w-6 place-items-center ${selected ? "text-[#688355]" : "text-transparent"}`}>
+                        <Check size={15} strokeWidth={2} />
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        </div>,
+        document.body,
+      )}
     </>
   );
 }
