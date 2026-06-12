@@ -918,11 +918,10 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResp
           setMenuOpen(false);
           onAddDetails?.(item);
         }}
-        className="absolute right-10 top-1.5 inline-flex h-8 items-center gap-1 rounded-[9px] px-2 text-[#718261] hover:bg-[#f1f5ec]"
+        className="absolute right-10 top-1.5 grid h-8 w-8 place-items-center rounded-[9px] text-[#718261] hover:bg-[#f1f5ec]"
         aria-label="이 기록에 마음이나 생각 더하기"
       >
-        <Sprout size={14} strokeWidth={1.9} />
-        <span className="text-[11px] font-semibold">더하기</span>
+        <Plus size={17} strokeWidth={1.8} />
       </button>
       <button
         onClick={() => {
@@ -1424,11 +1423,10 @@ function RecentCard({
             setMenuOpen(false);
             onAddDetails?.(item);
           }}
-          className="absolute right-10 top-1.5 z-10 inline-flex h-8 items-center gap-1 rounded-[9px] px-2 text-[#718261] hover:bg-[#f1f5ec]"
+          className="absolute right-10 top-1.5 z-10 grid h-8 w-8 place-items-center rounded-[9px] text-[#718261] hover:bg-[#f1f5ec]"
           aria-label="이 기록에 마음이나 생각 더하기"
         >
-          <Sprout size={14} strokeWidth={1.9} />
-          <span className="text-[11px] font-semibold">더하기</span>
+          <Plus size={17} strokeWidth={1.8} />
         </button>
       )}
       {showManage && (
