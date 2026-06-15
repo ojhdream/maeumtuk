@@ -545,19 +545,24 @@ function ResponseTuk({ children, typing = false }) {
   );
 }
 
-function SaveOverlay({ message }) {
+function SaveOverlay({ message, showSubtext = false, onDismiss }) {
   return (
-    <div className="maeumtuk-save-screen pointer-events-none absolute inset-0 z-50 grid place-items-center bg-[#fffaf4]">
+    <button
+      type="button"
+      onClick={onDismiss}
+      className="maeumtuk-save-screen absolute inset-0 z-50 grid w-full place-items-center bg-[rgba(250,248,245,.94)] px-8 text-center backdrop-blur-[2px]"
+      aria-label="기록 완료 화면 닫기"
+    >
       <div className="maeumtuk-save-pop flex flex-col items-center">
-        <div className="maeumtuk-save-symbol mb-5 flex w-[92px] items-center" aria-hidden="true">
+        <div className="maeumtuk-save-symbol mb-5 flex w-[78px] items-center" aria-hidden="true">
           <span className="h-px flex-1 bg-[#b9aa9c]" />
-          <span className="h-4 w-4 rounded-full bg-[#e4bd46]" />
+          <span className="h-3 w-3 rounded-full bg-[#e4bd46]" />
           <span className="h-px flex-1 bg-[#b9aa9c]" />
         </div>
-        <p className="maeumtuk-save-title font-['Pretendard'] text-[22px] font-semibold tracking-[-0.02em] text-[#241d18]">{message}</p>
-        <p className="maeumtuk-save-sub mt-3 text-[15px] font-medium tracking-[-0.02em] text-[#746d65]">마음이 여기 머물러요.</p>
+        <p className="maeumtuk-save-title font-['Pretendard'] text-[21px] font-semibold tracking-[-0.02em] text-[#2c251f]">{message}</p>
+        {showSubtext && <p className="maeumtuk-save-sub mt-3 text-[14px] font-medium tracking-[-0.02em] text-[#817970]">작은 마음 하나가 놓였어요.</p>}
       </div>
-    </div>
+    </button>
   );
 }
 
@@ -885,17 +890,17 @@ function RecordAddSheet({ item, emotionOptions, onAddEmotion, onClose, onUpdate 
   );
 }
 
-function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResponse = false, onAddDetails, onEdit, onDelete }) {
+function NowFlowItem({ item, sequence, isLatest = false, onAddDetails, onEdit, onDelete }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const response =
-    isLatest || [1, 2, 3, 5, 10, 15].includes(sequence) ? getResponseTukMessage(sequence, { totalCount: totalSequence, isLatest }) : "";
   const dotColor = getFlowDotColor(item, sequence);
   const hasEmotion = Boolean(item.mood && item.mood !== "남김");
   const hasNote = Boolean(item.note);
   return (
     <article
       className={`relative rounded-[12px] border border-[#eee5dc] bg-[#fffdf9] px-3.5 py-3 shadow-[0_2px_8px_rgba(54,42,30,.025)] ${
+        menuOpen ? "z-30" : ""
+      } ${
         isLatest ? "maeumtuk-now-settle" : ""
       }`}
     >
@@ -982,25 +987,21 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResp
             </div>
           </div>
         )}
-        {response && <ResponseTuk typing={typeResponse}>{response}</ResponseTuk>}
       </div>
     </article>
   );
 }
 
-function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, onDeleteLog, onHideWritingExample }) {
+function NowTab({ todayLogs, onAddLog, onAddDetails, onEditLog, onDeleteLog, onHideWritingExample, onShowSaved }) {
   const composerGuide = "한 줄이어도 괜찮아요.\n떠오르는 대로 그냥 툭.";
   const [draft, setDraft] = useState("");
   const [photoData, setPhotoData] = useState(null);
   const [photoError, setPhotoError] = useState("");
   const [lengthNotice, setLengthNotice] = useState(false);
-  const [typingResponseId, setTypingResponseId] = useState(null);
-  const [saveNotice, setSaveNotice] = useState(null);
   const [isLeaving, setIsLeaving] = useState(false);
   const [typedGuide, setTypedGuide] = useState("");
   const draftRef = useRef(null);
   const photoInputRef = useRef(null);
-  const saveNoticeTimerRef = useRef(null);
   const currentMeta = getCurrentLogMeta();
   const todayCount = todayLogs.length;
   const canLeaveTuk = Boolean(draft.trim() || photoData);
@@ -1041,12 +1042,6 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
     };
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (saveNoticeTimerRef.current) window.clearTimeout(saveNoticeTimerRef.current);
-    };
-  }, []);
-
   const leaveTuk = () => {
     if (isLeaving) return;
     const text = draft.trim();
@@ -1075,17 +1070,10 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
     onHideWritingExample?.();
     window.setTimeout(() => {
       onAddLog(nextLog);
-      setTypingResponseId(nextLog.id);
-      if (saveNoticeTimerRef.current) window.clearTimeout(saveNoticeTimerRef.current);
-      setSaveNotice({ showSubtext: todayCount === 0 });
-      saveNoticeTimerRef.current = window.setTimeout(() => {
-        setSaveNotice(null);
-        saveNoticeTimerRef.current = null;
-      }, 1450);
+      onShowSaved?.(todayCount + 1);
       setDraft("");
       setPhotoData(null);
       setIsLeaving(false);
-      draftRef.current?.focus();
     }, 260);
   };
 
@@ -1161,7 +1149,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
             <span className="text-[12px] font-medium text-[#91887f]">사진이 함께 남겨져요.</span>
           </div>
         )}
-        <div className="mt-3 flex items-center justify-between pt-1">
+        <div className="mt-3 flex items-center justify-between border-t border-[rgba(142,132,111,0.12)] pt-2.5">
           <button
             type="button"
             onClick={() => photoInputRef.current?.click()}
@@ -1187,13 +1175,6 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
         </p>
       )}
 
-      {saveNotice && (
-        <div className="maeumtuk-save-toast pointer-events-none absolute left-1/2 top-[250px] z-20 w-max max-w-[calc(100%-56px)] -translate-x-1/2 rounded-[10px] border border-[#eadfd4] bg-[#fffdf9] px-4 py-2.5 text-center shadow-[0_7px_20px_rgba(54,42,30,.08)]">
-          <p className="text-[14px] font-semibold tracking-[-0.02em] text-[#514940]">툭, 남겨졌어요.</p>
-          {saveNotice.showSubtext && <p className="mt-0.5 text-[12px] font-medium text-[#8a8178]">마음이 여기 머물러요.</p>}
-        </div>
-      )}
-
       <section className="mt-5">
         {todayLogs.length > 0 ? (
           <div className="space-y-2.5">
@@ -1202,9 +1183,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
                 key={item.id || `${item.date}-${item.time}`}
                 item={item}
                 sequence={todayLogs.length - index}
-                totalSequence={Math.max(totalLogCount - index, 0)}
                 isLatest={index === 0}
-                typeResponse={item.id === typingResponseId}
                 onAddDetails={onAddDetails}
                 onEdit={onEditLog}
                 onDelete={onDeleteLog}
@@ -2196,11 +2175,10 @@ export default function App() {
   const [editTarget, setEditTarget] = useState(null);
   const [addTarget, setAddTarget] = useState(null);
   const [storageError, setStorageError] = useState("");
-  /* 저장 완료 전체 화면 애니메이션을 다시 사용할 때 복원합니다.
   const [saveOverlayVisible, setSaveOverlayVisible] = useState(false);
-  const [saveOverlayMessage, setSaveOverlayMessage] = useState(getResponseTukMessage(0));
+  const [saveOverlayMessage, setSaveOverlayMessage] = useState("툭, 남겨졌어요.");
+  const [saveOverlaySubtext, setSaveOverlaySubtext] = useState(false);
   const saveTimerRef = useRef(null);
-  */
   const todayLogs = allLogs.filter(isCurrentOperationalLog);
 
   useEffect(() => {
@@ -2228,7 +2206,6 @@ export default function App() {
     }
   }, [allLogs, showWritingExample, customEmotions]);
 
-  /*
   useEffect(() => {
     return () => {
       if (saveTimerRef.current) {
@@ -2242,14 +2219,20 @@ export default function App() {
       window.clearTimeout(saveTimerRef.current);
     }
 
-    setSaveOverlayMessage("툭, 남겨졌어요.");
+    setSaveOverlayMessage(nextTodayCount === 1 ? "첫 툭이 남겨졌어요." : "툭, 남겨졌어요.");
+    setSaveOverlaySubtext(nextTodayCount === 1);
     setSaveOverlayVisible(true);
     saveTimerRef.current = window.setTimeout(() => {
       setSaveOverlayVisible(false);
       saveTimerRef.current = null;
-    }, nextTodayCount === 1 ? 3100 : 2800);
+    }, 2100);
   };
-  */
+
+  const dismissSaveOverlay = () => {
+    if (saveTimerRef.current) window.clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = null;
+    setSaveOverlayVisible(false);
+  };
 
   const addLog = (log) => {
     setAllLogs((current) => [log, ...current]);
@@ -2296,7 +2279,7 @@ export default function App() {
           onDeleteLog={deleteLog}
           showWritingExample={showWritingExample}
           onHideWritingExample={() => setShowWritingExample(false)}
-          /* onShowSaved={showSaveOverlay} */
+          onShowSaved={showSaveOverlay}
         />
       ) : tab === "log" ? (
         <LogTab
@@ -2331,7 +2314,17 @@ export default function App() {
   return (
     <div className="h-[var(--maeumtuk-vh,100dvh)] overflow-hidden bg-[#faf8f5] p-0 font-['Pretendard'] text-[#211b16] sm:p-6">
       <div className="mx-auto flex h-full max-w-[1260px] items-stretch justify-center gap-7 sm:items-start">
-        <Phone tab={tab} setTab={setTab} hideNav={Boolean(editTarget)} overlay={addSheet}>
+        <Phone
+          tab={tab}
+          setTab={setTab}
+          hideNav={Boolean(editTarget)}
+          overlay={
+            addSheet ||
+            (saveOverlayVisible ? (
+              <SaveOverlay message={saveOverlayMessage} showSubtext={saveOverlaySubtext} onDismiss={dismissSaveOverlay} />
+            ) : null)
+          }
+        >
           {storageError && !editTarget && (
             <div className="mx-6 mt-3 rounded-[10px] border border-[#f0d4c8] bg-[#fff4ee] px-3 py-2 text-[12px] font-medium leading-5 text-[#a6533c]">
               {storageError}

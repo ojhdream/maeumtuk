@@ -56,8 +56,30 @@ button,
   background-attachment: fixed;
 }
 
+.maeumtuk-phone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    112deg,
+    rgba(93, 76, 61, 0.016) 0,
+    rgba(93, 76, 61, 0.016) 0.6px,
+    transparent 0.6px,
+    transparent 4px
+  );
+  opacity: 0.55;
+}
+
 .maeumtuk-scroll {
+  position: relative;
+  z-index: 1;
   background: transparent;
+}
+
+.maeumtuk-bottom-nav {
+  z-index: 20;
 }
 
 .input-card-container {
@@ -104,36 +126,6 @@ button,
   transform: scale(0.98);
 }
 
-.maeumtuk-response-caret {
-  animation: maeumtuk-response-caret 0.75s steps(1, end) infinite;
-}
-
-.maeumtuk-save-toast {
-  animation: maeumtuk-save-toast 1.45s ease both;
-}
-
-@keyframes maeumtuk-response-caret {
-  50% {
-    opacity: 0;
-  }
-}
-
-@keyframes maeumtuk-save-toast {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, 6px);
-  }
-  14%,
-  72% {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -3px);
-  }
-}
-
 .maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-bottom-nav {
   opacity: 0;
   pointer-events: none;
@@ -145,23 +137,23 @@ button,
 }
 
 .maeumtuk-save-screen {
-  animation: maeumtuk-save-screen 2.8s ease both;
+  animation: maeumtuk-save-screen 2.1s ease both;
 }
 
 .maeumtuk-save-pop {
-  animation: maeumtuk-save-pop 2.8s ease both;
+  animation: maeumtuk-save-pop 2.1s ease both;
 }
 
 .maeumtuk-save-symbol {
-  animation: maeumtuk-save-symbol 2.8s ease both;
+  animation: maeumtuk-save-symbol 2.1s ease both;
 }
 
 .maeumtuk-save-title {
-  animation: maeumtuk-save-title 2.8s ease both;
+  animation: maeumtuk-save-title 2.1s ease both;
 }
 
 .maeumtuk-save-sub {
-  animation: maeumtuk-save-sub 2.8s ease both;
+  animation: maeumtuk-save-sub 2.1s ease both;
 }
 
 .maeumtuk-log-card {
