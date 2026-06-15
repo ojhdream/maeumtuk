@@ -60,6 +60,50 @@ button,
   background: transparent;
 }
 
+.input-card-container {
+  background-color: #fffdf9;
+  border: 1px solid rgba(142, 132, 111, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(142, 132, 111, 0.07);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.input-card-container:focus-within {
+  border-color: #9c8f80;
+  box-shadow: 0 14px 35px rgba(142, 132, 111, 0.12);
+}
+
+.input-card-container:focus-within .composer-guide {
+  opacity: 0;
+}
+
+.tuk-button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tuk-button:disabled {
+  background-color: #efece7;
+  color: #a39a90;
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.42;
+}
+
+.tuk-button:not(:disabled) {
+  background-color: #df896a;
+  color: #fffdf9;
+  box-shadow: 0 5px 14px rgba(171, 101, 73, 0.18);
+  opacity: 1;
+}
+
+.tuk-button:not(:disabled):active {
+  transform: scale(0.98);
+}
+
 .maeumtuk-response-caret {
   animation: maeumtuk-response-caret 0.75s steps(1, end) infinite;
 }

@@ -989,6 +989,7 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResp
 }
 
 function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, onDeleteLog, onHideWritingExample }) {
+  const composerGuide = "한 줄이어도 괜찮아요.\n떠오르는 대로 그냥 툭.";
   const [draft, setDraft] = useState("");
   const [photoData, setPhotoData] = useState(null);
   const [photoError, setPhotoError] = useState("");
@@ -996,12 +997,49 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
   const [typingResponseId, setTypingResponseId] = useState(null);
   const [saveNotice, setSaveNotice] = useState(null);
   const [isLeaving, setIsLeaving] = useState(false);
+  const [typedGuide, setTypedGuide] = useState("");
   const draftRef = useRef(null);
   const photoInputRef = useRef(null);
   const saveNoticeTimerRef = useRef(null);
   const currentMeta = getCurrentLogMeta();
   const todayCount = todayLogs.length;
   const canLeaveTuk = Boolean(draft.trim() || photoData);
+
+  useEffect(() => {
+    const storageKey = "maeumtuk-composer-guide-seen";
+    let timer;
+    let cancelled = false;
+    let hasPlayed = false;
+
+    try {
+      hasPlayed = window.sessionStorage.getItem(storageKey) === "1";
+      if (!hasPlayed) window.sessionStorage.setItem(storageKey, "1");
+    } catch {
+      hasPlayed = false;
+    }
+
+    if (hasPlayed) {
+      setTypedGuide(composerGuide);
+      return undefined;
+    }
+
+    let index = 0;
+    const typeNextCharacter = () => {
+      if (cancelled) return;
+      index += 1;
+      setTypedGuide(composerGuide.slice(0, index));
+      if (index >= composerGuide.length) return;
+
+      const justTypedFirstSentence = composerGuide.slice(0, index).endsWith("괜찮아요.");
+      timer = window.setTimeout(typeNextCharacter, justTypedFirstSentence ? 300 : 120);
+    };
+
+    timer = window.setTimeout(typeNextCharacter, 180);
+    return () => {
+      cancelled = true;
+      if (timer) window.clearTimeout(timer);
+    };
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -1072,7 +1110,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
       </header>
 
       <section
-        className={`relative rounded-[18px] bg-[#fffdfb] px-4 pb-3 pt-3.5 shadow-[0_8px_30px_rgba(142,132,111,.06)] transition duration-300 focus-within:shadow-[0_10px_34px_rgba(142,132,111,.09)] ${
+        className={`input-card-container relative px-5 pb-3.5 pt-4 ${
           isLeaving ? "translate-y-0.5 opacity-55" : ""
         }`}
       >
@@ -1094,10 +1132,19 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
             setDraft(event.target.value);
             if (lengthNotice) setLengthNotice(false);
           }}
-          className="maeumtuk-draft-input min-h-[92px] max-h-[164px] w-full resize-none overflow-y-auto bg-transparent px-0.5 py-0 text-[17px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f] outline-none placeholder:text-[#aaa198] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          placeholder={"한 줄이어도 괜찮아요.\n떠오르는 대로 그냥 툭."}
+          className="maeumtuk-draft-input relative z-[1] min-h-[92px] max-h-[164px] w-full resize-none overflow-y-auto bg-transparent px-0.5 py-0 text-[17px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f] outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          placeholder=""
+          aria-label={composerGuide.replace("\n", " ")}
           maxLength={301}
         />
+        {!draft && (
+          <p
+            aria-hidden="true"
+            className="composer-guide pointer-events-none absolute left-[22px] right-[22px] top-4 whitespace-pre-line text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#a79d94] opacity-100 transition-opacity duration-200"
+          >
+            {typedGuide}
+          </p>
+        )}
         {photoData && (
           <div className="mt-2 flex items-center gap-3">
             <div className="relative">
@@ -1127,11 +1174,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
             type="button"
             onClick={leaveTuk}
             disabled={isLeaving || !canLeaveTuk}
-            className={`h-9 min-w-[58px] rounded-[10px] px-4 text-[14px] font-semibold transition-all duration-300 ${
-              canLeaveTuk
-                ? "bg-[#ef875c] text-white shadow-[0_5px_13px_rgba(213,105,68,.16)] active:scale-[0.98]"
-                : "bg-[#f1e8e1] text-[#ad9c90] opacity-40"
-            }`}
+            className="tuk-button h-9 min-w-[58px] rounded-[10px] px-4 text-[14px] font-semibold"
           >
             툭
           </button>
