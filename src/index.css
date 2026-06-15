@@ -43,6 +43,22 @@ button,
   font-family: "Pretendard", system-ui, sans-serif !important;
 }
 
+.maeumtuk-phone {
+  background-color: #faf8f5;
+  background-image: linear-gradient(
+    180deg,
+    #faf8f5 0%,
+    #f9f7f3 38%,
+    #f6f2ed 70%,
+    #f1ede8 100%
+  );
+  background-attachment: fixed;
+}
+
+.maeumtuk-scroll {
+  background: transparent;
+}
+
 .maeumtuk-response-caret {
   animation: maeumtuk-response-caret 0.75s steps(1, end) infinite;
 }
