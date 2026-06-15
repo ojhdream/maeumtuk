@@ -1779,19 +1779,16 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
 
   return (
     <>
-      <main className="px-5 pt-6">
-        <div className="mb-4 flex min-h-[48px] items-center justify-between gap-3">
-          <div>
-            <h1 className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">툭로그</h1>
-            <p className="mt-1 text-[13px] font-medium text-[#938a82]">마음을 지나간 순간들</p>
-          </div>
+      <main className="px-5 pt-4">
+        <div className="mb-3 flex min-h-10 items-center justify-between gap-3">
+          <h1 className="font-['Pretendard'] text-[21px] font-semibold tracking-[-0.025em] text-[#2b251f]">툭로그</h1>
           <button
             onClick={() => {
               if (searchOpen) setSearchQuery("");
               setSearchOpen((open) => !open);
             }}
-            className={`grid h-10 w-10 shrink-0 place-items-center rounded-[10px] border transition ${
-              searchOpen ? "border-[#d9cbbd] bg-[#f4eee8] text-[#514940]" : "border-[#e8dfd5] bg-[#fffdf9] text-[#766f68] hover:bg-[#f8f4ef]"
+            className={`grid h-9 w-9 shrink-0 place-items-center rounded-[9px] transition ${
+              searchOpen ? "bg-[#f1ebe5] text-[#514940]" : "text-[#766f68] hover:bg-[#f3eee8]"
             }`}
             aria-label={searchOpen ? "검색 닫기" : "툭로그 검색"}
           >
@@ -1824,16 +1821,16 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
           </section>
         )}
         {monthOptions.length > 0 && (
-          <div className="mb-5 border-y border-[#eee6dc] py-2.5">
+          <div className="-mr-5 mb-4 flex justify-end">
             <button
               type="button"
               onClick={() => setMonthPickerOpen(true)}
-              className="inline-flex h-10 items-center gap-2 rounded-[9px] bg-[#fffaf5] px-3 text-[#4d453e] ring-1 ring-[#e9dfd5] transition hover:bg-[#f7f1eb]"
+              className="inline-flex h-10 items-center gap-2 rounded-l-full bg-[#f1ebe5] py-2 pl-4 pr-5 text-[#5c5247] shadow-[-2px_4px_12px_rgba(72,58,43,.045)] transition duration-200 hover:bg-[#ece4dc] active:translate-x-0.5"
               aria-label="기록 월 펼치기"
             >
-              <span className="text-[15px]" aria-hidden="true">📖</span>
+              <BookOpen size={15} strokeWidth={1.7} aria-hidden="true" />
               <span className="font-['Pretendard'] text-[13px] font-semibold tracking-[-0.01em]">{activeMonthLabel}</span>
-              <ChevronDown size={14} strokeWidth={1.8} className="text-[#8e857c]" />
+              <ChevronDown size={13} strokeWidth={1.8} className="text-[#8e857c]" />
             </button>
           </div>
         )}
@@ -1882,10 +1879,12 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
                 }}
                 className="scroll-mt-5"
               >
-                <div className="mb-4 flex items-center gap-3">
-                  <h2 className="shrink-0 font-['Pretendard'] text-[17px] font-semibold tracking-[-0.02em] text-[#332c26]">{month.label}</h2>
-                  <span className="h-px flex-1 bg-[#e9dfd5]" />
-                </div>
+                {month.key !== activeMonth && (
+                  <div className="mb-4 flex items-center gap-3">
+                    <h2 className="shrink-0 font-['Pretendard'] text-[17px] font-semibold tracking-[-0.02em] text-[#332c26]">{month.label}</h2>
+                    <span className="h-px flex-1 bg-[#e9dfd5]" />
+                  </div>
+                )}
                 <div className="space-y-6">
                   {month.days.map((group) => (
                     <section key={group.key}>
