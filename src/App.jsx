@@ -984,39 +984,19 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResp
   );
 }
 
-function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, onDeleteLog, showWritingExample, onHideWritingExample }) {
+function NowTab({ todayLogs, onAddLog, onHideWritingExample }) {
   const [draft, setDraft] = useState("");
   const [photoData, setPhotoData] = useState(null);
   const [photoError, setPhotoError] = useState("");
   const [lengthNotice, setLengthNotice] = useState(false);
-  const [typingResponseId, setTypingResponseId] = useState(null);
   const [saveNotice, setSaveNotice] = useState(null);
   const [isLeaving, setIsLeaving] = useState(false);
-  const [composerOpen, setComposerOpen] = useState(false);
   const draftRef = useRef(null);
   const photoInputRef = useRef(null);
   const saveNoticeTimerRef = useRef(null);
   const currentMeta = getCurrentLogMeta();
-  const draftLength = draft.trim().length;
   const todayCount = todayLogs.length;
   const canLeaveTuk = Boolean(draft.trim() || photoData);
-  const composerExpanded = composerOpen || Boolean(draft || photoData);
-
-  useEffect(() => {
-    const textarea = draftRef.current;
-    if (!textarea) return;
-    const minHeight = composerExpanded ? 86 : 32;
-    const maxHeight = composerExpanded ? 132 : 52;
-    textarea.style.height = `${minHeight}px`;
-    textarea.style.height = `${Math.min(Math.max(textarea.scrollHeight, minHeight), maxHeight)}px`;
-  }, [draft, composerExpanded]);
-
-  useEffect(() => {
-    if (!composerOpen) return;
-    window.requestAnimationFrame(() => {
-      draftRef.current?.focus();
-    });
-  }, [composerOpen]);
 
   useEffect(() => {
     return () => {
@@ -1052,8 +1032,6 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
     onHideWritingExample();
     window.setTimeout(() => {
       onAddLog(nextLog);
-      // onShowSaved(todayCount + 1);
-      setTypingResponseId(nextLog.id);
       if (saveNoticeTimerRef.current) window.clearTimeout(saveNoticeTimerRef.current);
       setSaveNotice({ showSubtext: todayCount === 0 });
       saveNoticeTimerRef.current = window.setTimeout(() => {
@@ -1062,207 +1040,112 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
       }, 1450);
       setDraft("");
       setPhotoData(null);
-      setComposerOpen(false);
       setIsLeaving(false);
+      draftRef.current?.focus();
     }, 260);
   };
 
   return (
-    <>
-      <div className="flex flex-col">
-      <main className="contents">
-        {todayLogs.length === 0 && showWritingExample && !draft && (
-          <section className="order-3 mx-6 mb-4 rounded-[11px] bg-[#fff9f3] px-4 py-3.5 ring-1 ring-[#eee3d8]">
-            <p className="whitespace-pre-line font-['Pretendard'] text-[14px] font-normal leading-6 text-[#514840]">
-              커피 마셨는데도 졸리다. 왜지.
-            </p>
-            <div className="mt-2 flex items-center justify-between">
-              <span className="text-[12px] font-medium text-[#a18f82]">그냥, 이런 생각 하나.</span>
-              <button
-                onClick={onHideWritingExample}
-                className="rounded-[7px] px-1.5 py-1 text-[11px] font-medium text-[#9b9188] hover:bg-[#f4eee8]"
-              >
-                그만 보기
-              </button>
-            </div>
-          </section>
-        )}
-
-        <section className="order-1 px-6 pt-5">
-          <div className="mb-4">
-            <div className="flex items-center gap-2.5">
-              <div className="text-[15px] font-semibold tracking-[-0.02em] text-[#5a5149]">마음툭</div>
-              <div className="flex w-[32px] items-center" aria-hidden="true">
-                <span className="h-px flex-1 bg-[#cfc3b7]" />
-                <span className="h-2 w-2 rounded-full bg-[#e6bd50]" />
-              </div>
-            </div>
-            <h1 className="mt-3 text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">오늘</h1>
-            <p className="mt-1 text-[13px] font-medium tracking-[-0.02em] text-[#938a82]">
-              {currentMeta.displayDate} {currentMeta.day} · {todayCount > 0 ? `${todayCount}툭` : "아직 남긴 툭이 없어요"}
-            </p>
+    <main className="relative flex min-h-[calc(var(--maeumtuk-vh,100dvh)-106px)] flex-col px-7 pb-5 pt-6">
+      <header>
+        <div className="flex items-center gap-2.5">
+          <h1 className="text-[22px] font-semibold tracking-[-0.025em] text-[#2b251f]">마음툭</h1>
+          <div className="flex w-[34px] items-center" aria-hidden="true">
+            <span className="h-px flex-1 bg-[#cfc3b7]" />
+            <span className="h-2 w-2 rounded-full bg-[#e6bd50]" />
           </div>
-        </section>
-        <section className="order-4 px-6 pb-[120px]">
-          {todayLogs.length > 0 ? (
-            <div className="space-y-2.5">
-              {todayLogs.map((item, index) => (
-                <NowFlowItem
-                  key={item.id || `${item.date}-${item.time}`}
-                  item={item}
-                  sequence={todayLogs.length - index}
-                  totalSequence={Math.max(totalLogCount - index, 0)}
-                  isLatest={index === 0}
-                  typeResponse={item.id === typingResponseId}
-                  onAddDetails={onAddDetails}
-                  onEdit={onEditLog}
-                  onDelete={onDeleteLog}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="px-1 py-8 text-[14px] leading-6 text-[#817970]">
-              오늘은 아직 비어 있어요.
-            </div>
-          )}
-        </section>
-      </main>
-      <section className="maeumtuk-composer relative order-2 z-20 mb-5 px-6">
-        {saveNotice && (
-          <div className="maeumtuk-save-toast pointer-events-none absolute bottom-[calc(100%+10px)] left-1/2 w-max max-w-[calc(100%-48px)] -translate-x-1/2 rounded-[10px] border border-[#eadfd4] bg-[#fffdf9] px-4 py-2.5 text-center shadow-[0_7px_20px_rgba(54,42,30,.08)]">
-            <p className="text-[14px] font-semibold tracking-[-0.02em] text-[#514940]">툭, 남겨졌어요.</p>
-            {saveNotice.showSubtext && <p className="mt-0.5 text-[12px] font-medium text-[#8a8178]">마음이 여기 머물러요.</p>}
-          </div>
-        )}
-        <div className="w-full">
-          <div
-            onClick={(event) => {
-              if (event.target.closest("button")) return;
-              setComposerOpen(true);
-              draftRef.current?.focus();
-            }}
-            className={`rounded-[8px] border border-[#eee5dc] bg-white shadow-[0_4px_12px_rgba(72,52,35,.055)] transition duration-200 focus-within:border-[#e4c5b3] focus-within:shadow-[0_5px_15px_rgba(72,52,35,.075)] ${
-              composerExpanded ? "min-h-[132px] px-3 py-2.5" : "flex min-h-[48px] items-center gap-1 px-1.5 py-1"
-            } ${
-              isLeaving ? "translate-y-0.5 opacity-55" : ""
-            }`}
-          >
-            <input
-              ref={photoInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(event) => {
-                setPhotoError("");
-                readImageFile(event.target.files?.[0], setPhotoData, setPhotoError);
-                event.target.value = "";
-                setComposerOpen(true);
-              }}
-            />
-            {composerExpanded ? (
-              <div className="flex flex-col">
-                <div className="relative">
-                  <PencilLine size={16} strokeWidth={1.8} className="pointer-events-none absolute left-0 top-1 text-[#c97857]" aria-hidden="true" />
-                  <textarea
-                    ref={draftRef}
-                    value={draft}
-                    onFocus={() => setComposerOpen(true)}
-                    onChange={(event) => {
-                      setDraft(event.target.value);
-                      if (lengthNotice) setLengthNotice(false);
-                    }}
-                    className="maeumtuk-draft-input min-h-[86px] max-h-[132px] w-full resize-none overflow-y-auto bg-transparent pb-0 pl-7 pr-1 pt-0 font-['Pretendard'] text-[16px] font-medium leading-[24px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-medium placeholder:text-[#a9a197] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                    placeholder="지금, 마음을 툭 남겨보세요..."
-                  />
-                </div>
-                <div className="mt-1.5 flex items-center justify-between gap-2 border-t border-[#eadfd5] pt-1.5">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => photoInputRef.current?.click()}
-                      className="grid h-8 w-8 shrink-0 place-items-center rounded-[9px] text-[#647856] hover:bg-[#eef4e8]"
-                      aria-label="사진 추가"
-                    >
-                      <Image size={16} strokeWidth={1.8} />
-                    </button>
-                    {photoData && (
-                      <div
-                        className="relative h-[38px] w-[38px] shrink-0 rounded-[8px] shadow-inner ring-1 ring-black/[.04]"
-                        style={{ background: getImageBackground(photoData) }}
-                      >
-                        <button
-                          onClick={() => setPhotoData(null)}
-                          className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-[#fffdf9] text-[#6c6259] shadow-[0_2px_8px_rgba(54,42,30,.12)] ring-1 ring-[#e8dfd5]"
-                          aria-label="첨부 사진 삭제"
-                        >
-                          <X size={10} strokeWidth={2} />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    {!draft && !photoData && (
-                      <button
-                        onClick={() => {
-                          setComposerOpen(false);
-                          draftRef.current?.blur();
-                        }}
-                        className="h-8 rounded-[9px] px-2.5 text-[12px] font-medium text-[#8b8279] hover:bg-[#f5eee7]"
-                      >
-                        접기
-                      </button>
-                    )}
-                    <button
-                      onClick={leaveTuk}
-                      disabled={isLeaving || !canLeaveTuk}
-                      className={`h-8 min-w-[48px] shrink-0 rounded-[9px] px-3 font-['Pretendard'] text-[14px] font-semibold tracking-[-0.02em] transition duration-150 ${
-                        canLeaveTuk
-                          ? "border border-[rgba(239,135,92,0.2)] bg-[#ef875c] text-[#fffdf9] shadow-[0_6px_13px_rgba(239,135,92,.14)] hover:bg-[#e77d52] active:scale-[0.98] active:bg-[#dd7349]"
-                          : "border border-[#eadfd4] bg-[#f6eee7] text-[#b39b8d]"
-                      }`}
-                    >
-                      툭
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <>
-                <span className="grid h-8 w-8 shrink-0 place-items-center text-[#c97857]" aria-hidden="true">
-                  <PencilLine size={16} strokeWidth={1.8} />
-                </span>
-                <textarea
-                  ref={draftRef}
-                  value={draft}
-                  onFocus={() => setComposerOpen(true)}
-                  onChange={(event) => {
-                    setDraft(event.target.value);
-                    if (lengthNotice) setLengthNotice(false);
-                  }}
-                  className="maeumtuk-draft-input min-h-[32px] max-h-[52px] min-w-0 flex-1 resize-none overflow-y-auto bg-transparent px-0.5 py-[4px] font-['Pretendard'] text-[16px] font-medium leading-[22px] tracking-[-0.02em] text-[#25211d] outline-none placeholder:font-medium placeholder:text-[#aaa096] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                  placeholder="지금 이 순간은?"
-                />
-                <button
-                  onClick={leaveTuk}
-                  disabled={isLeaving || !canLeaveTuk}
-                  className={`h-8 min-w-[48px] shrink-0 self-center rounded-[9px] px-3 font-['Pretendard'] text-[14px] font-semibold leading-none tracking-[-0.02em] transition duration-150 ${
-                    canLeaveTuk
-                      ? "border border-[rgba(239,135,92,0.2)] bg-[#ef875c] text-[#fffdf9] shadow-[0_6px_13px_rgba(239,135,92,.14)] hover:bg-[#e77d52] active:scale-[0.98] active:bg-[#dd7349]"
-                      : "border border-[#eadfd4] bg-[#f6eee7] text-[#b39b8d]"
-                  }`}
-                >
-                  툭
-                </button>
-              </>
-            )}
-          </div>
-          {lengthNotice && (
-            <p className="mt-2 px-1 text-[12px] font-medium text-[#c46b49]">조금 길어요. 툭은 300자 안쪽이 잘 읽혀요.</p>
-          )}
-          {photoError && <p className="mt-2 px-1 text-[12px] font-medium text-[#c46b49]">{photoError}</p>}
         </div>
-      </section>
+        <div className="mt-8 flex items-center gap-3">
+          <p className="text-[20px] font-semibold tracking-[-0.025em] text-[#3b342e]">{currentMeta.displayDate} {currentMeta.day}</p>
+          <span className="rounded-full bg-[#f2eee7] px-3 py-1.5 font-['Pretendard'] text-[12px] font-semibold text-[#737d67]">지금</span>
+        </div>
+        <p className="mt-7 whitespace-pre-line text-[15px] font-medium leading-7 text-[#9a928a]">
+          한 줄이어도 괜찮아요.{"\n"}떠오르는 대로 그냥 툭.
+        </p>
+      </header>
+
+      <div className="mt-6 h-px bg-[#e9e1d8]" />
+
+      <textarea
+        ref={draftRef}
+        value={draft}
+        onChange={(event) => {
+          setDraft(event.target.value);
+          if (lengthNotice) setLengthNotice(false);
+        }}
+        className={`maeumtuk-draft-input min-h-[240px] flex-1 resize-none bg-transparent py-7 font-['Pretendard'] text-[20px] font-normal leading-[34px] tracking-[-0.025em] text-[#28231f] outline-none placeholder:text-[#b8b0a8] ${
+          isLeaving ? "opacity-50" : ""
+        }`}
+        placeholder="지금 떠오르는 생각은..."
+        maxLength={301}
+      />
+
+      <input
+        ref={photoInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(event) => {
+          setPhotoError("");
+          readImageFile(event.target.files?.[0], setPhotoData, setPhotoError);
+          event.target.value = "";
+        }}
+      />
+
+      {photoData && (
+        <div className="mb-3 flex items-center gap-3">
+          <div className="relative">
+            <MiniPhoto bg={photoData} size="lg" />
+            <button
+              type="button"
+              onClick={() => setPhotoData(null)}
+              className="absolute -right-2 -top-2 grid h-7 w-7 place-items-center rounded-full bg-[#fffdf9] text-[#6c6259] shadow-[0_2px_8px_rgba(54,42,30,.12)] ring-1 ring-[#e8dfd5]"
+              aria-label="첨부 사진 삭제"
+            >
+              <X size={12} strokeWidth={2} />
+            </button>
+          </div>
+          <span className="font-['Pretendard'] text-[12px] font-medium text-[#91887f]">사진이 함께 남겨져요.</span>
+        </div>
+      )}
+
+      {(lengthNotice || photoError) && (
+        <p className="mb-3 font-['Pretendard'] text-[12px] font-medium text-[#c46b49]">
+          {photoError || "조금 길어요. 툭은 300자 안쪽이 잘 읽혀요."}
+        </p>
+      )}
+
+      <div className="flex items-center justify-between pb-1">
+        <button
+          type="button"
+          onClick={() => photoInputRef.current?.click()}
+          className="grid h-12 w-12 place-items-center rounded-[12px] text-[#66775a] transition hover:bg-[#eef3e9]"
+          aria-label="사진 추가"
+        >
+          <Image size={23} strokeWidth={1.75} />
+        </button>
+        <button
+          type="button"
+          onClick={leaveTuk}
+          disabled={isLeaving || !canLeaveTuk}
+          className={`inline-flex h-12 min-w-[92px] items-center justify-center gap-2 rounded-full px-5 font-['Pretendard'] text-[15px] font-semibold transition ${
+            canLeaveTuk
+              ? "bg-[#ef875c] text-white shadow-[0_7px_18px_rgba(213,105,68,.18)] active:scale-[0.98]"
+              : "bg-[#f1e9e2] text-[#b8a69b]"
+          }`}
+        >
+          <Check size={18} strokeWidth={2} />
+          툭
+        </button>
       </div>
-    </>
+
+      {saveNotice && (
+        <div className="maeumtuk-save-toast pointer-events-none absolute bottom-20 left-1/2 w-max max-w-[calc(100%-56px)] -translate-x-1/2 rounded-[10px] border border-[#eadfd4] bg-[#fffdf9] px-4 py-2.5 text-center shadow-[0_7px_20px_rgba(54,42,30,.08)]">
+          <p className="text-[14px] font-semibold tracking-[-0.02em] text-[#514940]">툭, 남겨졌어요.</p>
+          {saveNotice.showSubtext && <p className="mt-0.5 text-[12px] font-medium text-[#8a8178]">마음이 여기 머물러요.</p>}
+        </div>
+      )}
+    </main>
   );
 }
 
