@@ -1278,19 +1278,6 @@ function RecentCard({
     <article className="maeumtuk-log-card relative rounded-[13px] border border-[#eee4d9] bg-[#fffaf5] px-3.5 py-3 shadow-none">
       {showManage && (
         <button
-          type="button"
-          onClick={() => {
-            setMenuOpen(false);
-            onAddDetails?.(item);
-          }}
-          className="absolute right-10 top-1.5 z-10 grid h-8 w-8 place-items-center rounded-[9px] text-[#718261] hover:bg-[#f1f5ec]"
-          aria-label="이 기록에 마음이나 생각 더하기"
-        >
-          <Plus size={17} strokeWidth={1.8} />
-        </button>
-      )}
-      {showManage && (
-        <button
           onClick={() => {
             setMenuOpen((open) => !open);
             setConfirmDelete(false);
@@ -1339,7 +1326,7 @@ function RecentCard({
         </div>
       )}
       <div className="font-['Pretendard']">
-          <div className="mb-1.5 flex items-center gap-1.5 pr-28 text-[12px] text-[#77716a]">
+          <div className="mb-1.5 flex items-center gap-1.5 pr-10 text-[12px] text-[#77716a]">
             <span className="h-2 w-2 rounded-full" style={{ background: getLogDotColor(item) }} />
             <span>{item.time}</span>
           </div>
@@ -1448,6 +1435,22 @@ function RecentCard({
                 </div>
               </div>
             )}
+          </div>
+        )}
+        {!editing && !confirmDelete && showManage && (
+          <div className="mt-2 flex justify-end">
+            <button
+              type="button"
+              onClick={() => {
+                setMenuOpen(false);
+                onAddDetails?.(item);
+              }}
+              className="inline-flex h-9 items-center gap-1 rounded-[8px] px-2.5 text-[12px] font-medium text-[#667858] transition hover:bg-[#f1f5ec] active:scale-[0.98]"
+              aria-label="이 기록에 마음이나 생각 더하기"
+            >
+              <Plus size={14} strokeWidth={1.9} />
+              <span>더하기</span>
+            </button>
           </div>
         )}
         </div>
