@@ -1423,9 +1423,9 @@ function RecentCard({
         )}
         {!editing && !confirmDelete && (hasAfterData || showManage) && (
           <div className="mt-3 space-y-2">
-            <div className="flex flex-wrap items-center gap-1.5">
+            <div className="flex min-h-7 items-center justify-between gap-3">
               {hasEmotion && (
-                <span className="inline-flex rounded-full bg-[#eef4e8] px-2.5 py-1 text-[12px] font-medium text-[#526f43]">
+                <span className="inline-flex shrink-0 rounded-full bg-[#eef4e8] px-2.5 py-1 text-[12px] font-medium text-[#526f43]">
                   {item.mood}
                 </span>
               )}
@@ -1436,7 +1436,7 @@ function RecentCard({
                     setMenuOpen(false);
                     onAddDetails?.(item);
                   }}
-                  className="inline-flex h-7 items-center gap-1 rounded-full px-2 text-[12px] font-medium text-[#667858] transition hover:bg-[#f1f5ec] active:scale-[0.98]"
+                  className="ml-auto inline-flex h-7 shrink-0 items-center gap-1 rounded-full px-2 text-[12px] font-medium text-[#667858] transition hover:bg-[#f1f5ec] active:scale-[0.98]"
                   aria-label="이 기록에 마음이나 생각 더하기"
                 >
                   <Plus size={13} strokeWidth={1.9} />
