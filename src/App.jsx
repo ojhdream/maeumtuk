@@ -1046,7 +1046,7 @@ function NowTab({ todayLogs, onAddLog, onHideWritingExample }) {
   };
 
   return (
-    <main className="relative flex min-h-[calc(var(--maeumtuk-vh,100dvh)-106px)] flex-col px-7 pb-5 pt-6">
+    <main className="relative flex min-h-[calc(var(--maeumtuk-vh,100dvh)-106px)] flex-col px-7 pb-6 pt-10">
       <header>
         <div className="flex items-center gap-2.5">
           <h1 className="text-[22px] font-semibold tracking-[-0.025em] text-[#2b251f]">마음툭</h1>
@@ -1055,16 +1055,16 @@ function NowTab({ todayLogs, onAddLog, onHideWritingExample }) {
             <span className="h-2 w-2 rounded-full bg-[#e6bd50]" />
           </div>
         </div>
-        <div className="mt-8 flex items-center gap-3">
-          <p className="text-[20px] font-semibold tracking-[-0.025em] text-[#3b342e]">{currentMeta.displayDate} {currentMeta.day}</p>
-          <span className="rounded-full bg-[#f2eee7] px-3 py-1.5 font-['Pretendard'] text-[12px] font-semibold text-[#737d67]">지금</span>
+        <div className="mt-7 flex items-center gap-3">
+          <p className="text-[19px] font-semibold tracking-[-0.025em] text-[#3b342e]">{currentMeta.displayDate} {currentMeta.day}</p>
+          <span className="rounded-full bg-[#f2eee7] px-2.5 py-1 font-['Pretendard'] text-[12px] font-semibold text-[#737d67]">지금</span>
         </div>
-        <p className="mt-7 whitespace-pre-line text-[15px] font-medium leading-7 text-[#9a928a]">
+        <p className="mt-5 whitespace-pre-line text-[15px] font-normal leading-6 text-[#9a928a]">
           한 줄이어도 괜찮아요.{"\n"}떠오르는 대로 그냥 툭.
         </p>
       </header>
 
-      <div className="mt-6 h-px bg-[#e9e1d8]" />
+      <div className="mt-4 h-px bg-[#e9e1d8]" />
 
       <textarea
         ref={draftRef}
@@ -1073,7 +1073,7 @@ function NowTab({ todayLogs, onAddLog, onHideWritingExample }) {
           setDraft(event.target.value);
           if (lengthNotice) setLengthNotice(false);
         }}
-        className={`maeumtuk-draft-input min-h-[240px] flex-1 resize-none bg-transparent py-7 font-['Pretendard'] text-[20px] font-normal leading-[34px] tracking-[-0.025em] text-[#28231f] outline-none placeholder:text-[#b8b0a8] ${
+        className={`maeumtuk-draft-input min-h-[240px] flex-1 resize-none bg-transparent pb-5 pt-7 font-['Pretendard'] text-[25px] font-normal leading-[39px] tracking-[-0.025em] text-[#28231f] outline-none placeholder:font-normal placeholder:text-[#b8b0a8] ${
           isLeaving ? "opacity-50" : ""
         }`}
         placeholder="지금 떠오르는 생각은..."
