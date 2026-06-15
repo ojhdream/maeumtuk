@@ -1421,13 +1421,29 @@ function RecentCard({
             <MiniPhoto bg={item.image} />
           </div>
         )}
-        {!editing && !confirmDelete && showEnvelope && hasAfterData && (
+        {!editing && !confirmDelete && (hasAfterData || showManage) && (
           <div className="mt-3 space-y-2">
-            {hasEmotion && (
-              <span className="inline-flex rounded-full bg-[#eef4e8] px-2.5 py-1 text-[12px] font-medium text-[#526f43]">
-                {item.mood}
-              </span>
-            )}
+            <div className="flex flex-wrap items-center gap-1.5">
+              {hasEmotion && (
+                <span className="inline-flex rounded-full bg-[#eef4e8] px-2.5 py-1 text-[12px] font-medium text-[#526f43]">
+                  {item.mood}
+                </span>
+              )}
+              {showManage && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onAddDetails?.(item);
+                  }}
+                  className="inline-flex h-7 items-center gap-1 rounded-full px-2 text-[12px] font-medium text-[#667858] transition hover:bg-[#f1f5ec] active:scale-[0.98]"
+                  aria-label="이 기록에 마음이나 생각 더하기"
+                >
+                  <Plus size={13} strokeWidth={1.9} />
+                  <span>더하기</span>
+                </button>
+              )}
+            </div>
             {hasNote && (
               <div className="border-l border-[#cbd8bd] pl-3">
                 <div className="rounded-[10px] border border-[#e7eee0] bg-[#fbfcf7] px-3 py-2.5 text-[13px] leading-6 text-[#3f4638]">
@@ -1435,22 +1451,6 @@ function RecentCard({
                 </div>
               </div>
             )}
-          </div>
-        )}
-        {!editing && !confirmDelete && showManage && (
-          <div className="mt-2 flex justify-end">
-            <button
-              type="button"
-              onClick={() => {
-                setMenuOpen(false);
-                onAddDetails?.(item);
-              }}
-              className="inline-flex h-9 items-center gap-1 rounded-[8px] px-2.5 text-[12px] font-medium text-[#667858] transition hover:bg-[#f1f5ec] active:scale-[0.98]"
-              aria-label="이 기록에 마음이나 생각 더하기"
-            >
-              <Plus size={14} strokeWidth={1.9} />
-              <span>더하기</span>
-            </button>
           </div>
         )}
         </div>
