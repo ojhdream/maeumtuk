@@ -1052,8 +1052,8 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
   };
 
   return (
-    <main className="relative px-5 pb-10 pt-6">
-      <header className="mb-5">
+    <main className="relative px-5 pb-10 pt-4">
+      <header className="mb-3">
         <div className="flex items-center gap-2.5">
           <div className="text-[15px] font-semibold tracking-[-0.02em] text-[#5a5149]">마음툭</div>
           <div className="flex w-[32px] items-center" aria-hidden="true">
@@ -1061,17 +1061,14 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
             <span className="h-2 w-2 rounded-full bg-[#e6bd50]" />
           </div>
         </div>
-        <div className="mt-5 flex items-end justify-between gap-3">
+        <div className="mt-2.5 flex items-end justify-between gap-3">
           <div>
             <h1 className="text-[19px] font-semibold tracking-[-0.025em] text-[#2b251f]">오늘</h1>
-            <p className="mt-2 text-[13px] font-medium tracking-[-0.02em] text-[#938a82]">
+            <p className="mt-1 text-[13px] font-medium tracking-[-0.02em] text-[#938a82]">
               {currentMeta.displayDate} {currentMeta.day} · {todayCount > 0 ? `${todayCount}툭` : "아직 남긴 툭이 없어요"}
             </p>
           </div>
         </div>
-        <p className="mt-4 whitespace-pre-line text-[13px] font-normal leading-5 text-[#aaa39b]">
-          한 줄이어도 괜찮아요.{"\n"}떠오르는 대로 그냥 툭.
-        </p>
       </header>
 
       <section
@@ -1098,7 +1095,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
             if (lengthNotice) setLengthNotice(false);
           }}
           className="maeumtuk-draft-input min-h-[92px] max-h-[164px] w-full resize-none overflow-y-auto bg-transparent px-0.5 py-0 text-[17px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f] outline-none placeholder:text-[#aaa198] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          placeholder="지금 이 순간은?"
+          placeholder={"한 줄이어도 괜찮아요.\n떠오르는 대로 그냥 툭."}
           maxLength={301}
         />
         {photoData && (
