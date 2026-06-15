@@ -458,20 +458,24 @@ function BottomNav({ tab, setTab }) {
   ];
 
   return (
-    <nav className="maeumtuk-bottom-nav absolute bottom-0 left-0 right-0 flex h-[calc(78px+env(safe-area-inset-bottom))] items-start justify-around border-t border-[#eee7de] bg-[#fffdf9] pt-3 transition duration-200">
+    <nav className="maeumtuk-bottom-nav absolute bottom-0 left-0 right-0 flex h-[calc(78px+env(safe-area-inset-bottom))] items-center justify-around border-t border-[#eee7de] bg-[#fffdf9] pb-[env(safe-area-inset-bottom)] transition duration-200">
       {items.map((item) => {
         const active = tab === item.id;
         return (
           <button
             key={item.id}
             onClick={() => setTab(item.id)}
-            className={`flex min-h-[52px] w-20 flex-col items-center gap-1.5 text-[12px] transition ${
+            className={`relative flex h-[58px] w-20 flex-col items-center justify-center gap-1 text-[12px] transition duration-200 ${
               active ? "text-[#4f743b]" : "text-[#746d65] hover:text-[#4b443d]"
             }`}
           >
+            <span
+              aria-hidden="true"
+              className={`absolute top-0 h-[2px] w-5 rounded-full bg-[#6f8b5b] transition duration-200 ${active ? "scale-x-100 opacity-100" : "scale-x-50 opacity-0"}`}
+            />
             <div
-              className={`grid h-9 w-9 place-items-center rounded-[10px] transition ${
-                active ? "bg-[#e3efd9] text-[#4f743b] shadow-[0_6px_14px_rgba(79,111,61,.11)]" : "text-[#6f675f]"
+              className={`grid h-7 w-9 place-items-center transition duration-200 ${
+                active ? "text-[#4f743b]" : "text-[#6f675f]"
               }`}
             >
               {item.icon}
@@ -588,7 +592,7 @@ function useVisibleViewportHeight() {
 
 function Phone({ children, tab, setTab, hideNav = false, overlay = null }) {
   return (
-    <div className="maeumtuk-phone relative h-[var(--maeumtuk-vh,100dvh)] max-h-[var(--maeumtuk-vh,100dvh)] w-full max-w-[430px] overflow-hidden bg-[#f8f6f2] sm:h-[min(820px,calc(var(--maeumtuk-vh,100dvh)-48px))] sm:max-h-[820px] sm:w-[390px] sm:rounded-[26px] sm:shadow-[0_16px_55px_rgba(63,47,30,.08)] sm:ring-1 sm:ring-[#ebe2d8]">
+    <div className="maeumtuk-phone relative h-[var(--maeumtuk-vh,100dvh)] max-h-[var(--maeumtuk-vh,100dvh)] w-full max-w-[430px] overflow-hidden bg-[#faf8f5] sm:h-[min(820px,calc(var(--maeumtuk-vh,100dvh)-48px))] sm:max-h-[820px] sm:w-[390px] sm:rounded-[26px] sm:shadow-[0_16px_55px_rgba(63,47,30,.08)] sm:ring-1 sm:ring-[#ebe2d8]">
       <div className={`maeumtuk-scroll h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${hideNav ? "pb-[env(safe-area-inset-bottom)]" : "pb-[calc(106px+env(safe-area-inset-bottom))]"}`}>{children}</div>
       {!hideNav && <BottomNav tab={tab} setTab={setTab} />}
       {overlay}
@@ -702,7 +706,7 @@ function RecordEditScreen({ item, onClose, onSave }) {
   };
 
   return (
-    <section className="min-h-full bg-[#f8f6f2] px-6 pb-10 pt-6 font-['Pretendard']">
+    <section className="min-h-full bg-[#faf8f5] px-5 pb-10 pt-6 font-['Pretendard']">
       <div className="flex h-11 items-center justify-between">
         <button onClick={onClose} className="grid h-10 w-10 place-items-center rounded-[10px] text-[#655d56] hover:bg-[#eee8e1]" aria-label="수정 취소">
           <X size={20} strokeWidth={1.8} />
@@ -901,7 +905,7 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResp
           setMenuOpen(false);
           onAddDetails?.(item);
         }}
-        className="absolute right-10 top-1.5 grid h-8 w-8 place-items-center rounded-[9px] text-[#718261] hover:bg-[#f1f5ec]"
+        className="absolute right-[52px] top-3.5 grid h-8 w-8 place-items-center rounded-[9px] text-[#718261] transition hover:bg-[#f1f5ec]"
         aria-label="이 기록에 마음이나 생각 더하기"
       >
         <Plus size={17} strokeWidth={1.8} />
@@ -911,7 +915,7 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResp
           setMenuOpen((open) => !open);
           setConfirmDelete(false);
         }}
-        className="absolute right-1.5 top-1.5 grid h-8 w-8 place-items-center rounded-[9px] text-[#9a9188] hover:bg-[#f5eee7]"
+        className="absolute right-3.5 top-3.5 grid h-8 w-8 place-items-center rounded-[9px] text-[#9a9188] transition hover:bg-[#f5eee7]"
         aria-label="오늘 툭 관리"
       >
         <MoreHorizontal size={16} />
@@ -1048,7 +1052,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
   };
 
   return (
-    <main className="relative px-6 pb-10 pt-6">
+    <main className="relative px-5 pb-10 pt-6">
       <header className="mb-5">
         <div className="flex items-center gap-2.5">
           <div className="text-[15px] font-semibold tracking-[-0.02em] text-[#5a5149]">마음툭</div>
@@ -1057,21 +1061,21 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
             <span className="h-2 w-2 rounded-full bg-[#e6bd50]" />
           </div>
         </div>
-        <div className="mt-4 flex items-end justify-between gap-3">
+        <div className="mt-5 flex items-end justify-between gap-3">
           <div>
             <h1 className="text-[19px] font-semibold tracking-[-0.025em] text-[#2b251f]">오늘</h1>
-            <p className="mt-1 text-[13px] font-medium tracking-[-0.02em] text-[#938a82]">
+            <p className="mt-2 text-[13px] font-medium tracking-[-0.02em] text-[#938a82]">
               {currentMeta.displayDate} {currentMeta.day} · {todayCount > 0 ? `${todayCount}툭` : "아직 남긴 툭이 없어요"}
             </p>
           </div>
         </div>
-        <p className="mt-4 whitespace-pre-line text-[14px] font-normal leading-[22px] text-[#968e86]">
+        <p className="mt-4 whitespace-pre-line text-[13px] font-normal leading-5 text-[#aaa39b]">
           한 줄이어도 괜찮아요.{"\n"}떠오르는 대로 그냥 툭.
         </p>
       </header>
 
       <section
-        className={`relative rounded-[18px] border border-[#ede5dc] bg-[#fffdfb] px-4 pb-3 pt-3.5 shadow-[0_8px_24px_rgba(60,45,30,.055)] transition focus-within:border-[#e5c9b8] focus-within:shadow-[0_10px_28px_rgba(60,45,30,.075)] ${
+        className={`relative rounded-[18px] bg-[#fffdfb] px-4 pb-3 pt-3.5 shadow-[0_8px_30px_rgba(142,132,111,.06)] transition duration-300 focus-within:shadow-[0_10px_34px_rgba(142,132,111,.09)] ${
           isLeaving ? "translate-y-0.5 opacity-55" : ""
         }`}
       >
@@ -1113,7 +1117,7 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
             <span className="text-[12px] font-medium text-[#91887f]">사진이 함께 남겨져요.</span>
           </div>
         )}
-        <div className="mt-2.5 flex items-center justify-between border-t border-[#eee6dd] pt-2.5">
+        <div className="mt-3 flex items-center justify-between pt-1">
           <button
             type="button"
             onClick={() => photoInputRef.current?.click()}
@@ -1126,10 +1130,10 @@ function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, o
             type="button"
             onClick={leaveTuk}
             disabled={isLeaving || !canLeaveTuk}
-            className={`h-9 min-w-[58px] rounded-[10px] px-4 text-[14px] font-semibold transition ${
+            className={`h-9 min-w-[58px] rounded-[10px] px-4 text-[14px] font-semibold transition-all duration-300 ${
               canLeaveTuk
                 ? "bg-[#ef875c] text-white shadow-[0_5px_13px_rgba(213,105,68,.16)] active:scale-[0.98]"
-                : "border border-[#eadfd4] bg-[#f6eee7] text-[#b39b8d]"
+                : "bg-[#f1e8e1] text-[#ad9c90] opacity-40"
             }`}
           >
             툭
@@ -1306,7 +1310,7 @@ function RecentCard({
             setMenuOpen((open) => !open);
             setConfirmDelete(false);
           }}
-          className="absolute right-1.5 top-1.5 z-10 grid h-8 w-8 place-items-center rounded-[9px] text-[#8b857e] hover:bg-[#f5eee7]"
+          className="absolute right-3.5 top-3.5 z-10 grid h-8 w-8 place-items-center rounded-[9px] text-[#8b857e] transition hover:bg-[#f5eee7]"
           aria-label="툭 관리"
         >
           <MoreHorizontal size={17} />
@@ -1460,7 +1464,7 @@ function RecentCard({
                     setMenuOpen(false);
                     onAddDetails?.(item);
                   }}
-                  className="ml-auto inline-flex h-7 shrink-0 items-center gap-1 rounded-full px-2 text-[12px] font-medium text-[#667858] transition hover:bg-[#f1f5ec] active:scale-[0.98]"
+                  className="ml-auto inline-flex h-8 shrink-0 items-center gap-1 rounded-full border border-[#dfe7d8] bg-[#fbfcf8] px-2.5 text-[12px] font-semibold text-[#607451] transition duration-200 hover:border-[#cedbc5] hover:bg-[#f1f5ec] active:scale-[0.98]"
                   aria-label="이 기록에 마음이나 생각 더하기"
                 >
                   <Plus size={13} strokeWidth={1.9} />
@@ -1778,7 +1782,7 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
 
   return (
     <>
-      <main className="px-6 pt-6">
+      <main className="px-5 pt-6">
         <div className="mb-4 flex min-h-[48px] items-center justify-between gap-3">
           <div>
             <h1 className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">툭로그</h1>
@@ -2064,7 +2068,7 @@ function TodayTab({ logItems }) {
 
   return (
     <>
-      <main className="px-6 pt-6 font-['Pretendard']">
+      <main className="px-5 pt-6 font-['Pretendard']">
         <div className="relative mb-4 flex min-h-[48px] items-center justify-between">
           <h1 className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">요즘</h1>
           <button
@@ -2286,7 +2290,7 @@ export default function App() {
   ) : null;
 
   return (
-    <div className="h-[var(--maeumtuk-vh,100dvh)] overflow-hidden bg-[#f8f6f2] p-0 font-['Pretendard'] text-[#211b16] sm:p-6">
+    <div className="h-[var(--maeumtuk-vh,100dvh)] overflow-hidden bg-[#faf8f5] p-0 font-['Pretendard'] text-[#211b16] sm:p-6">
       <div className="mx-auto flex h-full max-w-[1260px] items-stretch justify-center gap-7 sm:items-start">
         <Phone tab={tab} setTab={setTab} hideNav={Boolean(editTarget)} overlay={addSheet}>
           {storageError && !editTarget && (
