@@ -984,11 +984,12 @@ function NowFlowItem({ item, sequence, totalSequence, isLatest = false, typeResp
   );
 }
 
-function NowTab({ todayLogs, onAddLog, onHideWritingExample }) {
+function NowTab({ todayLogs, totalLogCount, onAddLog, onAddDetails, onEditLog, onDeleteLog, onHideWritingExample }) {
   const [draft, setDraft] = useState("");
   const [photoData, setPhotoData] = useState(null);
   const [photoError, setPhotoError] = useState("");
   const [lengthNotice, setLengthNotice] = useState(false);
+  const [typingResponseId, setTypingResponseId] = useState(null);
   const [saveNotice, setSaveNotice] = useState(null);
   const [isLeaving, setIsLeaving] = useState(false);
   const draftRef = useRef(null);
@@ -1029,9 +1030,10 @@ function NowTab({ todayLogs, onAddLog, onHideWritingExample }) {
 
     setIsLeaving(true);
     setLengthNotice(false);
-    onHideWritingExample();
+    onHideWritingExample?.();
     window.setTimeout(() => {
       onAddLog(nextLog);
+      setTypingResponseId(nextLog.id);
       if (saveNoticeTimerRef.current) window.clearTimeout(saveNoticeTimerRef.current);
       setSaveNotice({ showSubtext: todayCount === 0 });
       saveNoticeTimerRef.current = window.setTimeout(() => {
@@ -1046,105 +1048,127 @@ function NowTab({ todayLogs, onAddLog, onHideWritingExample }) {
   };
 
   return (
-    <main className="relative flex min-h-[calc(var(--maeumtuk-vh,100dvh)-106px)] flex-col px-7 pb-6 pt-10">
-      <header>
+    <main className="relative px-6 pb-10 pt-6">
+      <header className="mb-5">
         <div className="flex items-center gap-2.5">
-          <h1 className="text-[22px] font-semibold tracking-[-0.025em] text-[#2b251f]">마음툭</h1>
-          <div className="flex w-[34px] items-center" aria-hidden="true">
+          <div className="text-[15px] font-semibold tracking-[-0.02em] text-[#5a5149]">마음툭</div>
+          <div className="flex w-[32px] items-center" aria-hidden="true">
             <span className="h-px flex-1 bg-[#cfc3b7]" />
             <span className="h-2 w-2 rounded-full bg-[#e6bd50]" />
           </div>
         </div>
-        <div className="mt-7 flex items-center gap-3">
-          <p className="text-[19px] font-semibold tracking-[-0.025em] text-[#3b342e]">{currentMeta.displayDate} {currentMeta.day}</p>
-          <span className="rounded-full bg-[#f2eee7] px-2.5 py-1 font-['Pretendard'] text-[12px] font-semibold text-[#737d67]">지금</span>
+        <div className="mt-4 flex items-end justify-between gap-3">
+          <div>
+            <h1 className="text-[19px] font-semibold tracking-[-0.025em] text-[#2b251f]">오늘</h1>
+            <p className="mt-1 text-[13px] font-medium tracking-[-0.02em] text-[#938a82]">
+              {currentMeta.displayDate} {currentMeta.day} · {todayCount > 0 ? `${todayCount}툭` : "아직 남긴 툭이 없어요"}
+            </p>
+          </div>
         </div>
-        <p className="mt-5 whitespace-pre-line text-[15px] font-normal leading-6 text-[#9a928a]">
+        <p className="mt-4 whitespace-pre-line text-[14px] font-normal leading-[22px] text-[#968e86]">
           한 줄이어도 괜찮아요.{"\n"}떠오르는 대로 그냥 툭.
         </p>
       </header>
 
-      <div className="mt-4 h-px bg-[#e9e1d8]" />
-
-      <textarea
-        ref={draftRef}
-        value={draft}
-        onChange={(event) => {
-          setDraft(event.target.value);
-          if (lengthNotice) setLengthNotice(false);
-        }}
-        className={`maeumtuk-draft-input min-h-[240px] flex-1 resize-none bg-transparent pb-5 pt-7 font-['Pretendard'] text-[25px] font-normal leading-[39px] tracking-[-0.025em] text-[#28231f] outline-none placeholder:font-normal placeholder:text-[#b8b0a8] ${
-          isLeaving ? "opacity-50" : ""
+      <section
+        className={`relative rounded-[18px] border border-[#ede5dc] bg-[#fffdfb] px-4 pb-3 pt-3.5 shadow-[0_8px_24px_rgba(60,45,30,.055)] transition focus-within:border-[#e5c9b8] focus-within:shadow-[0_10px_28px_rgba(60,45,30,.075)] ${
+          isLeaving ? "translate-y-0.5 opacity-55" : ""
         }`}
-        placeholder="지금 떠오르는 생각은..."
-        maxLength={301}
-      />
-
-      <input
-        ref={photoInputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(event) => {
-          setPhotoError("");
-          readImageFile(event.target.files?.[0], setPhotoData, setPhotoError);
-          event.target.value = "";
-        }}
-      />
-
-      {photoData && (
-        <div className="mb-3 flex items-center gap-3">
-          <div className="relative">
-            <MiniPhoto bg={photoData} size="lg" />
-            <button
-              type="button"
-              onClick={() => setPhotoData(null)}
-              className="absolute -right-2 -top-2 grid h-7 w-7 place-items-center rounded-full bg-[#fffdf9] text-[#6c6259] shadow-[0_2px_8px_rgba(54,42,30,.12)] ring-1 ring-[#e8dfd5]"
-              aria-label="첨부 사진 삭제"
-            >
-              <X size={12} strokeWidth={2} />
-            </button>
+      >
+        <input
+          ref={photoInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(event) => {
+            setPhotoError("");
+            readImageFile(event.target.files?.[0], setPhotoData, setPhotoError);
+            event.target.value = "";
+          }}
+        />
+        <textarea
+          ref={draftRef}
+          value={draft}
+          onChange={(event) => {
+            setDraft(event.target.value);
+            if (lengthNotice) setLengthNotice(false);
+          }}
+          className="maeumtuk-draft-input min-h-[92px] max-h-[164px] w-full resize-none overflow-y-auto bg-transparent px-0.5 py-0 text-[17px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f] outline-none placeholder:text-[#aaa198] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          placeholder="지금 이 순간은?"
+          maxLength={301}
+        />
+        {photoData && (
+          <div className="mt-2 flex items-center gap-3">
+            <div className="relative">
+              <MiniPhoto bg={photoData} />
+              <button
+                type="button"
+                onClick={() => setPhotoData(null)}
+                className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-[#fffdf9] text-[#6c6259] shadow-[0_2px_8px_rgba(54,42,30,.12)] ring-1 ring-[#e8dfd5]"
+                aria-label="첨부 사진 삭제"
+              >
+                <X size={10} strokeWidth={2} />
+              </button>
+            </div>
+            <span className="text-[12px] font-medium text-[#91887f]">사진이 함께 남겨져요.</span>
           </div>
-          <span className="font-['Pretendard'] text-[12px] font-medium text-[#91887f]">사진이 함께 남겨져요.</span>
+        )}
+        <div className="mt-2.5 flex items-center justify-between border-t border-[#eee6dd] pt-2.5">
+          <button
+            type="button"
+            onClick={() => photoInputRef.current?.click()}
+            className="grid h-9 w-9 place-items-center rounded-[9px] text-[#66775a] transition hover:bg-[#eef3e9]"
+            aria-label="사진 추가"
+          >
+            <Image size={19} strokeWidth={1.75} />
+          </button>
+          <button
+            type="button"
+            onClick={leaveTuk}
+            disabled={isLeaving || !canLeaveTuk}
+            className={`h-9 min-w-[58px] rounded-[10px] px-4 text-[14px] font-semibold transition ${
+              canLeaveTuk
+                ? "bg-[#ef875c] text-white shadow-[0_5px_13px_rgba(213,105,68,.16)] active:scale-[0.98]"
+                : "border border-[#eadfd4] bg-[#f6eee7] text-[#b39b8d]"
+            }`}
+          >
+            툭
+          </button>
         </div>
-      )}
+      </section>
 
       {(lengthNotice || photoError) && (
-        <p className="mb-3 font-['Pretendard'] text-[12px] font-medium text-[#c46b49]">
+        <p className="mt-2 px-1 text-[12px] font-medium text-[#c46b49]">
           {photoError || "조금 길어요. 툭은 300자 안쪽이 잘 읽혀요."}
         </p>
       )}
 
-      <div className="flex items-center justify-between pb-1">
-        <button
-          type="button"
-          onClick={() => photoInputRef.current?.click()}
-          className="grid h-12 w-12 place-items-center rounded-[12px] text-[#66775a] transition hover:bg-[#eef3e9]"
-          aria-label="사진 추가"
-        >
-          <Image size={23} strokeWidth={1.75} />
-        </button>
-        <button
-          type="button"
-          onClick={leaveTuk}
-          disabled={isLeaving || !canLeaveTuk}
-          className={`inline-flex h-12 min-w-[92px] items-center justify-center gap-2 rounded-full px-5 font-['Pretendard'] text-[15px] font-semibold transition ${
-            canLeaveTuk
-              ? "bg-[#ef875c] text-white shadow-[0_7px_18px_rgba(213,105,68,.18)] active:scale-[0.98]"
-              : "bg-[#f1e9e2] text-[#b8a69b]"
-          }`}
-        >
-          <Check size={18} strokeWidth={2} />
-          툭
-        </button>
-      </div>
-
       {saveNotice && (
-        <div className="maeumtuk-save-toast pointer-events-none absolute bottom-20 left-1/2 w-max max-w-[calc(100%-56px)] -translate-x-1/2 rounded-[10px] border border-[#eadfd4] bg-[#fffdf9] px-4 py-2.5 text-center shadow-[0_7px_20px_rgba(54,42,30,.08)]">
+        <div className="maeumtuk-save-toast pointer-events-none absolute left-1/2 top-[250px] z-20 w-max max-w-[calc(100%-56px)] -translate-x-1/2 rounded-[10px] border border-[#eadfd4] bg-[#fffdf9] px-4 py-2.5 text-center shadow-[0_7px_20px_rgba(54,42,30,.08)]">
           <p className="text-[14px] font-semibold tracking-[-0.02em] text-[#514940]">툭, 남겨졌어요.</p>
           {saveNotice.showSubtext && <p className="mt-0.5 text-[12px] font-medium text-[#8a8178]">마음이 여기 머물러요.</p>}
         </div>
       )}
+
+      <section className="mt-5">
+        {todayLogs.length > 0 ? (
+          <div className="space-y-2.5">
+            {todayLogs.map((item, index) => (
+              <NowFlowItem
+                key={item.id || `${item.date}-${item.time}`}
+                item={item}
+                sequence={todayLogs.length - index}
+                totalSequence={Math.max(totalLogCount - index, 0)}
+                isLatest={index === 0}
+                typeResponse={item.id === typingResponseId}
+                onAddDetails={onAddDetails}
+                onEdit={onEditLog}
+                onDelete={onDeleteLog}
+              />
+            ))}
+          </div>
+        ) : null}
+      </section>
     </main>
   );
 }
