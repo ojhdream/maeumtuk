@@ -11,6 +11,12 @@ body,
   background: #faf8f5;
 }
 
+html.maeumtuk-keyboard-open,
+html.maeumtuk-keyboard-open body,
+html.maeumtuk-keyboard-open #root {
+  background: #faf8f5;
+}
+
 * {
   -webkit-tap-highlight-color: transparent;
 }
@@ -56,6 +62,10 @@ button,
   background-attachment: fixed;
 }
 
+.maeumtuk-keyboard-open .maeumtuk-phone {
+  background-attachment: scroll;
+}
+
 .maeumtuk-phone::before {
   content: "";
   position: absolute;
@@ -75,6 +85,10 @@ button,
 .maeumtuk-scroll {
   position: relative;
   z-index: 1;
+  background: transparent;
+}
+
+.maeumtuk-keyboard-open .maeumtuk-scroll {
   background: transparent;
 }
 
@@ -219,8 +233,8 @@ button,
   margin-left: -20px;
   margin-right: -20px;
   padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
-  background: rgba(250, 248, 245, 0.96);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(180deg, rgba(250, 248, 245, 0.8) 0%, rgba(248, 243, 239, 0.96) 100%);
+  backdrop-filter: blur(12px);
 }
 
 .maeumtuk-save-screen {

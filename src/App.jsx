@@ -632,10 +632,12 @@ function useVisibleViewportHeight() {
   useEffect(() => {
     const setViewportHeight = () => {
       const viewport = window.visualViewport;
-      const height = viewport?.height || window.innerHeight;
-      const keyboardOpen = viewport ? window.innerHeight - viewport.height > 120 : false;
+      const layoutHeight = window.innerHeight;
+      const visibleHeight = viewport?.height || layoutHeight;
+      const keyboardOpen = viewport ? layoutHeight - visibleHeight > 120 : false;
 
-      document.documentElement.style.setProperty("--maeumtuk-vh", `${height}px`);
+      document.documentElement.style.setProperty("--maeumtuk-vh", `${layoutHeight}px`);
+      document.documentElement.style.setProperty("--maeumtuk-visible-vh", `${visibleHeight}px`);
       document.documentElement.classList.toggle("maeumtuk-keyboard-open", keyboardOpen);
     };
 
