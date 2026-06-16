@@ -103,7 +103,7 @@ function getRecentSampleLogs(currentMeta) {
       text: "커피가 정말 맛있었다.",
       tags: ["#소소한행복"],
       mood: "남김",
-      dot: "#fee856",
+      dot: "#c6a46b",
       image: null,
       note: "",
     },
@@ -145,7 +145,7 @@ function getRecentSampleLogs(currentMeta) {
       text: "오늘 하루도 잘 보내고 싶다.",
       tags: ["#다짐"],
       mood: "남김",
-      dot: "#d9aa45",
+      dot: "#9a846b",
       image: null,
       note: "",
     },
@@ -423,7 +423,7 @@ function getTimeDotColor(hour) {
   return "#8c8798";
 }
 
-const flowDotColors = ["#6f7f61", "#748866", "#62775d", "#7d8c70", "#6a8172"];
+const flowDotColors = ["#8a7660", "#9a846b", "#7d6b58", "#a08f7d", "#8f7f6f"];
 
 function getFlowDotColor(item, sequence = 0) {
   const source = `${item.id || ""}${item.date || ""}${item.time || ""}${item.text || ""}${sequence}`;
@@ -509,7 +509,7 @@ function TimeOfDayIcon({ hour }) {
     return <Moon size={22} strokeWidth={1.8} className="text-[#738099]" />;
   }
 
-  return <Sun size={22} strokeWidth={1.8} className="text-[#f0bd3f]" />;
+  return <Sun size={22} strokeWidth={1.8} className="text-[#b89a62]" />;
 }
 
 function BottomNav({ tab, setTab }) {
@@ -748,7 +748,7 @@ function EmptyState({ title, body }) {
     <section className="rounded-[13px] border border-[#eee6dc] bg-[#fffdf9] px-5 py-8 text-center shadow-[0_7px_18px_rgba(54,42,30,.03)]">
       <div className="mx-auto mb-5 flex w-[58px] items-center" aria-hidden="true">
         <span className="h-px flex-1 bg-[#cfc3b7]" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#e6bd50]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#b89a62]" />
         <span className="h-px flex-1 bg-[#cfc3b7]" />
       </div>
       <h2 className="font-['Pretendard'] text-[16px] font-semibold tracking-[-0.02em] text-[#2d2119]">{title}</h2>
@@ -1022,7 +1022,7 @@ function NowFlowItem({ item, sequence, isLatest = false, onAddDetails, onEdit, o
         />
         <span
           aria-hidden="true"
-          className="absolute left-[6px] top-[29px] h-[calc(100%-26px)] border-l border-dotted border-[#c4ccb9]"
+          className="absolute left-[6px] top-[29px] h-[calc(100%-26px)] border-l border-dotted border-[#d3c7ba]"
         />
         <time className="block h-[25px] text-[12px] font-medium leading-[25px] tracking-[-0.02em] text-[#766c63]">
           {item.time}
@@ -1167,7 +1167,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
             <span className="text-[16px] font-semibold tracking-[-0.04em] text-[#4c4a43]">마음툭</span>
             <span className="flex w-[36px] items-center" aria-hidden="true">
               <span className="h-px flex-1 bg-[#d0c5b8]" />
-              <span className="h-2 w-2 rounded-full bg-[#fee856]" />
+              <span className="h-2 w-2 rounded-full bg-[#c6a46b]" />
             </span>
           </div>
           <button
@@ -1217,12 +1217,12 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
         />
         <div className="relative pb-2 pl-[16px]">
           <div className="flex h-[28px] items-center pl-[18px] text-[12px] font-medium tracking-[-0.02em] text-[#6d7168]">
-            <span className="absolute left-[2px] top-[10px] h-2.5 w-2.5 rounded-full bg-[#6f7f61] shadow-[0_0_0_3px_rgba(111,127,97,.16)]" />
+            <span className="absolute left-[3px] top-[11px] h-2 w-2 rounded-full bg-[#8a7660]" />
             <span>{currentMeta.time}</span>
           </div>
           <span
             aria-hidden="true"
-            className="absolute left-[6px] top-[28px] h-[calc(100%-28px)] border-l border-dashed border-[#b9c4ae]"
+            className="absolute left-[6px] top-[28px] h-[calc(100%-28px)] border-l border-dashed border-[#cfc3b7]"
           />
           <div className="relative mt-1">
             <textarea

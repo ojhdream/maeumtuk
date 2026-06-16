@@ -119,21 +119,6 @@ button,
   animation: maeumtuk-wind-drift 4.8s ease-in-out infinite;
 }
 
-.maeumtuk-hero-friend::after {
-  content: "";
-  position: absolute;
-  left: 103px;
-  top: 9px;
-  z-index: 2;
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: rgba(245, 211, 76, 0.76);
-  box-shadow: 0 0 7px rgba(245, 211, 76, 0.18);
-  pointer-events: none;
-  animation: maeumtuk-dot-breathe 3.6s ease-in-out infinite;
-}
-
 .input-card-container {
   background-color: #fffdf9;
   border: 1px solid rgba(142, 132, 111, 0.05);
@@ -205,9 +190,9 @@ button,
 
 .tuk-button:not(:disabled),
 .tuk-button[aria-disabled="true"] {
-  background-color: #fee856;
-  color: #5a4314;
-  box-shadow: 0 6px 16px rgba(231, 185, 62, 0.22);
+  background-color: #d8c3a4;
+  color: #3f352b;
+  box-shadow: 0 6px 16px rgba(98, 79, 58, 0.14);
   opacity: 1;
 }
 
@@ -282,22 +267,9 @@ button,
   }
 }
 
-@keyframes maeumtuk-dot-breathe {
-  0%,
-  100% {
-    opacity: 0.78;
-    transform: scale(0.94);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.08);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .maeumtuk-hero-friend-img,
-  .maeumtuk-hero-friend::before,
-  .maeumtuk-hero-friend::after {
+  .maeumtuk-hero-friend::before {
     animation: none;
   }
 }
