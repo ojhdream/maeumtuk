@@ -82,6 +82,41 @@ button,
   z-index: 20;
 }
 
+.maeumtuk-hero-friend-img {
+  animation: maeumtuk-friend-float 7s ease-in-out infinite;
+  transform-origin: 42% 58%;
+}
+
+.maeumtuk-hero-friend::before {
+  content: "";
+  position: absolute;
+  left: 72px;
+  top: 19px;
+  z-index: 2;
+  width: 16px;
+  height: 1.5px;
+  border-radius: 999px;
+  background: rgba(140, 123, 106, 0.42);
+  pointer-events: none;
+  transform: rotate(-28deg);
+  animation: maeumtuk-wind-drift 4.8s ease-in-out infinite;
+}
+
+.maeumtuk-hero-friend::after {
+  content: "";
+  position: absolute;
+  left: 90px;
+  top: 7px;
+  z-index: 2;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(254, 232, 86, 0.88);
+  box-shadow: 0 0 10px rgba(254, 232, 86, 0.32);
+  pointer-events: none;
+  animation: maeumtuk-dot-breathe 3.6s ease-in-out infinite;
+}
+
 .input-card-container {
   background-color: #fffdf9;
   border: 1px solid rgba(142, 132, 111, 0.05);
@@ -174,7 +209,18 @@ button,
 }
 
 .maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-scroll {
-  padding-bottom: calc(96px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-composer-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 15;
+  margin-left: -20px;
+  margin-right: -20px;
+  padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
+  background: rgba(250, 248, 245, 0.96);
+  backdrop-filter: blur(10px);
 }
 
 .maeumtuk-save-screen {
@@ -195,6 +241,48 @@ button,
 
 .maeumtuk-save-sub {
   animation: maeumtuk-save-sub 2.1s ease both;
+}
+
+@keyframes maeumtuk-friend-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(0, -1.5px, 0) rotate(-0.35deg);
+  }
+}
+
+@keyframes maeumtuk-wind-drift {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translate3d(-1px, 0, 0) rotate(-28deg) scaleX(0.82);
+  }
+  45% {
+    opacity: 0.72;
+    transform: translate3d(4px, -1px, 0) rotate(-28deg) scaleX(1);
+  }
+}
+
+@keyframes maeumtuk-dot-breathe {
+  0%,
+  100% {
+    opacity: 0.78;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .maeumtuk-hero-friend-img,
+  .maeumtuk-hero-friend::before,
+  .maeumtuk-hero-friend::after {
+    animation: none;
+  }
 }
 
 .maeumtuk-log-card {

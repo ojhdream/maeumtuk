@@ -520,7 +520,7 @@ function BottomNav({ tab, setTab }) {
   ];
 
   return (
-    <nav className="maeumtuk-bottom-nav absolute bottom-0 left-0 right-0 flex h-[calc(78px+env(safe-area-inset-bottom))] items-center justify-around border-t border-[#eee7de] bg-[#fffdf9] pb-[env(safe-area-inset-bottom)] transition duration-200">
+    <nav className="maeumtuk-bottom-nav absolute bottom-0 left-0 right-0 flex h-[calc(78px+env(safe-area-inset-bottom))] items-center justify-around border-t border-[#e3d9cf] bg-[#f7f2ed]/94 pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_28px_rgba(47,66,92,0.045)] backdrop-blur-xl transition duration-200">
       {items.map((item) => {
         const active = tab === item.id;
         return (
@@ -528,16 +528,16 @@ function BottomNav({ tab, setTab }) {
             key={item.id}
             onClick={() => setTab(item.id)}
             className={`relative flex h-[58px] w-20 flex-col items-center justify-center gap-1 text-[12px] transition duration-200 ${
-              active ? "text-[#4f743b]" : "text-[#746d65] hover:text-[#4b443d]"
+              active ? "text-[#2f425c]" : "text-[#687386] hover:text-[#40516a]"
             }`}
           >
             <span
               aria-hidden="true"
-              className={`absolute top-0 h-[2px] w-5 rounded-full bg-[#6f8b5b] transition duration-200 ${active ? "scale-x-100 opacity-100" : "scale-x-50 opacity-0"}`}
+              className={`absolute top-0 h-[2px] w-5 rounded-full bg-[#2f425c] transition duration-200 ${active ? "scale-x-100 opacity-100" : "scale-x-50 opacity-0"}`}
             />
             <div
               className={`grid h-7 w-9 place-items-center transition duration-200 ${
-                active ? "text-[#4f743b]" : "text-[#6f675f]"
+                active ? "text-[#2f425c]" : "text-[#687386]"
               }`}
             >
               {item.icon}
@@ -1087,7 +1087,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
   const photoInputRef = useRef(null);
   const currentMeta = getCurrentLogMeta();
   const todayCount = todayLogs.length;
-  const displayRecentLogs = recentLogs.length > 0 ? recentLogs : getRecentSampleLogs(currentMeta);
+  const displayRecentLogs = (recentLogs.length > 0 ? recentLogs : getRecentSampleLogs(currentMeta)).slice(0, 3);
   const canLeaveTuk = Boolean(draft.trim() || photoData);
 
   useEffect(() => {
@@ -1159,18 +1159,18 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
 
   return (
     <main className="relative px-5 pb-10 pt-5">
-      <header className="mb-1 flex items-center justify-between">
+      <header className="mb-7 flex items-start justify-between">
         <div>
-          <div className="mb-1.5 flex items-center gap-2.5">
-            <span className="text-[13px] font-semibold tracking-[-0.03em] text-[#5a5149]">마음툭</span>
-            <span className="flex w-[28px] items-center" aria-hidden="true">
+          <div className="mb-5 flex items-center gap-2.5">
+            <span className="text-[16px] font-semibold tracking-[-0.04em] text-[#5a5149]">마음툭</span>
+            <span className="flex w-[36px] items-center" aria-hidden="true">
               <span className="h-px flex-1 bg-[#d0c5b8]" />
-              <span className="h-1.5 w-1.5 rounded-full bg-[#fee856]" />
+              <span className="h-2 w-2 rounded-full bg-[#fee856]" />
             </span>
           </div>
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-full py-1 text-[16px] font-medium tracking-[-0.03em] text-[#5b5148]"
+            className="inline-flex items-center gap-2 rounded-full py-1 text-[24px] font-semibold tracking-[-0.05em] text-[#514840]"
             aria-label={`${currentMeta.displayDate} ${currentMeta.day}`}
           >
             <span>{currentMeta.displayDate}</span>
@@ -1187,19 +1187,19 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
       </header>
 
       <section
-        className={`relative pb-4 pt-1 transition duration-300 ${
+        className={`relative pb-4 transition duration-300 ${
           isLeaving ? "translate-y-0.5 opacity-55" : ""
         }`}
       >
-        <div className="mx-auto mb-2 grid h-[142px] place-items-center">
+        <div className="maeumtuk-hero-friend relative mb-1.5 h-[76px] w-[118px] overflow-hidden">
           <img
             src="/now-hero.png"
             alt=""
-            className="h-[132px] w-[236px] object-contain opacity-95 mix-blend-multiply"
+            className="maeumtuk-hero-friend-img -ml-[29px] h-[74px] w-[152px] max-w-none object-contain object-left opacity-95 mix-blend-multiply"
             draggable="false"
           />
         </div>
-        <p className="mb-5 text-[15px] font-semibold leading-6 tracking-[-0.03em] text-[#4f463f]">
+        <p className="mb-6 text-[19px] font-medium leading-7 tracking-[-0.045em] text-[#5a5149]">
           떠오르는 대로, 지금 여기에.
         </p>
         <input
@@ -1214,7 +1214,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
           }}
         />
         <div className="relative pb-2 pl-[16px]">
-          <div className="flex h-[28px] items-center gap-1.5 text-[12px] font-medium tracking-[-0.02em] text-[#766c63]">
+          <div className="flex h-[28px] items-center pl-[18px] text-[12px] font-medium tracking-[-0.02em] text-[#766c63]">
             <span className="absolute left-[2px] top-[10px] h-2.5 w-2.5 rounded-full bg-[#fee856] shadow-[0_0_0_3px_rgba(254,232,86,.24)]" />
             <span>{currentMeta.time}</span>
           </div>
@@ -1263,7 +1263,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
             <span className="text-[12px] font-medium text-[#91887f]">사진이 함께 남겨져요.</span>
           </div>
         )}
-        <div className="mt-3 flex items-center justify-between border-t border-[rgba(142,132,111,0.16)] pt-3">
+        <div className="maeumtuk-composer-actions mt-3 flex items-center justify-between border-t border-[rgba(142,132,111,0.16)] pt-3">
           <button
             type="button"
             onClick={() => photoInputRef.current?.click()}
@@ -2395,7 +2395,7 @@ export default function App() {
   const taggedAllLogs = useMemo(() => enrichLogsWithTags(allLogs, personalTagSet), [allLogs, personalTagSet]);
   const taggedTodayLogs = useMemo(() => enrichLogsWithTags(todayLogs, personalTagSet), [todayLogs, personalTagSet]);
   const taggedRecentLogs = useMemo(
-    () => [...taggedAllLogs].sort((a, b) => parseLogDate(b) - parseLogDate(a)).slice(0, 4),
+    () => [...taggedAllLogs].sort((a, b) => parseLogDate(b) - parseLogDate(a)).slice(0, 3),
     [taggedAllLogs],
   );
 
