@@ -103,6 +103,32 @@ button,
   opacity: 0;
 }
 
+.maeumtuk-lined-input {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 44px,
+    rgba(142, 132, 111, 0.22) 44px,
+    rgba(142, 132, 111, 0.22) 45px
+  );
+  background-attachment: local;
+}
+
+.maeumtuk-lined-input:focus + .composer-guide {
+  opacity: 0;
+}
+
+.maeumtuk-now-row {
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.maeumtuk-now-row:active {
+  transform: scale(0.995);
+  background-color: rgba(255, 250, 245, 0.42);
+}
+
 .tuk-button {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -115,11 +141,16 @@ button,
   opacity: 0.42;
 }
 
-.tuk-button:not(:disabled) {
-  background-color: #df896a;
-  color: #fffdf9;
-  box-shadow: 0 5px 14px rgba(171, 101, 73, 0.18);
+.tuk-button:not(:disabled),
+.tuk-button[aria-disabled="true"] {
+  background-color: #fee856;
+  color: #5a4314;
+  box-shadow: 0 6px 16px rgba(231, 185, 62, 0.22);
   opacity: 1;
+}
+
+.tuk-button[aria-disabled="true"] {
+  opacity: 0.58;
 }
 
 .tuk-button:not(:disabled):active {
