@@ -963,7 +963,7 @@ function NowFlowItem({ item, sequence, isLatest = false, onAddDetails, onEdit, o
   const previewText = item.text.length > 42 ? `${item.text.slice(0, 42)}...` : item.text;
   return (
     <article
-      className={`maeumtuk-now-row relative border-b border-[#eadfd4] py-4 last:border-b-0 ${
+      className={`maeumtuk-now-row relative border-b border-[#dfd0c1] py-4 last:border-b-0 ${
         menuOpen ? "z-30" : ""
       } ${
         isLatest ? "maeumtuk-now-settle" : ""
@@ -1015,21 +1015,21 @@ function NowFlowItem({ item, sequence, isLatest = false, onAddDetails, onEdit, o
       <div className={`relative pl-[24px] font-['Pretendard'] ${isSample ? "pr-1" : "pr-10"}`}>
         <span
           aria-hidden="true"
-          className="absolute left-[2px] top-[10px] h-2 w-2 rounded-full shadow-[0_0_0_3px_rgba(254,232,86,.14)]"
+          className="absolute left-[2px] top-[10px] h-2.5 w-2.5 rounded-full shadow-[0_0_0_3px_rgba(254,232,86,.22)]"
           style={{ background: dotColor }}
         />
         <span
           aria-hidden="true"
-          className="absolute left-[5px] top-[26px] h-[calc(100%-24px)] border-l border-dotted border-[#e6d9ca]"
+          className="absolute left-[6px] top-[27px] h-[calc(100%-24px)] border-l border-dotted border-[#d8c8b8]"
         />
-        <time className="block h-[25px] text-[12px] font-medium leading-[25px] tracking-[-0.02em] text-[#9b948c]">
+        <time className="block h-[25px] text-[12px] font-medium leading-[25px] tracking-[-0.02em] text-[#766c63]">
           {item.time}
         </time>
         <div className="mt-0.5">
-          <p className="whitespace-pre-line text-[15px] font-semibold leading-[24px] tracking-[-0.02em] text-[#302923]">
+          <p className="whitespace-pre-line text-[15px] font-semibold leading-[24px] tracking-[-0.02em] text-[#241f1a]">
             {previewText}
           </p>
-          <p className="mt-1.5 text-[12px] font-medium leading-5 tracking-[-0.02em] text-[#9c958d]">
+          <p className="mt-1.5 text-[12px] font-medium leading-5 tracking-[-0.02em] text-[#7e746b]">
             {primaryTag || (sequence === 1 ? "첫 툭이 남겨졌어요." : `${sequence}번째 툭이에요.`)}
           </p>
         </div>
@@ -1199,7 +1199,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
             draggable="false"
           />
         </div>
-        <p className="mb-5 text-[15px] font-medium leading-6 tracking-[-0.03em] text-[#6f6258]">
+        <p className="mb-5 text-[15px] font-semibold leading-6 tracking-[-0.03em] text-[#4f463f]">
           떠오르는 대로, 지금 여기에.
         </p>
         <input
@@ -1214,13 +1214,13 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
           }}
         />
         <div className="relative pb-2 pl-[16px]">
-          <div className="flex h-[28px] items-center gap-1.5 text-[12px] font-medium tracking-[-0.02em] text-[#9b948c]">
-            <span className="absolute left-[3px] top-[11px] h-1.5 w-1.5 rounded-full bg-[#fee856] shadow-[0_0_0_3px_rgba(254,232,86,.18)]" />
+          <div className="flex h-[28px] items-center gap-1.5 text-[12px] font-medium tracking-[-0.02em] text-[#766c63]">
+            <span className="absolute left-[2px] top-[10px] h-2.5 w-2.5 rounded-full bg-[#fee856] shadow-[0_0_0_3px_rgba(254,232,86,.24)]" />
             <span>{currentMeta.time}</span>
           </div>
           <span
             aria-hidden="true"
-            className="absolute left-[6px] top-[28px] h-[calc(100%-28px)] border-l border-dashed border-[#e7dfd6]"
+            className="absolute left-[6px] top-[28px] h-[calc(100%-28px)] border-l border-dashed border-[#d8c8b8]"
           />
           <div className="relative mt-1">
             <textarea
@@ -1231,7 +1231,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
                 if (lengthNotice) setLengthNotice(false);
                 if (emptyNotice) setEmptyNotice(false);
               }}
-              className="maeumtuk-draft-input relative z-[1] min-h-[108px] max-h-[270px] w-full resize-none overflow-y-auto bg-transparent px-0 py-0 text-[18px] font-normal leading-[45px] tracking-[-0.02em] text-[#29241f] outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="maeumtuk-draft-input relative z-[1] min-h-[108px] max-h-[270px] w-full resize-none overflow-y-auto bg-transparent px-0 py-0 text-[18px] font-normal leading-[45px] tracking-[-0.02em] text-[#241f1a] outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               placeholder=""
               aria-label="지금 이 순간의 마음 작성"
               maxLength={301}
@@ -1240,7 +1240,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
             {!draft && (
               <p
                 aria-hidden="true"
-                className="composer-guide pointer-events-none absolute left-0 right-0 top-0 whitespace-pre-line text-[18px] font-normal leading-[45px] tracking-[-0.02em] text-[#b2a79d] opacity-100 transition-opacity duration-200"
+                className="composer-guide pointer-events-none absolute left-0 right-0 top-0 whitespace-pre-line text-[18px] font-normal leading-[45px] tracking-[-0.02em] text-[#9b8f84] opacity-100 transition-opacity duration-200"
               >
                 {typedNoteGuide}
               </p>
