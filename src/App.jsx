@@ -1074,7 +1074,7 @@ function NowFlowItem({ item, sequence, isLatest = false, onAddDetails, onEdit, o
 
 function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDeleteLog, onHideWritingExample, onShowSaved }) {
   const noteGuide = "그냥 적어도 괜찮아요..";
-  const minDraftHeight = 135;
+  const minDraftHeight = 108;
   const maxDraftHeight = 270;
   const [draft, setDraft] = useState("");
   const [photoData, setPhotoData] = useState(null);
@@ -1231,7 +1231,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
                 if (lengthNotice) setLengthNotice(false);
                 if (emptyNotice) setEmptyNotice(false);
               }}
-              className="maeumtuk-draft-input relative z-[1] min-h-[135px] max-h-[270px] w-full resize-none overflow-y-auto bg-transparent px-0 py-0 text-[18px] font-normal leading-[45px] tracking-[-0.02em] text-[#29241f] outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="maeumtuk-draft-input relative z-[1] min-h-[108px] max-h-[270px] w-full resize-none overflow-y-auto bg-transparent px-0 py-0 text-[18px] font-normal leading-[45px] tracking-[-0.02em] text-[#29241f] outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               placeholder=""
               aria-label="지금 이 순간의 마음 작성"
               maxLength={301}
