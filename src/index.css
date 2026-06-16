@@ -104,13 +104,16 @@ button,
 .maeumtuk-hero-friend::before {
   content: "";
   position: absolute;
-  left: 72px;
-  top: 19px;
+  left: 82px;
+  top: 23px;
   z-index: 2;
-  width: 16px;
+  width: 18px;
   height: 1.5px;
   border-radius: 999px;
-  background: rgba(140, 123, 106, 0.42);
+  background: rgba(110, 103, 93, 0.24);
+  box-shadow:
+    8px -8px 0 -0.2px rgba(110, 103, 93, 0.15),
+    -5px 9px 0 -0.3px rgba(110, 103, 93, 0.12);
   pointer-events: none;
   transform: rotate(-28deg);
   animation: maeumtuk-wind-drift 4.8s ease-in-out infinite;
@@ -119,14 +122,14 @@ button,
 .maeumtuk-hero-friend::after {
   content: "";
   position: absolute;
-  left: 90px;
-  top: 7px;
+  left: 103px;
+  top: 9px;
   z-index: 2;
   width: 10px;
   height: 10px;
   border-radius: 999px;
-  background: rgba(254, 232, 86, 0.88);
-  box-shadow: 0 0 10px rgba(254, 232, 86, 0.32);
+  background: rgba(245, 211, 76, 0.76);
+  box-shadow: 0 0 7px rgba(245, 211, 76, 0.18);
   pointer-events: none;
   animation: maeumtuk-dot-breathe 3.6s ease-in-out infinite;
 }

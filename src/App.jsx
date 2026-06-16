@@ -423,7 +423,7 @@ function getTimeDotColor(hour) {
   return "#8c8798";
 }
 
-const flowDotColors = ["#d9aa45", "#86a36f", "#87a8bd", "#e7a37b", "#a99bd2"];
+const flowDotColors = ["#6f7f61", "#748866", "#62775d", "#7d8c70", "#6a8172"];
 
 function getFlowDotColor(item, sequence = 0) {
   const source = `${item.id || ""}${item.date || ""}${item.time || ""}${item.text || ""}${sequence}`;
@@ -1022,7 +1022,7 @@ function NowFlowItem({ item, sequence, isLatest = false, onAddDetails, onEdit, o
         />
         <span
           aria-hidden="true"
-          className="absolute left-[6px] top-[29px] h-[calc(100%-26px)] border-l border-dotted border-[#d8c8b8]"
+          className="absolute left-[6px] top-[29px] h-[calc(100%-26px)] border-l border-dotted border-[#c4ccb9]"
         />
         <time className="block h-[25px] text-[12px] font-medium leading-[25px] tracking-[-0.02em] text-[#766c63]">
           {item.time}
@@ -1164,7 +1164,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
       <header className="mb-7 flex items-start justify-between">
         <div>
           <div className="mb-5 flex items-center gap-2.5">
-            <span className="text-[16px] font-semibold tracking-[-0.04em] text-[#5a5149]">마음툭</span>
+            <span className="text-[16px] font-semibold tracking-[-0.04em] text-[#4c4a43]">마음툭</span>
             <span className="flex w-[36px] items-center" aria-hidden="true">
               <span className="h-px flex-1 bg-[#d0c5b8]" />
               <span className="h-2 w-2 rounded-full bg-[#fee856]" />
@@ -1172,7 +1172,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
           </div>
           <button
             type="button"
-            className="inline-flex items-center gap-2 rounded-full py-1 text-[24px] font-semibold tracking-[-0.05em] text-[#514840]"
+            className="inline-flex items-center gap-2 rounded-full py-1 text-[24px] font-semibold tracking-[-0.05em] text-[#3f4449]"
             aria-label={`${currentMeta.displayDate} ${currentMeta.day}`}
           >
             <span>{currentMeta.displayDate}</span>
@@ -1193,15 +1193,15 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
           isLeaving ? "translate-y-0.5 opacity-55" : ""
         }`}
       >
-        <div className="maeumtuk-hero-friend relative mb-1.5 h-[76px] w-[118px] overflow-hidden">
+        <div className="maeumtuk-hero-friend relative mb-1.5 h-[88px] w-[136px] overflow-hidden">
           <img
             src="/now-hero.png"
             alt=""
-            className="maeumtuk-hero-friend-img -ml-[29px] h-[74px] w-[152px] max-w-none object-contain object-left opacity-95 mix-blend-multiply"
+            className="maeumtuk-hero-friend-img -ml-[33px] h-[85px] w-[175px] max-w-none object-contain object-left opacity-95 mix-blend-multiply"
             draggable="false"
           />
         </div>
-        <p className="mb-6 text-[19px] font-medium leading-7 tracking-[-0.045em] text-[#5a5149]">
+        <p className="mb-6 text-[19px] font-medium leading-7 tracking-[-0.045em] text-[#4c4a43]">
           떠오르는 대로, 지금 여기에.
         </p>
         <input
@@ -1216,13 +1216,13 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
           }}
         />
         <div className="relative pb-2 pl-[16px]">
-          <div className="flex h-[28px] items-center pl-[18px] text-[12px] font-medium tracking-[-0.02em] text-[#766c63]">
-            <span className="absolute left-[2px] top-[10px] h-2.5 w-2.5 rounded-full bg-[#fee856] shadow-[0_0_0_3px_rgba(254,232,86,.24)]" />
+          <div className="flex h-[28px] items-center pl-[18px] text-[12px] font-medium tracking-[-0.02em] text-[#6d7168]">
+            <span className="absolute left-[2px] top-[10px] h-2.5 w-2.5 rounded-full bg-[#6f7f61] shadow-[0_0_0_3px_rgba(111,127,97,.16)]" />
             <span>{currentMeta.time}</span>
           </div>
           <span
             aria-hidden="true"
-            className="absolute left-[6px] top-[28px] h-[calc(100%-28px)] border-l border-dashed border-[#d8c8b8]"
+            className="absolute left-[6px] top-[28px] h-[calc(100%-28px)] border-l border-dashed border-[#b9c4ae]"
           />
           <div className="relative mt-1">
             <textarea
