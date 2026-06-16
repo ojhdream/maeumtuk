@@ -1015,12 +1015,12 @@ function NowFlowItem({ item, sequence, isLatest = false, onAddDetails, onEdit, o
       <div className={`relative pl-[24px] font-['Pretendard'] ${isSample ? "pr-1" : "pr-10"}`}>
         <span
           aria-hidden="true"
-          className="absolute left-[2px] top-[10px] h-2.5 w-2.5 rounded-full shadow-[0_0_0_3px_rgba(254,232,86,.22)]"
+          className="absolute left-[3px] top-[11px] h-2 w-2 rounded-full"
           style={{ background: dotColor }}
         />
         <span
           aria-hidden="true"
-          className="absolute left-[6px] top-[27px] h-[calc(100%-24px)] border-l border-dotted border-[#d8c8b8]"
+          className="absolute left-[6px] top-[29px] h-[calc(100%-26px)] border-l border-dotted border-[#d8c8b8]"
         />
         <time className="block h-[25px] text-[12px] font-medium leading-[25px] tracking-[-0.02em] text-[#766c63]">
           {item.time}
