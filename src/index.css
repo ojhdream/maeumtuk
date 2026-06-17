@@ -221,8 +221,14 @@ button,
   margin-left: -20px;
   margin-right: -20px;
   padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
-  background: linear-gradient(180deg, rgba(250, 248, 245, 0.8) 0%, rgba(248, 243, 239, 0.96) 100%);
-  backdrop-filter: blur(12px);
+  background: linear-gradient(180deg, rgba(245, 239, 234, 0.9) 0%, rgba(242, 235, 229, 0.98) 100%);
+  box-shadow: 0 -10px 24px rgba(73, 59, 47, 0.035);
+  backdrop-filter: blur(8px);
+}
+
+.maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-composer-actions::before {
+  left: 36px;
+  right: 20px;
 }
 
 .maeumtuk-save-screen {
