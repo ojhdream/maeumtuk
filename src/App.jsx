@@ -415,12 +415,12 @@ function getHourFromTimeLabel(time) {
 }
 
 function getTimeDotColor(hour) {
-  if (hour >= 5 && hour < 10) return "#e6bd50";
-  if (hour >= 10 && hour < 14) return "#f0bd3f";
-  if (hour >= 14 && hour < 17) return "#de9c57";
-  if (hour >= 17 && hour < 21) return "#c9794f";
-  if (hour >= 21 || hour < 1) return "#78839a";
-  return "#8c8798";
+  if (hour >= 5 && hour < 10) return "#b8915d";
+  if (hour >= 10 && hour < 14) return "#9f7856";
+  if (hour >= 14 && hour < 17) return "#a7665d";
+  if (hour >= 17 && hour < 21) return "#746f8e";
+  if (hour >= 21 || hour < 1) return "#53657d";
+  return "#6f7889";
 }
 
 const flowDotColors = ["#8a7660", "#9a846b", "#7d6b58", "#a08f7d", "#8f7f6f"];
@@ -1094,6 +1094,12 @@ const nowNoteGuideOptions = [
   "왜 이렇게 피곤하지..",
   "아 진짜 모르겠다..",
   "오늘 하늘 예쁘네...",
+  "아 왜 이렇게 예민하지..",
+  "그 말이 계속 걸린다..",
+  "괜히 서운하다..",
+  "나 지금 좀 찌질한 듯..",
+  "기분이 이상하게 들떠있다..",
+  "아무것도 하기 싫다..",
 ];
 
 function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDeleteLog, onHideWritingExample, onShowSaved }) {
@@ -1215,11 +1221,11 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
           isLeaving ? "translate-y-0.5 opacity-55" : ""
         }`}
       >
-        <div className="maeumtuk-hero-friend relative mb-0 h-[82px] w-[136px] overflow-hidden">
+        <div className="maeumtuk-hero-friend relative mb-0 h-[94px] w-[156px] overflow-hidden">
           <img
             src="/now-hero.png"
             alt=""
-            className="maeumtuk-hero-friend-img -ml-[33px] h-[85px] w-[175px] max-w-none object-contain object-left opacity-95 mix-blend-multiply"
+            className="maeumtuk-hero-friend-img -ml-[38px] h-[98px] w-[201px] max-w-none object-contain object-left opacity-95 mix-blend-multiply"
             draggable="false"
           />
         </div>
@@ -1241,7 +1247,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
         />
         <div className="relative pb-2 pl-[16px]">
           <div className="flex h-[28px] items-center pl-[18px] text-[12px] font-medium tracking-[-0.02em] text-[#6d7168]">
-            <span className="absolute left-[3px] top-[11px] h-2 w-2 rounded-full bg-[#8a7660]" />
+            <span className="absolute left-[3px] top-[11px] h-2 w-2 rounded-full" style={{ background: currentMeta.dot }} />
             <span>{currentMeta.time}</span>
           </div>
           <span
@@ -1957,11 +1963,11 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
           <div>
             <div className="flex items-end gap-3">
               <h1 className="font-['Pretendard'] text-[24px] font-semibold tracking-[-0.045em] text-[#201a15]">툭로그</h1>
-              <span className="relative mb-0.5 block h-[24px] w-[42px] overflow-hidden" aria-hidden="true">
+              <span className="relative mb-0.5 block h-[34px] w-[58px] overflow-hidden" aria-hidden="true">
                 <img
                   src="/now-hero.png"
                   alt=""
-                  className="-ml-[10px] h-[24px] w-[58px] max-w-none object-contain object-left opacity-80 mix-blend-multiply"
+                  className="-ml-[14px] h-[34px] w-[82px] max-w-none object-contain object-left opacity-82 mix-blend-multiply"
                   draggable="false"
                 />
               </span>

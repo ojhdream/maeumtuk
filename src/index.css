@@ -188,16 +188,18 @@ button,
   opacity: 0.82;
 }
 
-.tuk-button:not(:disabled),
-.tuk-button[aria-disabled="true"] {
-  background-color: #d8c3a4;
-  color: #3f352b;
-  box-shadow: 0 6px 16px rgba(98, 79, 58, 0.14);
+.tuk-button:not(:disabled) {
+  background-color: #b89666;
+  color: #2f261e;
+  box-shadow: 0 7px 18px rgba(125, 91, 55, 0.18);
   opacity: 1;
 }
 
 .tuk-button[aria-disabled="true"] {
-  opacity: 0.82;
+  background-color: #e8dfd3;
+  color: #8b8178;
+  box-shadow: inset 0 0 0 1px rgba(126, 109, 92, 0.08);
+  opacity: 0.9;
 }
 
 .tuk-button:not(:disabled):active {
