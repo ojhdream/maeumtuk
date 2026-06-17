@@ -181,11 +181,11 @@ button,
 }
 
 .tuk-button:disabled {
-  background-color: #efece7;
-  color: #a39a90;
+  background-color: #e8dfd3;
+  color: #8b8178;
   cursor: not-allowed;
-  box-shadow: none;
-  opacity: 0.42;
+  box-shadow: inset 0 0 0 1px rgba(126, 109, 92, 0.08);
+  opacity: 0.82;
 }
 
 .tuk-button:not(:disabled),
@@ -197,7 +197,7 @@ button,
 }
 
 .tuk-button[aria-disabled="true"] {
-  opacity: 0.58;
+  opacity: 0.82;
 }
 
 .tuk-button:not(:disabled):active {

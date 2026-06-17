@@ -520,29 +520,29 @@ function BottomNav({ tab, setTab }) {
   ];
 
   return (
-    <nav className="maeumtuk-bottom-nav absolute bottom-0 left-0 right-0 flex h-[calc(78px+env(safe-area-inset-bottom))] items-center justify-around border-t border-[#ded4ca] bg-[#f4eee8] pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_22px_rgba(73,59,47,0.035)] transition duration-200">
+    <nav className="maeumtuk-bottom-nav absolute bottom-0 left-0 right-0 flex h-[calc(84px+env(safe-area-inset-bottom))] items-center justify-around border-t border-[#ded4ca] bg-[#f4eee8] px-3 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_22px_rgba(73,59,47,0.035)] transition duration-200">
       {items.map((item) => {
         const active = tab === item.id;
         return (
           <button
             key={item.id}
             onClick={() => setTab(item.id)}
-            className={`relative flex h-[58px] w-20 flex-col items-center justify-center gap-1 text-[12px] transition duration-200 ${
+            className={`relative flex h-[64px] w-[86px] flex-col items-center justify-center gap-1 rounded-[22px] text-[12px] transition duration-200 ${
               active ? "text-[#2f425c]" : "text-[#687386] hover:text-[#40516a]"
             }`}
           >
             <span
               aria-hidden="true"
-              className={`absolute top-0 h-[2px] w-5 rounded-full bg-[#2f425c] transition duration-200 ${active ? "scale-x-100 opacity-100" : "scale-x-50 opacity-0"}`}
+              className={`absolute inset-0 rounded-[22px] bg-[#eee7df] shadow-[0_10px_24px_rgba(47,66,92,0.06)] transition duration-200 ${active ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
             />
             <div
-              className={`grid h-7 w-9 place-items-center transition duration-200 ${
+              className={`relative z-[1] grid h-7 w-9 place-items-center transition duration-200 ${
                 active ? "text-[#2f425c]" : "text-[#687386]"
               }`}
             >
               {item.icon}
             </div>
-            <span className="font-['Pretendard'] font-medium tracking-[-0.02em]">{item.label}</span>
+            <span className="relative z-[1] font-['Pretendard'] font-medium tracking-[-0.02em]">{item.label}</span>
           </button>
         );
       })}
@@ -674,7 +674,7 @@ function useVisibleViewportHeight() {
 function Phone({ children, tab, setTab, hideNav = false, overlay = null }) {
   return (
     <div className="maeumtuk-phone relative h-[var(--maeumtuk-vh,100dvh)] max-h-[var(--maeumtuk-vh,100dvh)] w-full max-w-[430px] overflow-hidden bg-[#faf8f5] sm:h-[min(820px,calc(var(--maeumtuk-vh,100dvh)-48px))] sm:max-h-[820px] sm:w-[390px] sm:rounded-[26px] sm:shadow-[0_16px_55px_rgba(63,47,30,.08)] sm:ring-1 sm:ring-[#ebe2d8]">
-      <div className={`maeumtuk-scroll h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${hideNav ? "pb-[env(safe-area-inset-bottom)]" : "pb-[calc(106px+env(safe-area-inset-bottom))]"}`}>{children}</div>
+      <div className={`maeumtuk-scroll h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${hideNav ? "pb-[env(safe-area-inset-bottom)]" : "pb-[calc(112px+env(safe-area-inset-bottom))]"}`}>{children}</div>
       {!hideNav && <BottomNav tab={tab} setTab={setTab} />}
       {overlay}
       {/* 저장 완료 전체 화면 애니메이션은 추후 재검토를 위해 보존합니다. */}
@@ -1098,7 +1098,7 @@ const nowNoteGuideOptions = [
 
 function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDeleteLog, onHideWritingExample, onShowSaved }) {
   const noteGuide = useMemo(() => nowNoteGuideOptions[Math.floor(Math.random() * nowNoteGuideOptions.length)], []);
-  const minDraftHeight = 108;
+  const minDraftHeight = 88;
   const maxDraftHeight = 270;
   const [draft, setDraft] = useState("");
   const [photoData, setPhotoData] = useState(null);
@@ -1215,7 +1215,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
           isLeaving ? "translate-y-0.5 opacity-55" : ""
         }`}
       >
-        <div className="maeumtuk-hero-friend relative mb-1.5 h-[88px] w-[136px] overflow-hidden">
+        <div className="maeumtuk-hero-friend relative mb-0 h-[82px] w-[136px] overflow-hidden">
           <img
             src="/now-hero.png"
             alt=""
@@ -1223,7 +1223,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
             draggable="false"
           />
         </div>
-        <p className="mb-6 text-[17px] font-medium leading-[25px] tracking-[-0.045em] text-[#4c4a43]">
+        <p className="mb-6 -mt-1 text-[17px] font-medium leading-[25px] tracking-[-0.045em] text-[#4c4a43]">
           한 줄이어도 괜찮아요.
           <br />
           떠오르는 대로 그냥, 툭.
@@ -1257,7 +1257,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
                 if (lengthNotice) setLengthNotice(false);
                 if (emptyNotice) setEmptyNotice(false);
               }}
-              className="maeumtuk-draft-input relative z-[1] min-h-[108px] max-h-[270px] w-full resize-none overflow-y-auto bg-transparent py-0 pl-[18px] pr-0 text-[18px] font-normal leading-[45px] tracking-[-0.02em] text-[#241f1a] outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="maeumtuk-draft-input relative z-[1] min-h-[88px] max-h-[270px] w-full resize-none overflow-y-auto bg-transparent py-0 pl-[18px] pr-0 text-[18px] font-normal leading-[45px] tracking-[-0.02em] text-[#241f1a] outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               placeholder=""
               aria-label="지금 이 순간의 마음 작성"
               maxLength={301}
@@ -1266,7 +1266,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
             {!draft && (
               <p
                 aria-hidden="true"
-                className="composer-guide pointer-events-none absolute left-[18px] right-0 top-0 whitespace-pre-line text-[18px] font-normal leading-[45px] tracking-[-0.02em] text-[#9b8f84] opacity-100 transition-opacity duration-200"
+                className="composer-guide pointer-events-none absolute left-[18px] right-0 top-0 whitespace-pre-line text-[18px] font-normal leading-[45px] tracking-[-0.02em] text-[#85786d] opacity-100 transition-opacity duration-200"
               >
                 {typedNoteGuide}
               </p>
@@ -1305,10 +1305,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
             aria-disabled={!canLeaveTuk}
             className="tuk-button h-10 min-w-[58px] rounded-full px-3 text-[14px] font-semibold"
           >
-            <span className="inline-flex items-center gap-1">
-              툭
-              <Check size={14} strokeWidth={2.4} />
-            </span>
+            툭
           </button>
         </div>
       </section>
@@ -1321,7 +1318,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
 
       <section className="-mx-5 mt-3 border-t border-[#eee7df] bg-transparent px-5 pb-2 pt-4">
         <div className="mb-2.5 flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold tracking-[-0.03em] text-[#50463e]">조금 전 마음들</h2>
+          <h2 className="text-[15px] font-semibold tracking-[-0.03em] text-[#50463e]">최근 마음들</h2>
           <button
             type="button"
             className="inline-flex items-center gap-1 text-[12px] font-medium tracking-[-0.02em] text-[#9b9289]"
