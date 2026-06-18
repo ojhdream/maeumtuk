@@ -196,9 +196,29 @@ const personalTagStopWords = new Set([
   "너무",
   "그냥",
   "정말",
+  "진짜",
+  "완전",
+  "약간",
+  "뭔가",
   "계속",
   "다시",
+  "그리고",
+  "그래서",
+  "하지만",
+  "근데",
+  "어떤",
+  "무슨",
+  "왜",
+  "걸까",
+  "일까",
+  "뭘까",
+  "아직",
+  "벌써",
+  "이런",
+  "저런",
+  "그런",
   "마음",
+  "마음툭",
   "생각",
   "기분",
   "느낌",
@@ -213,6 +233,12 @@ const personalTagStopWords = new Set([
   "순간",
   "정도",
   "때문",
+  "저장",
+  "확인",
+  "흐름",
+  "작성",
+  "입력",
+  "테스트",
   "괜찮",
   "좋다",
   "좋았",
@@ -2413,11 +2439,11 @@ function getRecentSevenDayLogs(logItems) {
 
 function getTimeBucketLabel(date) {
   const hour = date.getHours();
-  if (hour < 6) return { key: "dawn", label: "🌘 새벽 0~6시" };
-  if (hour < 12) return { key: "morning", label: "☀️ 오전 6~12시" };
-  if (hour < 18) return { key: "afternoon", label: "🌤️ 오후 12~6시" };
-  if (hour < 22) return { key: "evening", label: "🌆 저녁 6~10시" };
-  return { key: "night", label: "🌙 밤 10~12시" };
+  if (hour < 6) return { key: "dawn", label: "🌘 새벽 0~6시에 자주 남겼어요." };
+  if (hour < 12) return { key: "morning", label: "☀️ 오전 6~12시에 자주 남겼어요." };
+  if (hour < 18) return { key: "afternoon", label: "🌤️ 오후 12~6시에 자주 남겼어요." };
+  if (hour < 22) return { key: "evening", label: "🌆 저녁 6~10시에 자주 남겼어요." };
+  return { key: "night", label: "🌙 밤 10~12시에 자주 남겼어요." };
 }
 
 function getFrequentTimeBucket(recentLogs) {
@@ -2435,7 +2461,23 @@ function getFrequentTimeBucket(recentLogs) {
 
 function getFrequentTopics(recentLogs) {
   const counts = new Map();
-  const weakTopicWords = new Set(["테스트", "테스트입니다", "입니다", "있어요", "없어요", "진짜", "그냥"]);
+  const weakTopicWords = new Set([
+    ...personalTagStopWords,
+    "테스트",
+    "테스트입니다",
+    "입니다",
+    "있어요",
+    "없어요",
+    "했다",
+    "하면",
+    "해서",
+    "하는",
+    "하고",
+    "된다",
+    "안돼",
+    "아니",
+    "남김",
+  ]);
 
   recentLogs.forEach(({ item }) => {
     const words = [
@@ -2445,9 +2487,11 @@ function getFrequentTopics(recentLogs) {
       .map(stripKoreanParticle)
       .map((word) => word.replace(/[.!,?…]+$/g, ""))
       .filter((word) => word.length >= 2)
+      .filter((word) => !personalTagStopWords.has(word))
       .filter((word) => !/^\d+$/.test(word))
+      .filter((word) => !/[ㅋㅎㅠㅜㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅌㅍ]{2,}/.test(word))
       .filter((word) => !weakTopicWords.has(word))
-      .filter((word) => word !== "남김");
+      .filter((word) => !categoryTagLabels.has(word));
 
     words.forEach((word) => {
       counts.set(word, (counts.get(word) || 0) + 1);
@@ -2460,13 +2504,32 @@ function getFrequentTopics(recentLogs) {
     .slice(0, 5);
 }
 
-function TodayStatLine({ label, children }) {
+function TodayStatLine({ label, children, subtle = false }) {
   return (
-    <section className="border-b border-[#e8dece] py-4 last:border-b-0">
-      <p className="mb-2 text-[13px] font-semibold tracking-[-0.02em] text-[#6b6257]">{label}</p>
-      <div className="font-['Pretendard'] text-[22px] font-semibold leading-[32px] tracking-[-0.045em] text-[#061c36]">
+    <section className="border-t border-[#e8dece] py-4">
+      {label && <p className="mb-2 text-[13px] font-semibold tracking-[-0.02em] text-[#6b6257]">{label}</p>}
+      <div className={`font-['Pretendard'] tracking-[-0.035em] text-[#061c36] ${subtle ? "text-[15px] font-medium leading-6" : "text-[18px] font-semibold leading-7"}`}>
         {children}
       </div>
+    </section>
+  );
+}
+
+function TodayTopicList({ topics }) {
+  return (
+    <section className="border-t border-[#e8dece] py-5">
+      <p className="mb-3 text-[13px] font-semibold tracking-[-0.02em] text-[#6b6257]">자주 떠오른 것</p>
+      {topics.length > 0 ? (
+        <div className="space-y-2">
+          {topics.slice(0, 3).map((word) => (
+            <div key={word} className="font-['Pretendard'] text-[25px] font-semibold leading-[34px] tracking-[-0.06em] text-[#061c36]">
+              #{word}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-[15px] font-medium leading-6 tracking-[-0.03em] text-[#8a8177]">아직 자주 보이는 단어가 많지 않아요.</p>
+      )}
     </section>
   );
 }
@@ -2483,36 +2546,38 @@ function TodayTab({ logItems }) {
 
   return (
     <main className="px-5 pb-10 pt-6 font-['Pretendard']">
-      <header className="mb-5">
-        <h1 className="font-['Pretendard'] text-[24px] font-semibold tracking-[-0.045em] text-[#061c36]">요즘</h1>
-        <p className="mt-1 text-[13px] font-medium tracking-[-0.02em] text-[#7a7167]">최근 7일의 툭에서 보이는 것들</p>
+      <header className="mb-5 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-['Pretendard'] text-[28px] font-semibold tracking-[-0.06em] text-[#061c36]">요즘</h1>
+          <p className="mt-1 text-[13px] font-medium tracking-[-0.02em] text-[#7a7167]">최근 7일의 툭에서 보이는 것들</p>
+        </div>
+        <div className="maeumtuk-hero-friend relative mt-1 h-[54px] w-[86px] shrink-0 overflow-hidden opacity-75" aria-hidden="true">
+          <img
+            src="/now-hero.png"
+            alt=""
+            className="maeumtuk-hero-friend-img -ml-[24px] h-[58px] w-[118px] max-w-none object-contain object-left mix-blend-multiply"
+            draggable="false"
+          />
+        </div>
       </header>
 
       {recentCount > 0 ? (
-        <section className="rounded-[18px] border border-[#eadfcb] bg-[#fffdf6]/78 px-4 shadow-[0_10px_26px_rgba(16,39,71,0.04)]">
-          <TodayStatLine label="이번 주의 툭">
+        <section>
+          <TodayTopicList topics={frequentTopics} />
+
+          <TodayStatLine subtle>
             이번 주 {recentCount}번 툭했어요.
           </TodayStatLine>
 
           {frequentTime && (
-            <TodayStatLine label="자주 툭한 시간">
+            <TodayStatLine subtle>
               {frequentTime.label}
-            </TodayStatLine>
-          )}
-
-          {frequentTopics.length > 0 && (
-            <TodayStatLine label="자주 떠오른 것">
-              <div className="flex flex-wrap gap-2 pt-0.5">
-                {frequentTopics.map((word) => (
-                  <Chip key={word}>{word}</Chip>
-                ))}
-              </div>
             </TodayStatLine>
           )}
 
           {photoMoments.length > 0 && (
             <TodayStatLine label="순간 모음">
-              <div className="flex gap-3 overflow-hidden pt-1">
+              <div className="flex gap-2.5 overflow-hidden pt-1">
                 {photoMoments.map((item) => (
                   <div key={item.id || `${item.date}-${item.time}`} className="w-[72px] shrink-0">
                     <MiniPhoto bg={item.image} size="lg" />
