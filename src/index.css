@@ -248,6 +248,40 @@ button,
   transform: translateY(100%);
 }
 
+.maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-composer-sheet {
+  bottom: calc(var(--maeumtuk-vh, 100dvh) - var(--maeumtuk-visible-vh, 100dvh));
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+}
+
+.maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-composer-panel {
+  max-height: calc(var(--maeumtuk-visible-vh, 100dvh) - 26px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-top: 12px;
+}
+
+.maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-composer-hero {
+  height: 42px !important;
+  margin-top: -2px;
+  opacity: 0.72;
+}
+
+.maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-composer-hero img {
+  height: 56px !important;
+  width: 116px !important;
+  margin-left: -26px !important;
+}
+
+.maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-composer-copy {
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-draft-input {
+  max-height: 150px;
+}
+
 .maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-scroll {
   padding-bottom: env(safe-area-inset-bottom);
 }

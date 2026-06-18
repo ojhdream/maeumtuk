@@ -1372,26 +1372,8 @@ function NowTab({
         </button>
       </header>
 
-      <section className="mb-4 rounded-[22px] border border-[#eadfcb] bg-[#fffdf6]/78 px-4 py-4 shadow-[0_10px_26px_rgba(16,39,71,0.04)]">
-        <div className="flex items-end gap-3">
-          <div className="maeumtuk-hero-friend relative h-[58px] w-[98px] shrink-0 overflow-hidden" style={getDailyWindStyle(currentMeta.operationalKey)}>
-            <img
-              src="/now-hero.png"
-              alt=""
-              className="maeumtuk-hero-friend-img -ml-[24px] h-[61px] w-[126px] max-w-none object-contain object-left opacity-90 mix-blend-multiply"
-              draggable="false"
-            />
-          </div>
-          <p className="pb-1 text-[15px] font-normal leading-[24px] tracking-[-0.04em] text-[#102747]">
-            한 줄이어도 괜찮아요.
-            <br />
-            떠오르면 아래 툭.
-          </p>
-        </div>
-      </section>
-
       {composerOpen && (
-        <div className="absolute inset-x-0 bottom-0 z-40 px-4 pb-[calc(92px+env(safe-area-inset-bottom))]">
+        <div className="maeumtuk-composer-sheet absolute inset-x-0 bottom-0 z-40 px-4 pb-[calc(92px+env(safe-area-inset-bottom))]">
           <button
             type="button"
             className="absolute inset-0 -top-[560px] z-0 bg-[#2b241f]/10 backdrop-blur-[1px]"
@@ -1399,7 +1381,7 @@ function NowTab({
             onClick={() => onComposerOpenChange?.(false)}
           />
           <section
-            className={`relative z-10 rounded-[26px] border border-[#e7ddd3] bg-[#fbf7f1] px-4 pb-4 pt-4 shadow-[0_18px_48px_rgba(54,42,30,0.18)] transition duration-300 ${
+            className={`maeumtuk-composer-panel relative z-10 rounded-[26px] border border-[#e7ddd3] bg-[#fbf7f1] px-4 pb-4 pt-4 shadow-[0_18px_48px_rgba(54,42,30,0.18)] transition duration-300 ${
           isLeaving ? "translate-y-0.5 opacity-55" : ""
         }`}
           >
@@ -1417,7 +1399,7 @@ function NowTab({
             <X size={17} strokeWidth={1.8} />
           </button>
         </div>
-        <div className="maeumtuk-hero-friend relative mb-0 h-[94px] w-[156px] overflow-hidden" style={getDailyWindStyle(currentMeta.operationalKey)}>
+        <div className="maeumtuk-composer-hero maeumtuk-hero-friend relative mb-0 h-[94px] w-[156px] overflow-hidden" style={getDailyWindStyle(currentMeta.operationalKey)}>
           <img
             src="/now-hero.png"
             alt=""
@@ -1425,7 +1407,7 @@ function NowTab({
             draggable="false"
           />
         </div>
-        <p className="mb-6 -mt-1 text-[17px] font-normal leading-[28px] tracking-[-0.045em] text-[#102747]">
+        <p className="maeumtuk-composer-copy mb-6 -mt-1 text-[17px] font-normal leading-[28px] tracking-[-0.045em] text-[#102747]">
           한 줄이어도 괜찮아요.
           <br />
           떠오르는 대로 그냥, 툭.
@@ -1519,9 +1501,9 @@ function NowTab({
         </div>
       )}
 
-      <section className="-mx-5 mt-3 border-t border-[#eee7df] bg-transparent px-5 pb-2 pt-4">
+      <section className="-mx-5 mt-1 border-t border-[#eee7df] bg-transparent px-5 pb-2 pt-4">
         <div className="mb-2.5 flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold tracking-[-0.03em] text-[#102747]">최근 마음들</h2>
+          <h2 className="text-[15px] font-semibold tracking-[-0.03em] text-[#102747]">최근 툭</h2>
           <button
             type="button"
             className="inline-flex items-center gap-1 text-[12px] font-medium tracking-[-0.02em] text-[#9b9289]"
