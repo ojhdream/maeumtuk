@@ -14,7 +14,7 @@ body,
 html.maeumtuk-keyboard-open,
 html.maeumtuk-keyboard-open body,
 html.maeumtuk-keyboard-open #root {
-  background: #faf8f5;
+  background: #faf8f2;
 }
 
 * {
@@ -26,7 +26,7 @@ body {
   min-width: 320px;
   min-height: 100dvh;
   overflow: hidden;
-  background: #faf8f5;
+  background: #faf8f2;
   font-family: "Pretendard", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -50,14 +50,15 @@ button,
 }
 
 .maeumtuk-phone {
-  background-color: #faf8f5;
+  color: #102747;
+  background-color: #faf8f2;
   background-image: linear-gradient(
     180deg,
-    #faf8f5 0%,
-    #f9f6f3 28%,
-    #f8f3ef 56%,
-    #f5efee 78%,
-    #f2edf1 100%
+    #fbfaf5 0%,
+    #faf8f2 30%,
+    #f8f4ea 58%,
+    #f5f1e8 82%,
+    #f2f0ea 100%
   );
   background-attachment: fixed;
 }
@@ -94,6 +95,9 @@ button,
 
 .maeumtuk-bottom-nav {
   z-index: 20;
+  border-color: #e5ded2 !important;
+  background: #f7f2e8 !important;
+  box-shadow: 0 -10px 28px rgba(16, 39, 71, 0.045) !important;
 }
 
 .maeumtuk-hero-friend-img {
@@ -104,19 +108,20 @@ button,
 .maeumtuk-hero-friend::before {
   content: "";
   position: absolute;
-  left: 82px;
-  top: 23px;
+  left: var(--wind-left, 82px);
+  top: var(--wind-top, 23px);
   z-index: 2;
-  width: 18px;
+  width: var(--wind-width, 18px);
   height: 1.5px;
   border-radius: 999px;
-  background: rgba(110, 103, 93, 0.24);
+  background: rgba(93, 86, 76, 0.34);
   box-shadow:
-    8px -8px 0 -0.2px rgba(110, 103, 93, 0.15),
-    -5px 9px 0 -0.3px rgba(110, 103, 93, 0.12);
+    8px -8px 0 -0.2px rgba(93, 86, 76, 0.22),
+    -5px 9px 0 -0.3px rgba(93, 86, 76, 0.18);
   pointer-events: none;
-  transform: rotate(-28deg);
-  animation: maeumtuk-wind-drift 4.8s ease-in-out infinite;
+  transform: rotate(var(--wind-rotate, -28deg));
+  animation: maeumtuk-wind-drift var(--wind-duration, 4.8s) ease-in-out infinite;
+  animation-delay: var(--wind-delay, 0s);
 }
 
 .input-card-container {
@@ -165,6 +170,37 @@ button,
   background-color: transparent;
 }
 
+.maeumtuk-draft-zone {
+  margin-left: -2px;
+  margin-right: -2px;
+  padding: 4px 6px 2px 18px;
+  border: 0;
+  border-radius: 0;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 38px,
+      rgba(16, 39, 71, 0.15) 38px,
+      rgba(16, 39, 71, 0.15) 39px
+    );
+  box-shadow: none;
+  transition:
+    background-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.maeumtuk-draft-zone:focus-within {
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 38px,
+      rgba(246, 196, 0, 0.52) 38px,
+      rgba(246, 196, 0, 0.52) 39px
+    );
+}
+
 .maeumtuk-now-row {
   transition:
     background-color 0.2s ease,
@@ -189,9 +225,9 @@ button,
 }
 
 .tuk-button:not(:disabled) {
-  background-color: #b89666;
-  color: #2f261e;
-  box-shadow: 0 7px 18px rgba(125, 91, 55, 0.18);
+  background-color: #f6c400;
+  color: #102747;
+  box-shadow: 0 8px 20px rgba(16, 39, 71, 0.14);
   opacity: 1;
 }
 
@@ -266,12 +302,16 @@ button,
 @keyframes maeumtuk-wind-drift {
   0%,
   100% {
-    opacity: 0.3;
-    transform: translate3d(-1px, 0, 0) rotate(-28deg) scaleX(0.82);
+    opacity: 0.42;
+    transform: translate3d(-1px, 0, 0) rotate(var(--wind-rotate, -28deg)) scaleX(0.78);
   }
-  45% {
-    opacity: 0.72;
-    transform: translate3d(4px, -1px, 0) rotate(-28deg) scaleX(1);
+  34% {
+    opacity: 0.82;
+    transform: translate3d(3px, -0.5px, 0) rotate(var(--wind-rotate, -28deg)) scaleX(1.04);
+  }
+  62% {
+    opacity: 0.56;
+    transform: translate3d(1px, 1px, 0) rotate(var(--wind-rotate, -28deg)) scaleX(0.9);
   }
 }
 

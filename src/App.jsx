@@ -4,18 +4,24 @@ import {
   Bell,
   Check,
   BookOpen,
+  BarChart3,
   ChevronDown,
   ChevronUp,
+  Cloud,
   FileText,
+  Home,
   Image,
+  Lock,
   MoreHorizontal,
   Moon,
   PencilLine,
   Plus,
+  RefreshCw,
   Search,
   Sprout,
   Sun,
   Sunset,
+  UserRound,
   X,
 } from "lucide-react";
 
@@ -415,15 +421,15 @@ function getHourFromTimeLabel(time) {
 }
 
 function getTimeDotColor(hour) {
-  if (hour >= 5 && hour < 10) return "#b8915d";
-  if (hour >= 10 && hour < 14) return "#9f7856";
-  if (hour >= 14 && hour < 17) return "#a7665d";
-  if (hour >= 17 && hour < 21) return "#746f8e";
-  if (hour >= 21 || hour < 1) return "#53657d";
-  return "#6f7889";
+  if (hour >= 5 && hour < 10) return "#f3a84f";
+  if (hour >= 10 && hour < 14) return "#e96f55";
+  if (hour >= 14 && hour < 17) return "#62a876";
+  if (hour >= 17 && hour < 21) return "#5f83c6";
+  if (hour >= 21 || hour < 1) return "#8b6fbd";
+  return "#607789";
 }
 
-const flowDotColors = ["#8a7660", "#9a846b", "#7d6b58", "#a08f7d", "#8f7f6f"];
+const flowDotColors = ["#f3a84f", "#e96f55", "#62a876", "#5f83c6", "#8b6fbd", "#607789"];
 
 function getFlowDotColor(item, sequence = 0) {
   const source = `${item.id || ""}${item.date || ""}${item.time || ""}${item.text || ""}${sequence}`;
@@ -436,8 +442,63 @@ function getFlowDotColor(item, sequence = 0) {
   return flowDotColors[hash];
 }
 
+function getDailyWindStyle(key = "") {
+  const source = key || formatOperationalKey(new Date());
+  let hash = 0;
+
+  for (let index = 0; index < source.length; index += 1) {
+    hash = (hash + source.charCodeAt(index) * (index + 3)) % 997;
+  }
+
+  return {
+    "--wind-left": `${87 + (hash % 4)}px`,
+    "--wind-top": `${24 + (Math.floor(hash / 5) % 4)}px`,
+    "--wind-width": `${19 + (hash % 5)}px`,
+    "--wind-rotate": `${-33 + (hash % 7)}deg`,
+    "--wind-duration": `${4.1 + (hash % 6) * 0.18}s`,
+    "--wind-delay": `${-((hash % 10) * 0.17)}s`,
+  };
+}
+
 function getLogDotColor(item) {
   return getFlowDotColor(item);
+}
+
+const moodChipPalettes = [
+  { bg: "#fff1e7", text: "#b9573f", border: "#f2c9b8" },
+  { bg: "#eef6ea", text: "#4e7b4f", border: "#cfe1c7" },
+  { bg: "#eaf3fb", text: "#386c9d", border: "#c7ddec" },
+  { bg: "#f1ecfb", text: "#7255a6", border: "#d8ccec" },
+  { bg: "#fff6d9", text: "#9a6f12", border: "#ecd58f" },
+  { bg: "#f3f0eb", text: "#6f5b49", border: "#ddd2c6" },
+];
+
+function getMoodChipStyle(mood = "") {
+  const source = mood || "남김";
+  let hash = 0;
+
+  for (let index = 0; index < source.length; index += 1) {
+    hash = (hash + source.charCodeAt(index) * (index + 5)) % moodChipPalettes.length;
+  }
+
+  const palette = moodChipPalettes[hash];
+  return {
+    backgroundColor: palette.bg,
+    color: palette.text,
+    borderColor: palette.border,
+  };
+}
+
+function getMoodLabels(item) {
+  const moods = Array.isArray(item.moods) ? item.moods : [];
+  const legacyMood = item.mood && item.mood !== "남김" ? [item.mood] : [];
+  return [...new Set([...moods, ...legacyMood].map((mood) => mood.trim()).filter(Boolean))].slice(0, 2);
+}
+
+function getNoteEntries(item) {
+  const notes = Array.isArray(item.notes) ? item.notes : [];
+  const legacyNote = item.note ? [item.note] : [];
+  return [...legacyNote, ...notes].map((note) => String(note).trim()).filter(Boolean);
 }
 
 function getMomentTitle(item) {
@@ -512,37 +573,55 @@ function TimeOfDayIcon({ hour }) {
   return <Sun size={22} strokeWidth={1.8} className="text-[#b89a62]" />;
 }
 
-function BottomNav({ tab, setTab }) {
+function BottomNav({ tab, setTab, onCompose, composing = false }) {
   const items = [
-    { id: "now", label: "지금", icon: <PencilLine size={20} strokeWidth={1.85} /> },
+    { id: "recent", label: "최근 툭", icon: <Home size={20} strokeWidth={1.85} /> },
     { id: "log", label: "툭로그", icon: <FileText size={20} strokeWidth={1.85} /> },
-    { id: "today", label: "요즘", icon: <Moon size={20} strokeWidth={1.85} /> },
+    { id: "compose", label: "지금", icon: <PencilLine size={22} strokeWidth={1.9} />, compose: true },
+    { id: "today", label: "요즘", icon: <BarChart3 size={20} strokeWidth={1.85} /> },
+    { id: "settings", label: "나", icon: <UserRound size={20} strokeWidth={1.85} /> },
   ];
 
   return (
-    <nav className="maeumtuk-bottom-nav absolute bottom-0 left-0 right-0 flex h-[calc(84px+env(safe-area-inset-bottom))] items-center justify-around border-t border-[#ded4ca] bg-[#f4eee8] px-3 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_22px_rgba(73,59,47,0.035)] transition duration-200">
+    <nav className="maeumtuk-bottom-nav absolute bottom-0 left-0 right-0 flex h-[calc(78px+env(safe-area-inset-bottom))] items-center justify-around border-t border-[#ded4ca] bg-[#f4eee8]/96 px-2 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_22px_rgba(73,59,47,0.035)] backdrop-blur-[10px] transition duration-200">
       {items.map((item) => {
-        const active = tab === item.id;
+        const active = item.compose ? composing : tab === item.id;
+        if (item.compose) {
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={onCompose}
+              className={`relative -mt-5 flex h-[66px] w-[66px] flex-col items-center justify-center gap-0.5 rounded-full bg-[radial-gradient(circle_at_38%_28%,#fff3bd_0%,#f6c400_58%,#e7b500_100%)] text-[#061c36] shadow-[0_12px_24px_rgba(16,39,71,0.14)] ring-1 ring-[#e7bd13]/45 transition duration-200 active:scale-[0.98] ${
+                active ? "scale-100" : "scale-[0.97]"
+              }`}
+              aria-label="지금 마음 작성하기"
+            >
+              <span className="grid h-6 w-6 place-items-center">{item.icon}</span>
+              <span className="font-['Pretendard'] text-[15px] font-semibold tracking-[-0.04em]">{item.label}</span>
+            </button>
+          );
+        }
         return (
           <button
             key={item.id}
             onClick={() => setTab(item.id)}
-            className={`relative flex h-[64px] w-[86px] flex-col items-center justify-center gap-1 rounded-[22px] text-[12px] transition duration-200 ${
-              active ? "text-[#2f425c]" : "text-[#687386] hover:text-[#40516a]"
+            className={`relative flex h-[56px] w-[58px] flex-col items-center justify-center gap-0.5 rounded-[18px] text-[10.5px] transition duration-200 ${
+              active ? "text-[#061c36]" : "text-[#72777c] hover:text-[#173253]"
             }`}
           >
             <span
               aria-hidden="true"
-              className={`absolute inset-0 rounded-[22px] bg-[#eee7df] shadow-[0_10px_24px_rgba(47,66,92,0.06)] transition duration-200 ${active ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
+              className={`absolute inset-0 rounded-[18px] bg-[#fff1bd]/82 shadow-[0_8px_18px_rgba(16,39,71,0.05)] transition duration-200 ${active ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
             />
             <div
-              className={`relative z-[1] grid h-7 w-9 place-items-center transition duration-200 ${
-                active ? "text-[#2f425c]" : "text-[#687386]"
+              className={`relative z-[1] grid h-6 w-8 place-items-center transition duration-200 ${
+                active ? "text-[#061c36]" : "text-[#72777c]"
               }`}
             >
               {item.icon}
             </div>
-            <span className="relative z-[1] font-['Pretendard'] font-medium tracking-[-0.02em]">{item.label}</span>
+            <span className="relative z-[1] whitespace-nowrap font-['Pretendard'] font-medium tracking-[-0.03em]">{item.label}</span>
           </button>
         );
       })}
@@ -671,11 +750,11 @@ function useVisibleViewportHeight() {
   }, []);
 }
 
-function Phone({ children, tab, setTab, hideNav = false, overlay = null }) {
+function Phone({ children, tab, setTab, hideNav = false, overlay = null, onCompose, composing = false }) {
   return (
     <div className="maeumtuk-phone relative h-[var(--maeumtuk-vh,100dvh)] max-h-[var(--maeumtuk-vh,100dvh)] w-full max-w-[430px] overflow-hidden bg-[#faf8f5] sm:h-[min(820px,calc(var(--maeumtuk-vh,100dvh)-48px))] sm:max-h-[820px] sm:w-[390px] sm:rounded-[26px] sm:shadow-[0_16px_55px_rgba(63,47,30,.08)] sm:ring-1 sm:ring-[#ebe2d8]">
-      <div className={`maeumtuk-scroll h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${hideNav ? "pb-[env(safe-area-inset-bottom)]" : "pb-[calc(112px+env(safe-area-inset-bottom))]"}`}>{children}</div>
-      {!hideNav && <BottomNav tab={tab} setTab={setTab} />}
+      <div className={`maeumtuk-scroll h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${hideNav ? "pb-[env(safe-area-inset-bottom)]" : "pb-[calc(96px+env(safe-area-inset-bottom))]"}`}>{children}</div>
+      {!hideNav && <BottomNav tab={tab} setTab={setTab} onCompose={onCompose} composing={composing} />}
       {overlay}
       {/* 저장 완료 전체 화면 애니메이션은 추후 재검토를 위해 보존합니다. */}
       {/* {saveOverlayVisible && <SaveOverlay message={saveOverlayMessage} />} */}
@@ -853,21 +932,32 @@ function RecordEditScreen({ item, onClose, onSave }) {
 
 function RecordAddSheet({ item, emotionOptions, initialMode = "menu", onAddEmotion, onClose, onUpdate }) {
   const [mode, setMode] = useState(initialMode);
+  const [selectedMoods, setSelectedMoods] = useState(getMoodLabels(item));
   const [customEmotion, setCustomEmotion] = useState("");
-  const [note, setNote] = useState(item.note || "");
+  const [note, setNote] = useState("");
 
-  const saveEmotion = (emotion) => {
+  const toggleEmotion = (emotion) => {
     const nextEmotion = emotion.trim();
     if (!nextEmotion) return;
-    onUpdate(item, { mood: nextEmotion });
-    onAddEmotion(nextEmotion);
+
+    setSelectedMoods((current) => {
+      if (current.includes(nextEmotion)) return current.filter((mood) => mood !== nextEmotion);
+      onAddEmotion(nextEmotion);
+      return [...current, nextEmotion].slice(0, 2);
+    });
+    setCustomEmotion("");
+  };
+
+  const saveEmotion = () => {
+    if (selectedMoods.length === 0) return;
+    onUpdate(item, { mood: selectedMoods[0], moods: selectedMoods });
     onClose();
   };
 
   const saveNote = () => {
     const nextNote = note.trim();
     if (!nextNote) return;
-    onUpdate(item, { note: nextNote });
+    onUpdate(item, { notes: [...(item.notes || []), nextNote] });
     onClose();
   };
 
@@ -892,7 +982,7 @@ function RecordAddSheet({ item, emotionOptions, initialMode = "menu", onAddEmoti
                 </span>
                 <span>
                   <b className="block text-[15px] font-semibold text-[#3c352f]">내 마음대로 이름 붙이기</b>
-                  <span className="mt-0.5 block text-[12px] text-[#8b8279]">속상해, 화남, 피곤함처럼 한마디만</span>
+                  <span className="mt-0.5 block text-[12px] text-[#8b8279]">속상해, 화남, 피곤함처럼 2개까지</span>
                 </span>
               </button>
               <button onClick={() => setMode("note")} className="flex w-full items-center gap-3 rounded-[12px] bg-[#fff4ed] px-4 py-4 text-left">
@@ -913,30 +1003,62 @@ function RecordAddSheet({ item, emotionOptions, initialMode = "menu", onAddEmoti
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <h2 className="text-[17px] font-semibold text-[#2b251f]">내 마음대로 이름 붙이기</h2>
-                <p className="mt-1 text-[12px] text-[#91887f]">속상해, 화남, 피곤함처럼 한마디만 남겨도 돼요.</p>
+                <p className="mt-1 text-[12px] text-[#91887f]">속상해, 화남, 피곤함처럼 2개까지 붙일 수 있어요.</p>
               </div>
               <button onClick={() => setMode("menu")} className="h-9 rounded-[9px] px-2 text-[12px] font-medium text-[#746d65]">뒤로</button>
             </div>
+            <div className="mb-3 flex items-center justify-between rounded-[11px] bg-[#f8f3ed] px-3 py-2 text-[12px] font-medium text-[#6f655b]">
+              <span>{selectedMoods.length > 0 ? selectedMoods.join(" · ") : "아직 붙인 이름이 없어요."}</span>
+              <span>{selectedMoods.length}/2</span>
+            </div>
             <div className="flex flex-wrap gap-2">
-              {emotionOptions.map((emotion) => (
-                <button key={emotion} onClick={() => saveEmotion(emotion)} className="rounded-full border border-[#ded2c6] bg-[#f4efe9] px-3 py-2 text-[13px] font-medium text-[#5c5045]">
-                  {emotion}
-                </button>
-              ))}
+              {emotionOptions.map((emotion) => {
+                const selected = selectedMoods.includes(emotion);
+                const disabled = !selected && selectedMoods.length >= 2;
+                return (
+                  <button
+                    key={emotion}
+                    onClick={() => toggleEmotion(emotion)}
+                    disabled={disabled}
+                    className={`rounded-full border px-3 py-2 text-[13px] font-medium transition ${
+                      selected
+                        ? "border-[#102747] bg-[#102747] text-white"
+                        : disabled
+                          ? "border-[#e6ddd3] bg-[#f7f2ec] text-[#b4aaa0]"
+                          : "border-[#ded2c6] bg-[#f4efe9] text-[#5c5045]"
+                    }`}
+                  >
+                    {emotion}
+                  </button>
+                );
+              })}
             </div>
             <div className="mt-4 flex gap-2">
               <input
                 value={customEmotion}
                 onChange={(event) => setCustomEmotion(event.target.value)}
                 onKeyDown={(event) => {
-                  if (event.key === "Enter") saveEmotion(customEmotion);
+                  if (event.key === "Enter") toggleEmotion(customEmotion);
                 }}
                 className="h-11 min-w-0 flex-1 rounded-[10px] border border-[#e5dbd0] bg-white px-3 text-[14px] outline-none focus:border-[#c8b5a4]"
                 placeholder="내 마음대로 이름 붙이기"
                 autoFocus
               />
-              <button onClick={() => saveEmotion(customEmotion)} className="h-11 rounded-[10px] bg-[#6e5d4c] px-4 text-[13px] font-semibold text-white">남기기</button>
+              <button
+                onClick={() => toggleEmotion(customEmotion)}
+                disabled={!customEmotion.trim() || (!selectedMoods.includes(customEmotion.trim()) && selectedMoods.length >= 2)}
+                className="h-11 rounded-[10px] bg-[#6e5d4c] px-4 text-[13px] font-semibold text-white disabled:bg-[#d8d0c8]"
+              >
+                추가
+              </button>
             </div>
+            <button
+              onClick={saveEmotion}
+              disabled={selectedMoods.length === 0}
+              className="mt-4 h-11 w-full rounded-[12px] bg-[#f6c400] text-[14px] font-semibold text-[#061c36] disabled:bg-[#e8dfd2] disabled:text-[#91887f]"
+            >
+              남기기
+            </button>
           </>
         )}
 
@@ -945,7 +1067,7 @@ function RecordAddSheet({ item, emotionOptions, initialMode = "menu", onAddEmoti
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <h2 className="text-[17px] font-semibold text-[#2b251f]">툭 하나 더</h2>
-                <p className="mt-1 text-[12px] text-[#91887f]">그 후의 생각이나 이야기를 남겨보세요.</p>
+                <p className="mt-1 text-[12px] text-[#91887f]">떠오를 때마다 이어서 남길 수 있어요.</p>
               </div>
               <button onClick={() => setMode("menu")} className="h-9 rounded-[9px] px-2 text-[12px] font-medium text-[#746d65]">뒤로</button>
             </div>
@@ -971,8 +1093,10 @@ function NowFlowItem({ item, sequence, isLatest = false, onAddDetails, onEdit, o
   const [confirmDelete, setConfirmDelete] = useState(false);
   const dotColor = getFlowDotColor(item, sequence);
   const isSample = Boolean(item.sample);
-  const hasEmotion = Boolean(item.mood && item.mood !== "남김");
-  const hasNote = Boolean(item.note);
+  const moodLabels = getMoodLabels(item);
+  const hasEmotion = moodLabels.length > 0;
+  const noteEntries = getNoteEntries(item);
+  const hasNote = noteEntries.length > 0;
   const primaryTag = item.tags?.[0] ? normalizeWord(item.tags[0]) : null;
   const previewText = item.text.length > 42 ? `${item.text.slice(0, 42)}...` : item.text;
   return (
@@ -1029,7 +1153,7 @@ function NowFlowItem({ item, sequence, isLatest = false, onAddDetails, onEdit, o
       <div className={`relative pl-[24px] font-['Pretendard'] ${isSample ? "pr-1" : "pr-10"}`}>
         <span
           aria-hidden="true"
-          className="absolute left-[3px] top-[11px] h-2 w-2 rounded-full"
+          className="absolute left-[3px] top-[11px] h-2 w-2 rounded-full ring-2 ring-[#fffaf3] shadow-[0_1px_5px_rgba(43,35,28,0.16)]"
           style={{ background: dotColor }}
         />
         <span
@@ -1040,7 +1164,7 @@ function NowFlowItem({ item, sequence, isLatest = false, onAddDetails, onEdit, o
           {item.time}
         </time>
         <div className="mt-0.5">
-          <p className="whitespace-pre-line text-[15px] font-semibold leading-[24px] tracking-[-0.02em] text-[#241f1a]">
+          <p className="whitespace-pre-line font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f]">
             {previewText}
           </p>
           <p className="mt-1.5 text-[12px] font-medium leading-5 tracking-[-0.02em] text-[#7e746b]">
@@ -1057,13 +1181,25 @@ function NowFlowItem({ item, sequence, isLatest = false, onAddDetails, onEdit, o
         {(hasEmotion || hasNote) && (
           <div className="mt-3 space-y-2">
             {hasEmotion && (
-              <span className="inline-flex rounded-full bg-[#eef4e8] px-2.5 py-1 text-[12px] font-medium text-[#526f43]">
-                {item.mood}
-              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {moodLabels.map((mood) => (
+                  <span
+                    key={mood}
+                    className="inline-flex rounded-full border px-2.5 py-1 text-[12px] font-medium"
+                    style={getMoodChipStyle(mood)}
+                  >
+                    {mood}
+                  </span>
+                ))}
+              </div>
             )}
             {hasNote && (
-              <div className="border-l border-[#cbd8bd] pl-3">
-                <p className="rounded-[9px] bg-[#f8faf5] px-3 py-2 text-[13px] leading-6 text-[#46503f]">{item.note}</p>
+              <div className="space-y-1.5 border-l border-[#d3c7ba] pl-3">
+                {noteEntries.map((note, index) => (
+                  <p key={`${note}-${index}`} className="rounded-[10px] border border-[#e8ded4] bg-[#f8f3ee] px-3 py-2.5 text-[13px] leading-6 text-[#4c4036]">
+                    {note}
+                  </p>
+                ))}
               </div>
             )}
           </div>
@@ -1102,9 +1238,20 @@ const nowNoteGuideOptions = [
   "아무것도 하기 싫다..",
 ];
 
-function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDeleteLog, onHideWritingExample, onShowSaved }) {
+function NowTab({
+  todayLogs,
+  recentLogs,
+  onAddLog,
+  onAddDetails,
+  onEditLog,
+  onDeleteLog,
+  onHideWritingExample,
+  onShowSaved,
+  composerOpen,
+  onComposerOpenChange,
+}) {
   const noteGuide = useMemo(() => nowNoteGuideOptions[Math.floor(Math.random() * nowNoteGuideOptions.length)], []);
-  const minDraftHeight = 88;
+  const minDraftHeight = 78;
   const maxDraftHeight = 270;
   const [draft, setDraft] = useState("");
   const [photoData, setPhotoData] = useState(null);
@@ -1146,6 +1293,12 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
     input.style.height = `${Math.min(input.scrollHeight, maxDraftHeight)}px`;
   }, [draft]);
 
+  useEffect(() => {
+    if (!composerOpen) return;
+    const focusTimer = window.setTimeout(() => draftRef.current?.focus(), 120);
+    return () => window.clearTimeout(focusTimer);
+  }, [composerOpen]);
+
   const leaveTuk = () => {
     if (isLeaving) return;
     const text = draft.trim();
@@ -1169,9 +1322,11 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
       text: text || "사진으로 남긴 툭",
       tags: [],
       mood: "남김",
+      moods: [],
       dot: currentMeta.dot,
       image: photoData,
       note: "",
+      notes: [],
     };
 
     setIsLeaving(true);
@@ -1184,6 +1339,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
       setDraft("");
       setPhotoData(null);
       setIsLeaving(false);
+      onComposerOpenChange?.(false);
     }, 260);
   };
 
@@ -1192,15 +1348,15 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
       <header className="mb-7 flex items-start justify-between">
         <div>
           <div className="mb-5 flex items-center gap-2.5">
-            <span className="text-[16px] font-semibold tracking-[-0.04em] text-[#4c4a43]">마음툭</span>
+            <span className="text-[16px] font-semibold tracking-[-0.04em] text-[#102747]">마음툭</span>
             <span className="flex w-[36px] items-center" aria-hidden="true">
               <span className="h-px flex-1 bg-[#d0c5b8]" />
-              <span className="h-2 w-2 rounded-full bg-[#c6a46b]" />
+              <span className="h-2 w-2 rounded-full bg-[#f6c400]" />
             </span>
           </div>
           <button
             type="button"
-            className="inline-flex items-center gap-2 rounded-full py-1 text-[22px] font-semibold tracking-[-0.05em] text-[#3f4449]"
+            className="inline-flex items-center gap-2 rounded-full py-1 text-[22px] font-semibold tracking-[-0.05em] text-[#102747]"
             aria-label={`${currentMeta.displayDate} ${currentMeta.day}`}
           >
             <span>{currentMeta.displayDate}</span>
@@ -1216,12 +1372,52 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
         </button>
       </header>
 
-      <section
-        className={`relative pb-4 transition duration-300 ${
+      <section className="mb-4 rounded-[22px] border border-[#eadfcb] bg-[#fffdf6]/78 px-4 py-4 shadow-[0_10px_26px_rgba(16,39,71,0.04)]">
+        <div className="flex items-end gap-3">
+          <div className="maeumtuk-hero-friend relative h-[58px] w-[98px] shrink-0 overflow-hidden" style={getDailyWindStyle(currentMeta.operationalKey)}>
+            <img
+              src="/now-hero.png"
+              alt=""
+              className="maeumtuk-hero-friend-img -ml-[24px] h-[61px] w-[126px] max-w-none object-contain object-left opacity-90 mix-blend-multiply"
+              draggable="false"
+            />
+          </div>
+          <p className="pb-1 text-[15px] font-normal leading-[24px] tracking-[-0.04em] text-[#102747]">
+            한 줄이어도 괜찮아요.
+            <br />
+            떠오르면 아래 툭.
+          </p>
+        </div>
+      </section>
+
+      {composerOpen && (
+        <div className="absolute inset-x-0 bottom-0 z-40 px-4 pb-[calc(92px+env(safe-area-inset-bottom))]">
+          <button
+            type="button"
+            className="absolute inset-0 -top-[560px] z-0 bg-[#2b241f]/10 backdrop-blur-[1px]"
+            aria-label="작성창 닫기"
+            onClick={() => onComposerOpenChange?.(false)}
+          />
+          <section
+            className={`relative z-10 rounded-[26px] border border-[#e7ddd3] bg-[#fbf7f1] px-4 pb-4 pt-4 shadow-[0_18px_48px_rgba(54,42,30,0.18)] transition duration-300 ${
           isLeaving ? "translate-y-0.5 opacity-55" : ""
         }`}
-      >
-        <div className="maeumtuk-hero-friend relative mb-0 h-[94px] w-[156px] overflow-hidden">
+          >
+        <div className="mb-3 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-[13px] font-semibold tracking-[-0.03em] text-[#102747]">
+            <span className="h-2 w-2 rounded-full" style={{ background: currentMeta.dot }} />
+            지금 남기기
+          </div>
+          <button
+            type="button"
+            onClick={() => onComposerOpenChange?.(false)}
+            className="grid h-8 w-8 place-items-center rounded-full text-[#81776e] transition hover:bg-[#f1ebe4]"
+            aria-label="작성창 닫기"
+          >
+            <X size={17} strokeWidth={1.8} />
+          </button>
+        </div>
+        <div className="maeumtuk-hero-friend relative mb-0 h-[94px] w-[156px] overflow-hidden" style={getDailyWindStyle(currentMeta.operationalKey)}>
           <img
             src="/now-hero.png"
             alt=""
@@ -1229,7 +1425,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
             draggable="false"
           />
         </div>
-        <p className="mb-6 -mt-1 text-[17px] font-medium leading-[25px] tracking-[-0.045em] text-[#4c4a43]">
+        <p className="mb-6 -mt-1 text-[17px] font-normal leading-[28px] tracking-[-0.045em] text-[#102747]">
           한 줄이어도 괜찮아요.
           <br />
           떠오르는 대로 그냥, 툭.
@@ -1245,15 +1441,14 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
             event.target.value = "";
           }}
         />
-        <div className="relative pb-2 pl-[16px]">
-          <div className="flex h-[28px] items-center pl-[18px] text-[12px] font-medium tracking-[-0.02em] text-[#6d7168]">
-            <span className="absolute left-[3px] top-[11px] h-2 w-2 rounded-full" style={{ background: currentMeta.dot }} />
+        <div className="maeumtuk-draft-zone relative pl-[16px]">
+          <div className="flex h-[28px] items-center pl-[22px] text-[12px] font-medium tracking-[-0.02em] text-[#6d7168]">
+            <span
+              className="absolute left-[8px] top-[11px] h-2 w-2 rounded-full ring-2 ring-[#fffaf3] shadow-[0_1px_5px_rgba(43,35,28,0.16)]"
+              style={{ background: currentMeta.dot }}
+            />
             <span>{currentMeta.time}</span>
           </div>
-          <span
-            aria-hidden="true"
-            className="absolute left-[6px] top-[28px] h-[calc(100%-28px)] border-l border-dashed border-[#cfc3b7]"
-          />
           <div className="relative mt-1">
             <textarea
               ref={draftRef}
@@ -1263,16 +1458,16 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
                 if (lengthNotice) setLengthNotice(false);
                 if (emptyNotice) setEmptyNotice(false);
               }}
-              className="maeumtuk-draft-input relative z-[1] min-h-[88px] max-h-[270px] w-full resize-none overflow-y-auto bg-transparent py-0 pl-[18px] pr-0 text-[18px] font-normal leading-[45px] tracking-[-0.02em] text-[#241f1a] outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="maeumtuk-draft-input relative z-[1] min-h-[78px] max-h-[220px] w-full resize-none overflow-y-auto bg-transparent py-0 pl-[22px] pr-0 text-[18px] font-normal leading-[39px] tracking-[-0.02em] text-[#061c36] outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               placeholder=""
               aria-label="지금 이 순간의 마음 작성"
               maxLength={301}
-              rows={3}
+              rows={2}
             />
             {!draft && (
               <p
                 aria-hidden="true"
-                className="composer-guide pointer-events-none absolute left-[18px] right-0 top-0 whitespace-pre-line text-[18px] font-normal leading-[45px] tracking-[-0.02em] text-[#85786d] opacity-100 transition-opacity duration-200"
+                className="composer-guide pointer-events-none absolute left-[22px] right-0 top-0 whitespace-pre-line text-[18px] font-normal leading-[39px] tracking-[-0.02em] text-[#7a756e] opacity-100 transition-opacity duration-200"
               >
                 {typedNoteGuide}
               </p>
@@ -1321,10 +1516,12 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
           {photoError || (emptyNotice ? "마음을 먼저 적어주세요." : "조금 길어요. 300자 안쪽이 잘 읽혀요.")}
         </p>
       )}
+        </div>
+      )}
 
       <section className="-mx-5 mt-3 border-t border-[#eee7df] bg-transparent px-5 pb-2 pt-4">
         <div className="mb-2.5 flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold tracking-[-0.03em] text-[#50463e]">최근 마음들</h2>
+          <h2 className="text-[15px] font-semibold tracking-[-0.03em] text-[#102747]">최근 마음들</h2>
           <button
             type="button"
             className="inline-flex items-center gap-1 text-[12px] font-medium tracking-[-0.02em] text-[#9b9289]"
@@ -1349,6 +1546,7 @@ function NowTab({ todayLogs, recentLogs, onAddLog, onAddDetails, onEditLog, onDe
           </div>
         ) : null}
       </section>
+
     </main>
   );
 }
@@ -1461,8 +1659,10 @@ function RecentCard({
   const [editText, setEditText] = useState(item.text);
   const [editImage, setEditImage] = useState(item.image);
   const editImageInputRef = useRef(null);
-  const hasEmotion = Boolean(item.mood && item.mood !== "남김");
-  const hasNote = Boolean(item.note);
+  const moodLabels = getMoodLabels(item);
+  const hasEmotion = moodLabels.length > 0;
+  const noteEntries = getNoteEntries(item);
+  const hasNote = noteEntries.length > 0;
   const hasAfterData = hasEmotion || hasNote;
 
   const saveEdit = () => {
@@ -1472,6 +1672,7 @@ function RecentCard({
       text: nextText,
       tags: item.tags || [],
       mood: item.mood || "남김",
+      moods: getMoodLabels(item),
       image: editImage,
     });
     setEditing(false);
@@ -1530,8 +1731,11 @@ function RecentCard({
         </div>
       )}
       <div className="font-['Pretendard']">
-          <div className="mb-2 flex items-center gap-2 pr-10 text-[12px] font-medium text-[#77716a]">
-            <span className="h-2 w-2 rounded-full" style={{ background: getLogDotColor(item) }} />
+          <div className="mb-2 flex items-center gap-2 pr-10 text-[12px] font-medium tracking-[-0.02em] text-[#766c63]">
+            <span
+              className="h-2 w-2 rounded-full ring-2 ring-[#fffaf3] shadow-[0_1px_5px_rgba(43,35,28,0.16)]"
+              style={{ background: getLogDotColor(item) }}
+            />
             <span>{item.time}</span>
           </div>
         <div className="pl-8">
@@ -1629,9 +1833,17 @@ function RecentCard({
           <div className="mt-3 space-y-2">
             <div className="flex min-h-7 items-center justify-between gap-3">
               {hasEmotion && (
-                <span className="inline-flex shrink-0 rounded-full bg-[#f1ebe4] px-2.5 py-1 text-[12px] font-semibold text-[#7a5f43]">
-                  {item.mood}
-                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  {moodLabels.map((mood) => (
+                    <span
+                      key={mood}
+                      className="inline-flex shrink-0 rounded-full border px-2.5 py-1 text-[12px] font-medium"
+                      style={getMoodChipStyle(mood)}
+                    >
+                      {mood}
+                    </span>
+                  ))}
+                </div>
               )}
               {showManage && (
                 <button
@@ -1649,10 +1861,13 @@ function RecentCard({
               )}
             </div>
             {hasNote && (
-              <div className="border-l border-[#d3c7ba] pl-3">
-                <div className="rounded-[10px] border border-[#e8ded4] bg-[#f8f3ee] px-3 py-2.5 text-[13px] leading-6 text-[#4c4036]">
-                  {item.note}
-                </div>
+              <div className="space-y-1.5 border-l border-[#d3c7ba] pl-3">
+                {noteEntries.map((note, index) => (
+                  <div key={`${note}-${index}`} className="rounded-[10px] border border-[#e8ded4] bg-[#f8f3ee] px-3 py-2.5 text-[13px] leading-6 text-[#4c4036]">
+                    <span className="mb-1 block text-[11px] font-semibold text-[#9a8f84]">이어쓰기 {index + 1}</span>
+                    {note}
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -1864,7 +2079,7 @@ function LogTab({ logItems, onAddDetails, onEditLog, onUpdateLog, onDeleteLog })
   const normalizedQuery = searchQuery.trim().toLocaleLowerCase("ko-KR");
   const filteredLogs = normalizedQuery
     ? logItems.filter((item) => {
-        const searchableText = [item.text, item.note, item.mood, item.date, item.day, item.time, ...(item.tags || [])]
+        const searchableText = [item.text, item.note, ...(item.notes || []), item.mood, ...(item.moods || []), item.date, item.day, item.time, ...(item.tags || [])]
           .filter(Boolean)
           .join(" ")
           .toLocaleLowerCase("ko-KR");
@@ -2207,131 +2422,238 @@ function WeeklyReflectionCard({ reflection }) {
   );
 }
 
+function getCreatedLogDate(item) {
+  if (item.createdAt) {
+    const created = new Date(item.createdAt);
+    if (!Number.isNaN(created.getTime())) return created;
+  }
+
+  return parseLogDate(item);
+}
+
+function getRecentSevenDayLogs(logItems) {
+  const now = new Date();
+  const recentFrom = now.getTime() - 1000 * 60 * 60 * 24 * 7;
+
+  return logItems
+    .map((item) => ({ item, createdDate: getCreatedLogDate(item) }))
+    .filter(({ createdDate }) => createdDate && createdDate.getTime() >= recentFrom && createdDate.getTime() <= now.getTime())
+    .sort((a, b) => b.createdDate.getTime() - a.createdDate.getTime());
+}
+
+function getTimeBucketLabel(date) {
+  const hour = date.getHours();
+  if (hour < 6) return { key: "dawn", label: "🌘 새벽 0~6시" };
+  if (hour < 12) return { key: "morning", label: "☀️ 오전 6~12시" };
+  if (hour < 18) return { key: "afternoon", label: "🌤️ 오후 12~6시" };
+  if (hour < 22) return { key: "evening", label: "🌆 저녁 6~10시" };
+  return { key: "night", label: "🌙 밤 10~12시" };
+}
+
+function getFrequentTimeBucket(recentLogs) {
+  const counts = new Map();
+
+  recentLogs.forEach(({ createdDate }) => {
+    const bucket = getTimeBucketLabel(createdDate);
+    const current = counts.get(bucket.key) || { ...bucket, count: 0 };
+    current.count += 1;
+    counts.set(bucket.key, current);
+  });
+
+  return [...counts.values()].sort((a, b) => b.count - a.count)[0] || null;
+}
+
+function getFrequentTopics(recentLogs) {
+  const counts = new Map();
+  const weakTopicWords = new Set(["테스트", "테스트입니다", "입니다", "있어요", "없어요", "진짜", "그냥"]);
+
+  recentLogs.forEach(({ item }) => {
+    const words = [
+      ...extractCandidateWords(item.text || ""),
+      ...(item.tags || []).map(normalizeWord),
+    ]
+      .map(stripKoreanParticle)
+      .map((word) => word.replace(/[.!,?…]+$/g, ""))
+      .filter((word) => word.length >= 2)
+      .filter((word) => !/^\d+$/.test(word))
+      .filter((word) => !weakTopicWords.has(word))
+      .filter((word) => word !== "남김");
+
+    words.forEach((word) => {
+      counts.set(word, (counts.get(word) || 0) + 1);
+    });
+  });
+
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "ko-KR"))
+    .map(([word]) => word)
+    .slice(0, 5);
+}
+
+function TodayStatLine({ label, children }) {
+  return (
+    <section className="border-b border-[#e8dece] py-4 last:border-b-0">
+      <p className="mb-2 text-[13px] font-semibold tracking-[-0.02em] text-[#6b6257]">{label}</p>
+      <div className="font-['Pretendard'] text-[22px] font-semibold leading-[32px] tracking-[-0.045em] text-[#061c36]">
+        {children}
+      </div>
+    </section>
+  );
+}
+
 function TodayTab({ logItems }) {
-  const hasLogs = logItems.length > 0;
-  const [periodOpen, setPeriodOpen] = useState(false);
-  const [selectedPeriodId, setSelectedPeriodId] = useState("current");
-  const currentFrequentWords = [...new Set(logItems.flatMap((item) => item.tags || []).map(normalizeWord))]
+  const recentLogs = getRecentSevenDayLogs(logItems);
+  const recentCount = recentLogs.length;
+  const frequentTime = getFrequentTimeBucket(recentLogs);
+  const frequentTopics = getFrequentTopics(recentLogs);
+  const photoMoments = recentLogs
+    .filter(({ item }) => item.image)
+    .map(({ item }) => item)
     .slice(0, 6);
-  const currentPhotoMoments = logItems.filter((item) => item.image).slice(0, 3);
-  const currentContinuedStories = logItems.filter((item) => item.note).slice(0, 2).map((item) => item.note);
-  const reviewPeriods = [
-    {
-      id: "current",
-      label: "최근 7일",
-      dates: "05.19 - 05.26",
-      words: currentFrequentWords,
-      moments: currentPhotoMoments,
-      stories: currentContinuedStories,
-      reflection:
-        "이번 주에는 바람을 맞으며 걷던 순간과 조용히 집으로 돌아오던 시간을 자주 떠올렸네요. 누군가와 함께 있어도 말이 많지 않은 편안함이 오래 남은 것 같아요. 바로 답하기보다 잠깐 기다리며 마음을 가다듬는 순간도 보였어요. 바쁜 하루 사이에서 조금 느슨해질 틈을 찾고 있었던 것 같아요.",
-    },
-    {
-      id: "previous-1",
-      label: "1주 전",
-      dates: "05.12 - 05.18",
-      words: ["업무", "친구", "카페", "기다림"],
-      moments: [
-        { id: "past-1", image: "linear-gradient(135deg,#c8d5bf,#f4c36c 48%,#6b4325)", title: "오랜만의 카페" },
-        { id: "past-2", image: "linear-gradient(135deg,#e7e0c9,#b6c4a3 45%,#6f7659)", title: "잠깐의 기다림" },
-      ],
-      stories: ["집에 와서도 그 느슨한 대화가 오래 남았다."],
-      reflection:
-        "이번 주에는 바로 답하기보다 조금 기다려보는 순간이 자주 보였어요. 오랜만에 만난 사람과 나눈 느슨한 시간이 오래 남은 것 같아요. 해야 할 일 사이에서도 잠깐 멈춰 마음을 정리하려 했던 것처럼 보였어요.",
-    },
-    {
-      id: "previous-2",
-      label: "2주 전",
-      dates: "05.05 - 05.11",
-      words: ["집", "산책", "하루", "정리"],
-      moments: [
-        { id: "past-3", image: "linear-gradient(135deg,#d8d0bf,#95b39d 52%,#6f7659)", title: "조용한 귀가" },
-        { id: "past-4", image: "linear-gradient(135deg,#eadbb8,#725e48 48%,#f3a744)", title: "늦은 산책" },
-      ],
-      stories: [],
-      reflection:
-        "이번 주에는 하루를 마치고 집으로 돌아가는 시간이 자주 남았네요. 조금 버거운 날에도 씻고 눕거나 잠깐 걸으며 하루를 닫으려 했던 것 같아요. 특별한 해결보다 조용히 지나갈 시간을 필요로 했던 것처럼 보였어요.",
-    },
-  ];
-  const selectedPeriod = reviewPeriods.find((period) => period.id === selectedPeriodId) || reviewPeriods[0];
 
   return (
-    <>
-      <main className="px-5 pt-6 font-['Pretendard']">
-        <div className="relative mb-4 flex min-h-[48px] items-center justify-between">
-          <h1 className="font-['Pretendard'] text-[20px] font-semibold tracking-[-0.02em] text-[#2b251f]">요즘</h1>
-          <button
-            onClick={() => setPeriodOpen((open) => !open)}
-            className="inline-flex items-center gap-2 rounded-[10px] border border-[#e6ddd3] bg-[#fffdf9] px-3 py-2 text-right"
-          >
-            <span>
-              <span className="block text-[12px] font-semibold text-[#4d453e]">{selectedPeriod.label}</span>
-              <span className="mt-0.5 block text-[11px] font-medium text-[#9a9188]">{selectedPeriod.dates}</span>
-            </span>
-            <ChevronDown size={14} className={`text-[#8b857e] transition ${periodOpen ? "rotate-180" : ""}`} />
-          </button>
-          {periodOpen && (
-            <div className="absolute right-0 top-12 z-30 w-[176px] rounded-[11px] border border-[#eee6dc] bg-[#fffdf9] p-1.5 shadow-[0_12px_28px_rgba(54,42,30,.09)]">
-              {reviewPeriods.map((period) => (
-                <button
-                  key={period.id}
-                  onClick={() => {
-                    setSelectedPeriodId(period.id);
-                    setPeriodOpen(false);
-                  }}
-                  className={`block w-full rounded-[8px] px-3 py-2 text-left ${
-                    selectedPeriod.id === period.id ? "bg-[#f4eee8]" : "hover:bg-[#f8f4ef]"
-                  }`}
-                >
-                  <span className="block text-[12px] font-semibold text-[#4d453e]">{period.label}</span>
-                  <span className="mt-0.5 block text-[11px] font-medium text-[#9a9188]">{period.dates}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+    <main className="px-5 pb-10 pt-6 font-['Pretendard']">
+      <header className="mb-5">
+        <h1 className="font-['Pretendard'] text-[24px] font-semibold tracking-[-0.045em] text-[#061c36]">요즘</h1>
+        <p className="mt-1 text-[13px] font-medium tracking-[-0.02em] text-[#7a7167]">최근 7일의 툭에서 보이는 것들</p>
+      </header>
 
-        {hasLogs ? (
-          <div className="space-y-3.5">
-            <TodayCard title="자주 떠오른 것">
-              <div className="flex flex-wrap gap-2">
-                {selectedPeriod.words.map((word) => (
+      {recentCount > 0 ? (
+        <section className="rounded-[18px] border border-[#eadfcb] bg-[#fffdf6]/78 px-4 shadow-[0_10px_26px_rgba(16,39,71,0.04)]">
+          <TodayStatLine label="이번 주의 툭">
+            이번 주 {recentCount}번 툭했어요.
+          </TodayStatLine>
+
+          {frequentTime && (
+            <TodayStatLine label="자주 툭한 시간">
+              {frequentTime.label}
+            </TodayStatLine>
+          )}
+
+          {frequentTopics.length > 0 && (
+            <TodayStatLine label="자주 떠오른 것">
+              <div className="flex flex-wrap gap-2 pt-0.5">
+                {frequentTopics.map((word) => (
                   <Chip key={word}>{word}</Chip>
                 ))}
               </div>
-            </TodayCard>
+            </TodayStatLine>
+          )}
 
-            <TodayCard title="순간 모음">
-              <div className="flex gap-3 overflow-hidden">
-                {selectedPeriod.moments.map((item) => (
-                  <div key={item.id || `${item.date}-${item.time}`} className="w-[76px] shrink-0">
+          {photoMoments.length > 0 && (
+            <TodayStatLine label="순간 모음">
+              <div className="flex gap-3 overflow-hidden pt-1">
+                {photoMoments.map((item) => (
+                  <div key={item.id || `${item.date}-${item.time}`} className="w-[72px] shrink-0">
                     <MiniPhoto bg={item.image} size="lg" />
-                    <p className="mt-2 line-clamp-2 text-[12px] font-medium leading-5 text-[#746d65]">{item.title || getMomentTitle(item)}</p>
                   </div>
                 ))}
               </div>
-            </TodayCard>
+            </TodayStatLine>
+          )}
+        </section>
+      ) : (
+        <EmptyState title="최근 7일의 툭이 없어요." body="툭이 쌓이면 자주 남긴 시간과 단어가 여기에 보여요." />
+      )}
+    </main>
+  );
+}
 
-            {selectedPeriod.stories.length > 0 && (
-              <TodayCard title="이어진 이야기">
-                <div className="space-y-2">
-                  {selectedPeriod.stories.map((story) => (
-                    <p key={story} className="rounded-[9px] bg-[#f8f4ef] px-3.5 py-3 text-[13px] leading-6 text-[#514840]">
-                      {story}
-                    </p>
-                  ))}
-                </div>
-              </TodayCard>
+function SettingsRow({ icon, title, body, badge, action }) {
+  return (
+    <div className="rounded-[18px] border border-[#eadfcb] bg-[#fffdf6]/78 px-4 py-4 shadow-[0_10px_26px_rgba(16,39,71,0.035)]">
+      <div className="flex items-start gap-3">
+        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[15px] bg-[#fff1bd] text-[#061c36]">
+          {icon}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-[15px] font-semibold tracking-[-0.03em] text-[#061c36]">{title}</h2>
+            {badge && (
+              <span className="shrink-0 rounded-full bg-[#f3eee8] px-2.5 py-1 text-[11px] font-semibold text-[#6b6257]">
+                {badge}
+              </span>
             )}
-
-            <WeeklyReflectionCard reflection={selectedPeriod.reflection} />
-
           </div>
-        ) : (
-          <EmptyState title="아직 모인 조각이 없어요." body="툭이 몇 개 쌓이면 남은 말과 순간이 천천히 모여요." />
-        )}
-      </main>
-    </>
+          <p className="mt-1.5 text-[12px] font-medium leading-5 tracking-[-0.02em] text-[#81786e]">{body}</p>
+          {action && (
+            <button
+              type="button"
+              className="mt-3 h-9 rounded-full bg-[#061c36] px-4 text-[12px] font-semibold text-[#fffdf6]"
+            >
+              {action}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SettingsTab({ logItems }) {
+  const photoCount = logItems.filter((item) => item.image).length;
+  const moodCount = logItems.filter((item) => getMoodLabels(item).length > 0).length;
+
+  return (
+    <main className="px-5 pb-10 pt-6 font-['Pretendard']">
+      <header className="mb-6">
+        <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-[#fff1bd]/72 px-3 py-1.5 text-[12px] font-semibold tracking-[-0.02em] text-[#061c36]">
+          <span className="h-2 w-2 rounded-full bg-[#f6c400]" />
+          내 마음툭
+        </p>
+        <h1 className="text-[27px] font-semibold tracking-[-0.055em] text-[#061c36]">나</h1>
+        <p className="mt-1.5 text-[13px] font-medium leading-5 tracking-[-0.02em] text-[#7a7167]">
+          계정과 저장 방식을 정리하는 곳이에요.
+        </p>
+      </header>
+
+      <section className="mb-5 rounded-[22px] border border-[#eadfcb] bg-[#fffdf6]/80 px-4 py-4 shadow-[0_12px_28px_rgba(16,39,71,0.04)]">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-[13px] font-semibold tracking-[-0.02em] text-[#6b6257]">현재 저장 방식</p>
+            <p className="mt-1 text-[22px] font-semibold tracking-[-0.05em] text-[#061c36]">이 기기에 저장 중</p>
+          </div>
+          <div className="grid h-14 w-14 place-items-center rounded-[20px] bg-[#fff1bd] text-[#061c36]">
+            <Cloud size={26} strokeWidth={1.8} />
+          </div>
+        </div>
+        <div className="mt-4 grid grid-cols-3 gap-2 border-t border-[#ece1d2] pt-4">
+          <div>
+            <p className="text-[18px] font-semibold text-[#061c36]">{logItems.length}</p>
+            <p className="mt-0.5 text-[11px] font-medium text-[#81786e]">툭</p>
+          </div>
+          <div>
+            <p className="text-[18px] font-semibold text-[#061c36]">{photoCount}</p>
+            <p className="mt-0.5 text-[11px] font-medium text-[#81786e]">사진</p>
+          </div>
+          <div>
+            <p className="text-[18px] font-semibold text-[#061c36]">{moodCount}</p>
+            <p className="mt-0.5 text-[11px] font-medium text-[#81786e]">마음이름</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="space-y-3">
+        <SettingsRow
+          icon={<Cloud size={20} strokeWidth={1.85} />}
+          title="클라우드 저장"
+          badge="준비 중"
+          body="로그인하면 기기를 바꿔도 툭을 이어서 볼 수 있게 할 예정이에요."
+          action="계정 연결 준비"
+        />
+        <SettingsRow
+          icon={<RefreshCw size={20} strokeWidth={1.85} />}
+          title="동기화 상태"
+          badge="로컬"
+          body="지금은 이 브라우저에만 저장돼요. 클라우드 연결 전까지는 브라우저 데이터를 지우면 기록도 사라질 수 있어요."
+        />
+        <SettingsRow
+          icon={<Lock size={20} strokeWidth={1.85} />}
+          title="데이터와 보안"
+          body="MVP에서는 AI 해석 없이 기록을 그대로 보관하고, 요즘 탭도 기기 안의 기록만 가볍게 집계해요."
+        />
+      </section>
+    </main>
   );
 }
 
@@ -2339,7 +2661,8 @@ export default function App() {
   useVisibleViewportHeight();
   const storedAppState = loadStoredAppState();
 
-  const [tab, setTab] = useState("now");
+  const [tab, setTab] = useState("recent");
+  const [composerOpen, setComposerOpen] = useState(false);
   const [allLogs, setAllLogs] = useState(() => storedAppState?.allLogs || [...initialTodayLogItems, ...initialLogItems]);
   const [showWritingExample, setShowWritingExample] = useState(() => storedAppState?.showWritingExample ?? true);
   const [customEmotions, setCustomEmotions] = useState(() => storedAppState?.customEmotions || []);
@@ -2357,6 +2680,9 @@ export default function App() {
   useEffect(() => {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
+    }
+    if (tab !== "recent") {
+      setComposerOpen(false);
     }
   }, [tab]);
 
@@ -2396,11 +2722,13 @@ export default function App() {
     setSaveOverlaySubtext(nextTodayCount === 1);
     setSaveOverlayTarget(savedLog);
     setSaveOverlayVisible(true);
-    saveTimerRef.current = window.setTimeout(() => {
-      setSaveOverlayVisible(false);
-      setSaveOverlayTarget(null);
-      saveTimerRef.current = null;
-    }, savedLog ? 3800 : 2100);
+    if (!savedLog) {
+      saveTimerRef.current = window.setTimeout(() => {
+        setSaveOverlayVisible(false);
+        setSaveOverlayTarget(null);
+        saveTimerRef.current = null;
+      }, 2100);
+    }
   };
 
   const dismissSaveOverlay = () => {
@@ -2446,6 +2774,11 @@ export default function App() {
     setCustomEmotions((current) => [nextEmotion, ...current.filter((item) => item !== nextEmotion)].slice(0, 12));
   };
 
+  const openComposer = () => {
+    setTab("recent");
+    setComposerOpen(true);
+  };
+
   const personalTagSet = useMemo(() => getPersonalTagSet(allLogs), [allLogs]);
   const taggedAllLogs = useMemo(() => enrichLogsWithTags(allLogs, personalTagSet), [allLogs, personalTagSet]);
   const taggedTodayLogs = useMemo(() => enrichLogsWithTags(todayLogs, personalTagSet), [todayLogs, personalTagSet]);
@@ -2456,7 +2789,7 @@ export default function App() {
 
   const screen = useMemo(
     () =>
-      tab === "now" ? (
+      tab === "recent" ? (
         <NowTab
           todayLogs={taggedTodayLogs}
           recentLogs={taggedRecentLogs}
@@ -2468,6 +2801,8 @@ export default function App() {
           showWritingExample={showWritingExample}
           onHideWritingExample={() => setShowWritingExample(false)}
           onShowSaved={showSaveOverlay}
+          composerOpen={composerOpen}
+          onComposerOpenChange={setComposerOpen}
         />
       ) : tab === "log" ? (
         <LogTab
@@ -2477,10 +2812,12 @@ export default function App() {
           onUpdateLog={updateLog}
           onDeleteLog={deleteLog}
         />
+      ) : tab === "settings" ? (
+        <SettingsTab logItems={taggedAllLogs} />
       ) : (
         <TodayTab logItems={taggedAllLogs} />
       ),
-    [tab, taggedTodayLogs, taggedRecentLogs, taggedAllLogs, showWritingExample, customEmotions],
+    [tab, taggedTodayLogs, taggedRecentLogs, taggedAllLogs, showWritingExample, customEmotions, composerOpen],
   );
 
   const activeScreen = editTarget ? (
@@ -2504,11 +2841,13 @@ export default function App() {
   ) : null;
 
   return (
-    <div className="h-[var(--maeumtuk-vh,100dvh)] overflow-hidden bg-[#faf8f5] p-0 font-['Pretendard'] text-[#211b16] sm:p-6">
+    <div className="h-[var(--maeumtuk-vh,100dvh)] overflow-hidden bg-[#faf8f2] p-0 font-['Pretendard'] text-[#102747] sm:p-6">
       <div className="mx-auto flex h-full max-w-[1260px] items-stretch justify-center gap-7 sm:items-start">
         <Phone
           tab={tab}
           setTab={setTab}
+          onCompose={openComposer}
+          composing={composerOpen}
           hideNav={Boolean(editTarget)}
           overlay={
             addSheet ||
