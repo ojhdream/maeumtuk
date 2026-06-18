@@ -1098,10 +1098,10 @@ function NowFlowItem({ item, sequence, isLatest = false, onAddDetails, onEdit, o
   const noteEntries = getNoteEntries(item);
   const hasNote = noteEntries.length > 0;
   const primaryTag = item.tags?.[0] ? normalizeWord(item.tags[0]) : null;
-  const previewText = item.text.length > 42 ? `${item.text.slice(0, 42)}...` : item.text;
+  const afterLabel = hasNote ? `이어쓰기 ${noteEntries.length}` : primaryTag || (sequence === 1 ? "첫 툭" : `${sequence}번째 툭`);
   return (
     <article
-      className={`maeumtuk-now-row relative border-b border-[#dfd0c1] py-4 last:border-b-0 ${
+      className={`maeumtuk-now-row relative border-b border-[#dfd0c1] py-3 last:border-b-0 ${
         menuOpen ? "z-30" : ""
       } ${
         isLatest ? "maeumtuk-now-settle" : ""
@@ -1153,55 +1153,51 @@ function NowFlowItem({ item, sequence, isLatest = false, onAddDetails, onEdit, o
       <div className={`relative pl-[24px] font-['Pretendard'] ${isSample ? "pr-1" : "pr-10"}`}>
         <span
           aria-hidden="true"
-          className="absolute left-[3px] top-[11px] h-2 w-2 rounded-full ring-2 ring-[#fffaf3] shadow-[0_1px_5px_rgba(43,35,28,0.16)]"
+          className="absolute left-[3px] top-[10px] h-2 w-2 rounded-full ring-2 ring-[#fffaf3] shadow-[0_1px_5px_rgba(43,35,28,0.16)]"
           style={{ background: dotColor }}
         />
         <span
           aria-hidden="true"
-          className="absolute left-[6px] top-[29px] h-[calc(100%-26px)] border-l border-dotted border-[#d3c7ba]"
+          className="absolute left-[6px] top-[27px] h-[calc(100%-24px)] border-l border-dotted border-[#d3c7ba]"
         />
-        <time className="block h-[25px] text-[12px] font-medium leading-[25px] tracking-[-0.02em] text-[#766c63]">
+        <time className="block h-[23px] text-[12px] font-medium leading-[23px] tracking-[-0.02em] text-[#766c63]">
           {item.time}
         </time>
-        <div className="mt-0.5">
-          <p className="whitespace-pre-line font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f]">
-            {previewText}
-          </p>
-          <p className="mt-1.5 text-[12px] font-medium leading-5 tracking-[-0.02em] text-[#7e746b]">
-            {primaryTag || (sequence === 1 ? "첫 툭이 남겨졌어요." : `${sequence}번째 툭이에요.`)}
-          </p>
-        </div>
-      </div>
-      <div className="pl-[24px]">
-        {item.image && (
-          <div className="mt-3">
-            <MiniPhoto bg={item.image} size="md" />
-          </div>
-        )}
-        {(hasEmotion || hasNote) && (
-          <div className="mt-3 space-y-2">
-            {hasEmotion && (
-              <div className="flex flex-wrap gap-1.5">
-                {moodLabels.map((mood) => (
+        <div className={`mt-0.5 flex gap-3 ${item.image ? "items-start" : "items-start"}`}>
+          <div className="min-w-0 flex-1">
+            <p className="maeumtuk-now-preview whitespace-pre-line font-['Pretendard'] text-[15px] font-normal leading-[23px] tracking-[-0.02em] text-[#29241f]">
+              {item.text}
+            </p>
+            <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[12px] font-medium leading-5 tracking-[-0.02em] text-[#7e746b]">
+              {hasEmotion ? (
+                moodLabels.map((mood) => (
                   <span
                     key={mood}
-                    className="inline-flex rounded-full border px-2.5 py-1 text-[12px] font-medium"
+                    className="inline-flex rounded-full border px-2.5 py-0.5 text-[12px] font-medium"
                     style={getMoodChipStyle(mood)}
                   >
                     {mood}
                   </span>
-                ))}
-              </div>
-            )}
-            {hasNote && (
-              <div className="space-y-1.5 border-l border-[#d3c7ba] pl-3">
-                {noteEntries.map((note, index) => (
-                  <p key={`${note}-${index}`} className="rounded-[10px] border border-[#e8ded4] bg-[#f8f3ee] px-3 py-2.5 text-[13px] leading-6 text-[#4c4036]">
-                    {note}
-                  </p>
-                ))}
-              </div>
-            )}
+                ))
+              ) : null}
+              <span>{afterLabel}</span>
+            </div>
+          </div>
+          {item.image && (
+            <div className="h-[72px] w-[72px] shrink-0 overflow-hidden rounded-[14px] border border-[#e7ddd3] bg-[#f6f1eb] shadow-[0_6px_14px_rgba(54,42,30,0.06)]">
+              <div className="h-full w-full" style={{ background: getImageBackground(item.image) }} />
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="pl-[24px]">
+        {hasNote && (
+          <div className="mt-2 flex flex-wrap gap-1.5 text-[12px] font-medium text-[#867b70]">
+            {noteEntries.slice(0, 2).map((note, index) => (
+              <span key={`${note}-${index}`} className="max-w-full truncate rounded-full bg-[#f8f3ee] px-2.5 py-1">
+                {index + 1}. {note}
+              </span>
+            ))}
           </div>
         )}
         {!isSample && confirmDelete && (
@@ -1399,15 +1395,7 @@ function NowTab({
             <X size={17} strokeWidth={1.8} />
           </button>
         </div>
-        <div className="maeumtuk-composer-hero maeumtuk-hero-friend relative mb-0 h-[94px] w-[156px] overflow-hidden" style={getDailyWindStyle(currentMeta.operationalKey)}>
-          <img
-            src="/now-hero.png"
-            alt=""
-            className="maeumtuk-hero-friend-img -ml-[38px] h-[98px] w-[201px] max-w-none object-contain object-left opacity-95 mix-blend-multiply"
-            draggable="false"
-          />
-        </div>
-        <p className="maeumtuk-composer-copy mb-6 -mt-1 text-[17px] font-normal leading-[28px] tracking-[-0.045em] text-[#102747]">
+        <p className="maeumtuk-composer-copy mb-5 mt-1 text-[17px] font-normal leading-[28px] tracking-[-0.045em] text-[#102747]">
           한 줄이어도 괜찮아요.
           <br />
           떠오르는 대로 그냥, 툭.
