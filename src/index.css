@@ -176,14 +176,7 @@ button,
   padding: 4px 6px 2px 18px;
   border: 0;
   border-radius: 0;
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0,
-      transparent 38px,
-      rgba(16, 39, 71, 0.15) 38px,
-      rgba(16, 39, 71, 0.15) 39px
-    );
+  background: transparent;
   box-shadow: none;
   transition:
     background-color 0.2s ease,
@@ -191,14 +184,7 @@ button,
 }
 
 .maeumtuk-draft-zone:focus-within {
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0,
-      transparent 38px,
-      rgba(246, 196, 0, 0.52) 38px,
-      rgba(246, 196, 0, 0.52) 39px
-    );
+  background: transparent;
 }
 
 .maeumtuk-now-row {

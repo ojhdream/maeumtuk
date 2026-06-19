@@ -527,6 +527,46 @@ function getNoteEntries(item) {
   return [...legacyNote, ...notes].map((note) => String(note).trim()).filter(Boolean);
 }
 
+const defaultFrequencyOption = { key: "daily", icon: "📝", label: "일상기록" };
+
+const frequencyOptions = [
+  { key: "daily", icon: "📝", label: "일상기록" },
+  { key: "heavy", icon: "🌧️", label: "무거움" },
+  { key: "flow", icon: "🍃", label: "흘러감" },
+  { key: "calm", icon: "☕", label: "잔잔함" },
+  { key: "spark", icon: "✨", label: "반짝임" },
+];
+
+const selectableFrequencyOptions = frequencyOptions.filter((option) => option.key !== defaultFrequencyOption.key);
+
+const frequencyGuideMap = {
+  heavy: {
+    name: "한 걸음 물러서기",
+    body: "던져진 무거운 마음을\n한 걸음 물러서서 바라봅니다.",
+    selfTalk: "다 해결하지 않아도 괜찮아요.",
+  },
+  flow: {
+    name: "흘려보내기",
+    body: "스쳐가는 생각을\n굳이 붙잡지 않아도 됩니다.",
+    selfTalk: "지나가는 바람처럼 보내줘도 괜찮아요.",
+  },
+  calm: {
+    name: "잠시 머물기",
+    body: "마음속에 머무는\n평온한 순간을 음미해봅니다.",
+    selfTalk: "무리하지 말고 이 속도 그대로.",
+  },
+  spark: {
+    name: "기억해두기",
+    body: "작게 반짝인 순간을\n조용히 마음에 담아둡니다.",
+    selfTalk: "오늘의 이 빛을 오래 간직해도 좋아요.",
+  },
+};
+
+function getFrequencyOption(item) {
+  if (!item) return null;
+  return frequencyOptions.find((option) => option.key === item.frequencyKey || option.label === item.frequency) || null;
+}
+
 function getMomentTitle(item) {
   const words = (item.tags || []).map(normalizeWord).filter(Boolean);
   if (words.length >= 2) return words.slice(0, 2).join(" ");
@@ -601,9 +641,9 @@ function TimeOfDayIcon({ hour }) {
 
 function BottomNav({ tab, setTab, onCompose, composing = false }) {
   const items = [
-    { id: "recent", label: "최근 툭", icon: <Home size={20} strokeWidth={1.85} /> },
+    { id: "recent", label: "오늘", icon: <Home size={20} strokeWidth={1.85} /> },
     { id: "log", label: "툭로그", icon: <FileText size={20} strokeWidth={1.85} /> },
-    { id: "compose", label: "지금", icon: <PencilLine size={22} strokeWidth={1.9} />, compose: true },
+    { id: "compose", label: "지금", icon: <PencilLine size={20} strokeWidth={1.9} />, compose: true },
     { id: "today", label: "요즘", icon: <BarChart3 size={20} strokeWidth={1.85} /> },
     { id: "settings", label: "나", icon: <UserRound size={20} strokeWidth={1.85} /> },
   ];
@@ -618,13 +658,13 @@ function BottomNav({ tab, setTab, onCompose, composing = false }) {
               key={item.id}
               type="button"
               onClick={onCompose}
-              className={`relative -mt-5 flex h-[66px] w-[66px] flex-col items-center justify-center gap-0.5 rounded-full bg-[radial-gradient(circle_at_38%_28%,#fff3bd_0%,#f6c400_58%,#e7b500_100%)] text-[#061c36] shadow-[0_12px_24px_rgba(16,39,71,0.14)] ring-1 ring-[#e7bd13]/45 transition duration-200 active:scale-[0.98] ${
+              className={`relative flex h-[58px] w-[58px] -translate-y-[39px] flex-col items-center justify-center gap-0.5 rounded-full bg-[#f6c400] text-[#061c36] shadow-[0_8px_16px_rgba(16,39,71,0.10)] ring-1 ring-[#dfb400]/35 transition duration-200 active:scale-[0.98] ${
                 active ? "scale-100" : "scale-[0.97]"
               }`}
               aria-label="지금 마음 작성하기"
             >
-              <span className="grid h-6 w-6 place-items-center">{item.icon}</span>
-              <span className="font-['Pretendard'] text-[15px] font-semibold tracking-[-0.04em]">{item.label}</span>
+              <span className="grid h-5 w-5 place-items-center">{item.icon}</span>
+              <span className="font-['Pretendard'] text-[13px] font-semibold tracking-[-0.04em]">{item.label}</span>
             </button>
           );
         }
@@ -740,6 +780,58 @@ function SaveOverlay({ message, showSubtext = false, onDismiss, onAddWord }) {
             </div>
           </div>
         )}
+      </section>
+    </div>
+  );
+}
+
+function FrequencyGuideOverlay({ item, onClose }) {
+  const frequency = getFrequencyOption(item);
+  const guide = frequency ? frequencyGuideMap[frequency.key] : null;
+  if (!frequency || !guide) return null;
+
+  return (
+    <div className="absolute inset-0 z-50 flex items-center justify-center bg-[rgba(250,248,245,.96)] px-5 py-6 backdrop-blur-[2px]">
+      <section className="max-h-full w-full overflow-y-auto rounded-[26px] border border-[#e9ded3] bg-[#fffaf4] px-5 py-5 shadow-[0_18px_48px_rgba(54,42,30,0.13)]">
+        <div className="mb-4">
+          <p className="text-[13px] font-semibold tracking-[-0.02em] text-[#8a8178]">
+            {frequency.icon} {frequency.label} · {guide.name}
+          </p>
+          <p className="mt-4 whitespace-pre-line text-[20px] font-semibold leading-8 tracking-[-0.055em] text-[#102747]">
+            {guide.body}
+          </p>
+        </div>
+
+        <div className="rounded-[18px] border border-[#e7ddd3] bg-[#fffdf9] px-4 py-4">
+          <p className="mb-2 text-[12px] font-semibold tracking-[-0.02em] text-[#9a9289]">남겨둔 원본 글</p>
+          <p className="whitespace-pre-line text-[16px] font-normal leading-7 tracking-[-0.03em] text-[#29241f]">
+            {item.text}
+          </p>
+        </div>
+
+        <div className="mt-4 rounded-[18px] bg-[#f4efe8] px-4 py-4">
+          <p className="mb-2 text-[12px] font-semibold tracking-[-0.02em] text-[#8a8178]">나에게 해줄 말</p>
+          <p className="text-[16px] font-semibold leading-7 tracking-[-0.035em] text-[#4a4037]">
+            {guide.selfTalk}
+          </p>
+        </div>
+
+        <div className="mt-5 space-y-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="h-12 w-full rounded-[16px] bg-[#102747] text-[15px] font-semibold tracking-[-0.03em] text-white"
+          >
+            이 마음 그대로 안아주기
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="h-11 w-full rounded-[14px] text-[14px] font-semibold tracking-[-0.03em] text-[#776d64]"
+          >
+            그냥 닫기
+          </button>
+        </div>
       </section>
     </div>
   );
@@ -1120,6 +1212,7 @@ function NowFlowItem({ item, sequence, isLatest = false, onEdit, onDelete }) {
   const dotColor = getFlowDotColor(item, sequence);
   const isSample = Boolean(item.sample);
   const moodLabels = getMoodLabels(item);
+  const frequency = getFrequencyOption(item);
   const noteEntries = getNoteEntries(item);
   const hasNote = noteEntries.length > 0;
   const previewTags = [...moodLabels, ...(item.tags || []).map(normalizeWord)]
@@ -1184,18 +1277,23 @@ function NowFlowItem({ item, sequence, isLatest = false, onEdit, onDelete }) {
         </time>
         <div className="mt-1 flex items-start gap-3">
           <div className="min-w-0 flex-1">
-            <p className="maeumtuk-now-preview whitespace-pre-line font-['Pretendard'] text-[17px] font-normal leading-[27px] tracking-[-0.025em] text-[#29241f]">
+            <p className="maeumtuk-now-preview whitespace-pre-line font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f]">
               {item.text}
             </p>
             {previewTags.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-x-2 gap-y-1 text-[13px] font-medium leading-5 tracking-[-0.02em] text-[#766c63]/75">
+              <div className="mt-2 flex flex-wrap gap-x-2 gap-y-1 text-[12px] font-medium leading-5 tracking-[-0.02em] text-[#766c63]/75">
                 {previewTags.map((tag) => (
                   <span key={tag}>#{tag}</span>
                 ))}
               </div>
             )}
+            {frequency && (
+              <p className="mt-1.5 text-[12px] font-medium leading-5 tracking-[-0.02em] text-[#7e746b]">
+                {frequency.icon} {frequency.label}
+              </p>
+            )}
             {hasNote && (
-              <p className="mt-1.5 text-[13px] font-medium leading-5 tracking-[-0.02em] text-[#7e746b]">
+              <p className="mt-1.5 text-[12px] font-medium leading-5 tracking-[-0.02em] text-[#7e746b]">
                 ↳ 이어진 생각 {noteEntries.length}개
               </p>
             )}
@@ -1269,13 +1367,15 @@ function NowTab({
   const [draftMoods, setDraftMoods] = useState([]);
   const [moodPickerOpen, setMoodPickerOpen] = useState(false);
   const [customDraftMood, setCustomDraftMood] = useState("");
+  const [selectedFrequencyKey, setSelectedFrequencyKey] = useState("");
   const draftRef = useRef(null);
   const photoInputRef = useRef(null);
   const currentMeta = getCurrentLogMeta();
   const todayCount = todayLogs.length;
-  const displayRecentLogs = (recentLogs.length > 0 ? recentLogs : getRecentSampleLogs(currentMeta)).slice(0, 3);
+  const displayRecentLogs = recentLogs.slice(0, 3);
   const canLeaveTuk = Boolean(draft.trim() || photoData);
   const moodOptions = emotionOptions;
+  const hasSelectedFrequency = Boolean(selectedFrequencyKey);
 
   useEffect(() => {
     let index = 0;
@@ -1333,6 +1433,8 @@ function NowTab({
       tags: [],
       mood: draftMoods[0] || "남김",
       moods: draftMoods,
+      frequencyKey: selectedFrequencyKey || defaultFrequencyOption.key,
+      frequency: (frequencyOptions.find((option) => option.key === selectedFrequencyKey) || defaultFrequencyOption).label,
       dot: currentMeta.dot,
       image: photoData,
       note: "",
@@ -1351,6 +1453,7 @@ function NowTab({
       setDraftMoods([]);
       setMoodPickerOpen(false);
       setCustomDraftMood("");
+      setSelectedFrequencyKey("");
       setIsLeaving(false);
       onComposerOpenChange?.(false);
     }, 260);
@@ -1368,9 +1471,21 @@ function NowTab({
     setCustomDraftMood("");
   };
 
+  const toggleFrequency = (key) => {
+    setSelectedFrequencyKey((current) => {
+      if (current === key) {
+        setMoodPickerOpen(false);
+        setDraftMoods([]);
+        setCustomDraftMood("");
+        return "";
+      }
+      return key;
+    });
+  };
+
   if (composerOpen) {
     return (
-      <main className="flex min-h-full flex-col px-5 pb-[calc(22px+env(safe-area-inset-bottom))] pt-5">
+      <main className="flex min-h-full flex-col px-5 pb-[calc(16px+env(safe-area-inset-bottom))] pt-5">
         <header className="flex items-center justify-between">
           <button
             type="button"
@@ -1382,19 +1497,27 @@ function NowTab({
           </button>
           <div className="text-center">
             <p className="text-[17px] font-semibold tracking-[-0.04em] text-[#102747]">지금 남기기</p>
-            <p className="mt-0.5 text-[12px] font-medium tracking-[-0.02em] text-[#8a8178]">
-              {currentMeta.displayDate} {currentMeta.day} · {currentMeta.time}
-            </p>
           </div>
           <span className="h-10 w-10" aria-hidden="true" />
         </header>
 
-        <img
-          src="/now-hero.png"
-          alt=""
-          className="mx-auto mb-5 mt-8 w-[136px] select-none opacity-95"
-          draggable="false"
-        />
+        <div className="mb-1 mt-4 flex items-center justify-between rounded-[18px] bg-[#fbf7f1]/56 px-3 py-2">
+          <div className="flex items-center gap-2 text-[12px] font-medium tracking-[-0.02em] text-[#7b7269]">
+            <span
+              className="h-2 w-2 rounded-full ring-2 ring-[#fffaf3] shadow-[0_1px_5px_rgba(43,35,28,0.16)]"
+              style={{ background: currentMeta.dot }}
+            />
+            <span>{currentMeta.displayDate} {currentMeta.day}</span>
+            <span className="text-[#b0a79d]">·</span>
+            <span>{currentMeta.time}</span>
+          </div>
+          <img
+            src="/now-hero.png"
+            alt=""
+            className="h-[42px] w-[72px] select-none object-contain object-right opacity-86 mix-blend-multiply"
+            draggable="false"
+          />
+        </div>
 
         <input
           ref={photoInputRef}
@@ -1414,14 +1537,7 @@ function NowTab({
           }`}
         >
           <div className="maeumtuk-draft-zone relative pl-[16px]">
-            <div className="flex h-[28px] items-center pl-[22px] text-[12px] font-medium tracking-[-0.02em] text-[#6d7168]">
-              <span
-                className="absolute left-[8px] top-[11px] h-2 w-2 rounded-full ring-2 ring-[#fffaf3] shadow-[0_1px_5px_rgba(43,35,28,0.16)]"
-                style={{ background: currentMeta.dot }}
-              />
-              <span>{currentMeta.time}</span>
-            </div>
-            <div className="relative mt-1">
+            <div className="relative">
               <textarea
                 ref={draftRef}
                 value={draft}
@@ -1446,77 +1562,106 @@ function NowTab({
               )}
             </div>
           </div>
+        </section>
 
-          <div className="mt-4 pl-[38px]">
-            {draftMoods.length > 0 && (
-              <div className="mb-2 flex flex-wrap gap-1.5">
-                {draftMoods.map((mood) => (
+          <div className="mt-4 px-1 pl-[38px]">
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <p className="text-[13px] font-semibold tracking-[-0.03em] text-[#3f372f]">마음의 주파수</p>
+              <p className="text-[11px] font-medium tracking-[-0.02em] text-[#9a9289]">선택 안 하면 일상기록</p>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {selectableFrequencyOptions.map((option) => {
+                const selected = selectedFrequencyKey === option.key;
+                return (
                   <button
                     type="button"
-                    key={mood}
-                    onClick={() => toggleDraftMood(mood)}
-                    className="rounded-full border border-[#d8cabd] bg-[#fffaf5] px-2.5 py-1 text-[12px] font-medium text-[#5e5145]"
+                    key={option.key}
+                    onClick={() => toggleFrequency(option.key)}
+                    className={`h-10 rounded-[13px] border px-3 text-left text-[13px] font-semibold tracking-[-0.03em] transition ${
+                      selected
+                        ? "border-[#d7b958] bg-[#fff3b8] text-[#102747] shadow-[0_4px_10px_rgba(185,151,54,0.10)]"
+                        : "border-[#e3d9cf] bg-[#fffaf5] text-[#5a5047] hover:bg-[#f7f1ea]"
+                    }`}
                   >
-                    #{mood}
+                    <span className="mr-1.5" aria-hidden="true">{option.icon}</span>
+                    {option.label}
                   </button>
-                ))}
-              </div>
-            )}
-            <button
-              type="button"
-              onClick={() => setMoodPickerOpen((open) => !open)}
-              className="text-[13px] font-semibold tracking-[-0.02em] text-[#102747]"
-            >
-              + 지금의 마음 더하기
-            </button>
-            {moodPickerOpen && (
-              <div className="mt-3 rounded-[16px] border border-[#e8ded4] bg-[#fffaf5] p-3">
-                <div className="mb-2 flex items-center justify-between text-[12px] font-medium text-[#7d746b]">
-                  <span>{draftMoods.length > 0 ? draftMoods.join(" · ") : "마음 이름을 2개까지 붙일 수 있어요."}</span>
-                  <span>{draftMoods.length}/2</span>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {moodOptions.map((mood) => {
-                    const selected = draftMoods.includes(mood);
-                    const disabled = !selected && draftMoods.length >= 2;
-                    return (
+                );
+              })}
+            </div>
+            {hasSelectedFrequency && (
+              <div className="mt-4">
+                {draftMoods.length > 0 && (
+                  <div className="mb-2 flex flex-wrap gap-1.5">
+                    {draftMoods.map((mood) => (
                       <button
                         type="button"
                         key={mood}
                         onClick={() => toggleDraftMood(mood)}
-                        disabled={disabled}
-                        className={`rounded-full border px-2.5 py-1.5 text-[12px] font-medium transition ${
-                          selected
-                            ? "border-[#102747] bg-[#102747] text-white"
-                            : disabled
-                              ? "border-[#e8dfd6] bg-[#f5f0ea] text-[#b4aaa0]"
-                              : "border-[#ded2c6] bg-[#f4efe9] text-[#5c5045]"
-                        }`}
+                        className="rounded-full border border-[#d8cabd] bg-[#fffaf5] px-2.5 py-1 text-[12px] font-medium text-[#5e5145]"
                       >
-                        {mood}
+                        #{mood}
                       </button>
-                    );
-                  })}
-                </div>
-                <div className="mt-3 flex gap-2">
-                  <input
-                    value={customDraftMood}
-                    onChange={(event) => setCustomDraftMood(event.target.value)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter") toggleDraftMood(customDraftMood);
-                    }}
-                    className="h-9 min-w-0 flex-1 rounded-[10px] border border-[#e5dbd0] bg-white px-3 text-[13px] outline-none focus:border-[#c8b5a4]"
-                    placeholder="내 마음대로 이름 붙이기"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => toggleDraftMood(customDraftMood)}
-                    disabled={!customDraftMood.trim() || (!draftMoods.includes(customDraftMood.trim()) && draftMoods.length >= 2)}
-                    className="h-9 rounded-[10px] bg-[#102747] px-3 text-[12px] font-semibold text-white disabled:bg-[#d8d0c8]"
-                  >
-                    추가
-                  </button>
-                </div>
+                    ))}
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setMoodPickerOpen((open) => !open)}
+                  className="text-[13px] font-semibold tracking-[-0.02em] text-[#102747]"
+                >
+                  + 내 마음대로 이름 붙이기
+                </button>
+                {moodPickerOpen && (
+                  <div className="mt-3 rounded-[16px] border border-[#e8ded4] bg-[#fffaf5] p-3">
+                    <div className="mb-2 flex items-center justify-between text-[12px] font-medium text-[#7d746b]">
+                      <span>{draftMoods.length > 0 ? draftMoods.join(" · ") : "마음 이름을 2개까지 붙일 수 있어요."}</span>
+                      <span>{draftMoods.length}/2</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {moodOptions.map((mood) => {
+                        const selected = draftMoods.includes(mood);
+                        const disabled = !selected && draftMoods.length >= 2;
+                        return (
+                          <button
+                            type="button"
+                            key={mood}
+                            onClick={() => toggleDraftMood(mood)}
+                            disabled={disabled}
+                            className={`rounded-full border px-2.5 py-1.5 text-[12px] font-medium transition ${
+                              selected
+                                ? "border-[#102747] bg-[#102747] text-white"
+                                : disabled
+                                  ? "border-[#e8dfd6] bg-[#f5f0ea] text-[#b4aaa0]"
+                                  : "border-[#ded2c6] bg-[#f4efe9] text-[#5c5045]"
+                            }`}
+                          >
+                            {mood}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="mt-3 flex gap-2">
+                      <input
+                        value={customDraftMood}
+                        onChange={(event) => setCustomDraftMood(event.target.value)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") toggleDraftMood(customDraftMood);
+                        }}
+                        className="h-9 min-w-0 flex-1 rounded-[10px] border border-[#e5dbd0] bg-white px-3 text-[13px] outline-none focus:border-[#c8b5a4]"
+                        placeholder="내 마음대로 이름 붙이기"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => toggleDraftMood(customDraftMood)}
+                        disabled={!customDraftMood.trim() || (!draftMoods.includes(customDraftMood.trim()) && draftMoods.length >= 2)}
+                        className="h-9 rounded-[10px] bg-[#102747] px-3 text-[12px] font-semibold text-white disabled:bg-[#d8d0c8]"
+                      >
+                        추가
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -1537,7 +1682,6 @@ function NowTab({
               <span className="text-[12px] font-medium text-[#91887f]">사진이 함께 남겨져요.</span>
             </div>
           )}
-        </section>
 
         {(lengthNotice || photoError || emptyNotice) && (
           <p className="mt-2 px-1 text-[12px] font-medium text-[#c46b49]">
@@ -1545,7 +1689,7 @@ function NowTab({
           </p>
         )}
 
-        <div className="mt-4 flex items-center justify-between border-t border-[rgba(142,132,111,0.16)] pt-4">
+        <div className="mt-3 flex items-center justify-between pt-1">
           <button
             type="button"
             onClick={() => photoInputRef.current?.click()}
@@ -1599,14 +1743,16 @@ function NowTab({
 
       <section className="-mx-5 mt-1 border-t border-[#eee7df] bg-transparent px-5 pb-2 pt-4">
         <div className="mb-2.5 flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold tracking-[-0.03em] text-[#102747]">최근 툭</h2>
-          <button
-            type="button"
-            className="inline-flex items-center gap-1 text-[12px] font-medium tracking-[-0.02em] text-[#9b9289]"
-          >
-            모두 보기
-            <ChevronDown size={13} strokeWidth={1.7} className="-rotate-90" />
-          </button>
+          <h2 className="text-[15px] font-semibold tracking-[-0.03em] text-[#102747]">오늘의 툭</h2>
+          {displayRecentLogs.length > 0 && (
+            <button
+              type="button"
+              className="inline-flex items-center gap-1 text-[12px] font-medium tracking-[-0.02em] text-[#9b9289]"
+            >
+              모두 보기
+              <ChevronDown size={13} strokeWidth={1.7} className="-rotate-90" />
+            </button>
+          )}
         </div>
         {displayRecentLogs.length > 0 ? (
           <div>
@@ -1621,7 +1767,22 @@ function NowTab({
               />
             ))}
           </div>
-        ) : null}
+        ) : (
+          <section className="flex min-h-[260px] flex-col items-center justify-center rounded-[22px] border border-[#eee5dc] bg-[#fffaf4]/52 px-5 py-10 text-center">
+            <img
+              src="/now-hero.png"
+              alt=""
+              className="mb-5 h-[82px] w-[138px] select-none object-contain opacity-82 mix-blend-multiply"
+              draggable="false"
+            />
+            <h3 className="text-[17px] font-semibold tracking-[-0.04em] text-[#102747]">아직 남겨둔 툭이 없어요</h3>
+            <p className="mt-2 text-[13px] font-medium leading-5 tracking-[-0.03em] text-[#8a8178]">
+              마음이 움직인 순간,
+              <br />
+              지금 툭 남겨보세요.
+            </p>
+          </section>
+        )}
       </section>
 
     </main>
@@ -1737,10 +1898,11 @@ function RecentCard({
   const [editImage, setEditImage] = useState(item.image);
   const editImageInputRef = useRef(null);
   const moodLabels = getMoodLabels(item);
+  const frequency = getFrequencyOption(item);
   const hasEmotion = moodLabels.length > 0;
   const noteEntries = getNoteEntries(item);
   const hasNote = noteEntries.length > 0;
-  const hasAfterData = hasEmotion || hasNote;
+  const hasAfterData = hasEmotion || Boolean(frequency) || hasNote;
 
   const saveEdit = () => {
     const nextText = editText.trim();
@@ -1750,6 +1912,8 @@ function RecentCard({
       tags: item.tags || [],
       mood: item.mood || "남김",
       moods: getMoodLabels(item),
+      frequencyKey: item.frequencyKey || "",
+      frequency: item.frequency || "",
       image: editImage,
     });
     setEditing(false);
@@ -1921,6 +2085,11 @@ function RecentCard({
                     </span>
                   ))}
                 </div>
+              )}
+              {frequency && (
+                <span className="inline-flex shrink-0 rounded-full border border-[#e1d6ca] bg-[#fffaf5] px-2.5 py-1 text-[12px] font-medium text-[#6f6257]">
+                  {frequency.icon} {frequency.label}
+                </span>
               )}
               {showManage && (
                 <button
@@ -2156,7 +2325,7 @@ function LogTab({ logItems, initialSearchQuery = "", onAddDetails, onEditLog, on
   const normalizedQuery = searchQuery.trim().toLocaleLowerCase("ko-KR");
   const filteredLogs = normalizedQuery
     ? logItems.filter((item) => {
-        const searchableText = [item.text, item.note, ...(item.notes || []), item.mood, ...(item.moods || []), item.date, item.day, item.time, ...(item.tags || [])]
+        const searchableText = [item.text, item.note, ...(item.notes || []), item.mood, ...(item.moods || []), item.frequency, item.date, item.day, item.time, ...(item.tags || [])]
           .filter(Boolean)
           .join(" ")
           .toLocaleLowerCase("ko-KR");
@@ -2821,7 +2990,7 @@ export default function App() {
   const [saveOverlayVisible, setSaveOverlayVisible] = useState(false);
   const [saveOverlayMessage, setSaveOverlayMessage] = useState("툭, 남겨졌어요.");
   const [saveOverlaySubtext, setSaveOverlaySubtext] = useState(false);
-  const [saveOverlayTarget, setSaveOverlayTarget] = useState(null);
+  const [frequencyGuideTarget, setFrequencyGuideTarget] = useState(null);
   const saveTimerRef = useRef(null);
   const todayLogs = allLogs.filter(isCurrentOperationalLog);
 
@@ -2866,31 +3035,34 @@ export default function App() {
       window.clearTimeout(saveTimerRef.current);
     }
 
+    const savedFrequency = getFrequencyOption(savedLog);
+    if (savedFrequency && savedFrequency.key !== defaultFrequencyOption.key) {
+      setSaveOverlayVisible(false);
+      setFrequencyGuideTarget(savedLog);
+      saveTimerRef.current = null;
+      return;
+    }
+
+    setFrequencyGuideTarget(null);
     setSaveOverlayMessage(nextTodayCount === 1 ? "첫 툭이 남겨졌어요." : "툭, 남겨졌어요.");
     setSaveOverlaySubtext(nextTodayCount === 1);
-    setSaveOverlayTarget(savedLog);
     setSaveOverlayVisible(true);
-    if (!savedLog) {
-      saveTimerRef.current = window.setTimeout(() => {
-        setSaveOverlayVisible(false);
-        setSaveOverlayTarget(null);
-        saveTimerRef.current = null;
-      }, 2100);
-    }
+    saveTimerRef.current = window.setTimeout(() => {
+      setSaveOverlayVisible(false);
+      saveTimerRef.current = null;
+    }, 2100);
   };
 
   const dismissSaveOverlay = () => {
     if (saveTimerRef.current) window.clearTimeout(saveTimerRef.current);
     saveTimerRef.current = null;
     setSaveOverlayVisible(false);
-    setSaveOverlayTarget(null);
   };
 
-  const openSavedLogWordSheet = () => {
-    if (!saveOverlayTarget) return;
-    dismissSaveOverlay();
-    setAddInitialMode("emotion");
-    setAddTarget(saveOverlayTarget);
+  const closeFrequencyGuide = () => {
+    setFrequencyGuideTarget(null);
+    setComposerOpen(false);
+    setTab("recent");
   };
 
   const addLog = (log) => {
@@ -3008,12 +3180,14 @@ export default function App() {
           hideNav={Boolean(editTarget || composerOpen)}
           overlay={
             addSheet ||
+            (frequencyGuideTarget ? (
+              <FrequencyGuideOverlay item={frequencyGuideTarget} onClose={closeFrequencyGuide} />
+            ) : null) ||
             (saveOverlayVisible ? (
               <SaveOverlay
                 message={saveOverlayMessage}
                 showSubtext={saveOverlaySubtext}
                 onDismiss={dismissSaveOverlay}
-                onAddWord={saveOverlayTarget ? openSavedLogWordSheet : null}
               />
             ) : null)
           }
