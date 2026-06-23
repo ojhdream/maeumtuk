@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   Bell,
+  Camera,
   Check,
   BookOpen,
   BarChart3,
@@ -14,7 +15,6 @@ import {
   Lock,
   MoreHorizontal,
   Moon,
-  PencilLine,
   Plus,
   RefreshCw,
   Search,
@@ -567,6 +567,18 @@ function getFrequencyOption(item) {
   return frequencyOptions.find((option) => option.key === item.frequencyKey || option.label === item.frequency) || null;
 }
 
+const frequencyToneMap = {
+  heavy: { bg: "#eef0f7", text: "#4f5f7d", border: "#d8deec" },
+  flow: { bg: "#eef6ed", text: "#4d7b55", border: "#d4e7d2" },
+  calm: { bg: "#f6eee6", text: "#82634b", border: "#e5d5c6" },
+  spark: { bg: "#fff7d1", text: "#9a7412", border: "#efd989" },
+};
+
+function getFrequencyTone(item) {
+  const frequency = getFrequencyOption(item);
+  return frequency ? frequencyToneMap[frequency.key] : null;
+}
+
 function getMomentTitle(item) {
   const words = (item.tags || []).map(normalizeWord).filter(Boolean);
   if (words.length >= 2) return words.slice(0, 2).join(" ");
@@ -639,11 +651,10 @@ function TimeOfDayIcon({ hour }) {
   return <Sun size={22} strokeWidth={1.8} className="text-[#b89a62]" />;
 }
 
-function BottomNav({ tab, setTab, onCompose, composing = false }) {
+function BottomNav({ tab, setTab }) {
   const items = [
     { id: "recent", label: "오늘", icon: <Home size={20} strokeWidth={1.85} /> },
     { id: "log", label: "툭로그", icon: <FileText size={20} strokeWidth={1.85} /> },
-    { id: "compose", label: "지금", icon: <PencilLine size={20} strokeWidth={1.9} />, compose: true },
     { id: "today", label: "요즘", icon: <BarChart3 size={20} strokeWidth={1.85} /> },
     { id: "settings", label: "나", icon: <UserRound size={20} strokeWidth={1.85} /> },
   ];
@@ -651,23 +662,7 @@ function BottomNav({ tab, setTab, onCompose, composing = false }) {
   return (
     <nav className="maeumtuk-bottom-nav absolute bottom-0 left-0 right-0 flex h-[calc(78px+env(safe-area-inset-bottom))] items-center justify-around border-t border-[#ded4ca] bg-[#f4eee8]/96 px-2 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_22px_rgba(73,59,47,0.035)] backdrop-blur-[10px] transition duration-200">
       {items.map((item) => {
-        const active = item.compose ? composing : tab === item.id;
-        if (item.compose) {
-          return (
-            <button
-              key={item.id}
-              type="button"
-              onClick={onCompose}
-              className={`relative flex h-[58px] w-[58px] -translate-y-[39px] flex-col items-center justify-center gap-0.5 rounded-full bg-[#f6c400] text-[#061c36] shadow-[0_8px_16px_rgba(16,39,71,0.10)] ring-1 ring-[#dfb400]/35 transition duration-200 active:scale-[0.98] ${
-                active ? "scale-100" : "scale-[0.97]"
-              }`}
-              aria-label="지금 마음 작성하기"
-            >
-              <span className="grid h-5 w-5 place-items-center">{item.icon}</span>
-              <span className="font-['Pretendard'] text-[13px] font-semibold tracking-[-0.04em]">{item.label}</span>
-            </button>
-          );
-        }
+        const active = tab === item.id;
         return (
           <button
             key={item.id}
@@ -868,11 +863,11 @@ function useVisibleViewportHeight() {
   }, []);
 }
 
-function Phone({ children, tab, setTab, hideNav = false, overlay = null, onCompose, composing = false }) {
+function Phone({ children, tab, setTab, hideNav = false, overlay = null }) {
   return (
-    <div className="maeumtuk-phone relative h-[var(--maeumtuk-vh,100dvh)] max-h-[var(--maeumtuk-vh,100dvh)] w-full max-w-[430px] overflow-hidden bg-[#faf8f5] sm:h-[min(820px,calc(var(--maeumtuk-vh,100dvh)-48px))] sm:max-h-[820px] sm:w-[390px] sm:rounded-[26px] sm:shadow-[0_16px_55px_rgba(63,47,30,.08)] sm:ring-1 sm:ring-[#ebe2d8]">
+    <div className="maeumtuk-phone relative h-[var(--maeumtuk-vh,100dvh)] max-h-[var(--maeumtuk-vh,100dvh)] w-full max-w-[430px] overflow-hidden bg-[#fcfcfa] sm:h-[min(820px,calc(var(--maeumtuk-vh,100dvh)-48px))] sm:max-h-[820px] sm:w-[390px] sm:rounded-[26px] sm:shadow-[0_16px_55px_rgba(63,47,30,.08)] sm:ring-1 sm:ring-[#ebe2d8]">
       <div className={`maeumtuk-scroll h-full overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${hideNav ? "pb-[env(safe-area-inset-bottom)]" : "pb-[calc(96px+env(safe-area-inset-bottom))]"}`}>{children}</div>
-      {!hideNav && <BottomNav tab={tab} setTab={setTab} onCompose={onCompose} composing={composing} />}
+      {!hideNav && <BottomNav tab={tab} setTab={setTab} />}
       {overlay}
       {/* 저장 완료 전체 화면 애니메이션은 추후 재검토를 위해 보존합니다. */}
       {/* {saveOverlayVisible && <SaveOverlay message={saveOverlayMessage} />} */}
@@ -1213,6 +1208,7 @@ function NowFlowItem({ item, sequence, isLatest = false, onEdit, onDelete }) {
   const isSample = Boolean(item.sample);
   const moodLabels = getMoodLabels(item);
   const frequency = getFrequencyOption(item);
+  const frequencyTone = getFrequencyTone(item);
   const noteEntries = getNoteEntries(item);
   const hasNote = noteEntries.length > 0;
   const previewTags = [...moodLabels, ...(item.tags || []).map(normalizeWord)]
@@ -1222,7 +1218,7 @@ function NowFlowItem({ item, sequence, isLatest = false, onEdit, onDelete }) {
     .slice(0, 3);
   return (
     <article
-      className={`maeumtuk-now-row relative border-b border-[#dfd0c1] py-3 last:border-b-0 ${
+      className={`maeumtuk-now-row relative mb-2.5 rounded-[18px] border border-[#ece7de] bg-white px-3 py-3 shadow-[0_4px_16px_rgba(0,0,0,0.025)] last:mb-0 ${
         menuOpen ? "z-30" : ""
       } ${
         isLatest ? "maeumtuk-now-settle" : ""
@@ -1263,14 +1259,28 @@ function NowFlowItem({ item, sequence, isLatest = false, onEdit, onDelete }) {
         </div>
       )}
       <div className={`relative pl-[24px] font-['Pretendard'] ${isSample ? "pr-1" : "pr-10"}`}>
+        {frequency && frequencyTone ? (
+          <span
+            aria-hidden="true"
+            className="absolute left-[-1px] top-[5px] grid h-4 w-4 place-items-center rounded-full border text-[9px] leading-none shadow-[0_1px_5px_rgba(43,35,28,0.10)]"
+            style={{
+              backgroundColor: frequencyTone.bg,
+              borderColor: frequencyTone.border,
+              color: frequencyTone.text,
+            }}
+          >
+            {frequency.icon}
+          </span>
+        ) : (
+          <span
+            aria-hidden="true"
+            className="absolute left-[3px] top-[10px] h-2 w-2 rounded-full ring-2 ring-white shadow-[0_1px_5px_rgba(43,35,28,0.16)]"
+            style={{ background: dotColor }}
+          />
+        )}
         <span
           aria-hidden="true"
-          className="absolute left-[3px] top-[10px] h-2 w-2 rounded-full ring-2 ring-[#fffaf3] shadow-[0_1px_5px_rgba(43,35,28,0.16)]"
-          style={{ background: dotColor }}
-        />
-        <span
-          aria-hidden="true"
-          className="absolute left-[6px] top-[27px] h-[calc(100%-24px)] border-l border-dotted border-[#d3c7ba]"
+          className="absolute left-[6px] top-[27px] h-[calc(100%-24px)] border-l border-dotted border-[#e3ddd5]"
         />
         <time className="block h-[23px] text-[12px] font-medium leading-[23px] tracking-[-0.02em] text-[#766c63]">
           {item.time}
@@ -1299,7 +1309,7 @@ function NowFlowItem({ item, sequence, isLatest = false, onEdit, onDelete }) {
             )}
           </div>
           {item.image && (
-            <div className="maeumtuk-now-thumbnail h-[84px] w-[84px] shrink-0 overflow-hidden rounded-[16px] border border-[#e7ddd3] bg-[#f6f1eb] shadow-[0_6px_14px_rgba(54,42,30,0.06)]">
+            <div className="maeumtuk-now-thumbnail h-[84px] w-[84px] shrink-0 overflow-hidden rounded-[16px] border border-[#ece7de] bg-[#f8f8f5] shadow-[0_6px_14px_rgba(54,42,30,0.04)]">
               <div className="h-full w-full" style={{ background: getImageBackground(item.image) }} />
             </div>
           )}
@@ -1325,19 +1335,7 @@ function NowFlowItem({ item, sequence, isLatest = false, onEdit, onDelete }) {
 }
 
 const nowNoteGuideOptions = [
-  "회의가 너무 길다..",
-  "쉬고 싶다..",
-  "맛있는 커피숍을 발견했다..",
-  "퇴근하고 싶다 진짜로..",
-  "왜 이렇게 피곤하지..",
-  "아 진짜 모르겠다..",
-  "오늘 하늘 예쁘네...",
-  "아 왜 이렇게 예민하지..",
-  "그 말이 계속 걸린다..",
-  "괜히 서운하다..",
-  "나 지금 좀 찌질한 듯..",
-  "기분이 이상하게 들떠있다..",
-  "아무것도 하기 싫다..",
+  "지금 떠오른 것을 툭 남겨보세요.",
 ];
 
 function NowTab({
@@ -1355,7 +1353,7 @@ function NowTab({
   onAddEmotion,
 }) {
   const noteGuide = useMemo(() => nowNoteGuideOptions[Math.floor(Math.random() * nowNoteGuideOptions.length)], []);
-  const minDraftHeight = 117;
+  const minDraftHeight = 96;
   const maxDraftHeight = 270;
   const [draft, setDraft] = useState("");
   const [photoData, setPhotoData] = useState(null);
@@ -1368,6 +1366,7 @@ function NowTab({
   const [moodPickerOpen, setMoodPickerOpen] = useState(false);
   const [customDraftMood, setCustomDraftMood] = useState("");
   const [selectedFrequencyKey, setSelectedFrequencyKey] = useState("");
+  const [frequencyPickerOpen, setFrequencyPickerOpen] = useState(false);
   const draftRef = useRef(null);
   const photoInputRef = useRef(null);
   const currentMeta = getCurrentLogMeta();
@@ -1433,8 +1432,8 @@ function NowTab({
       tags: [],
       mood: draftMoods[0] || "남김",
       moods: draftMoods,
-      frequencyKey: selectedFrequencyKey || defaultFrequencyOption.key,
-      frequency: (frequencyOptions.find((option) => option.key === selectedFrequencyKey) || defaultFrequencyOption).label,
+      frequencyKey: selectedFrequencyKey,
+      frequency: frequencyOptions.find((option) => option.key === selectedFrequencyKey)?.label || "",
       dot: currentMeta.dot,
       image: photoData,
       note: "",
@@ -1454,6 +1453,7 @@ function NowTab({
       setMoodPickerOpen(false);
       setCustomDraftMood("");
       setSelectedFrequencyKey("");
+      setFrequencyPickerOpen(false);
       setIsLeaving(false);
       onComposerOpenChange?.(false);
     }, 260);
@@ -1567,7 +1567,6 @@ function NowTab({
           <div className="mt-4 px-1 pl-[38px]">
             <div className="mb-2 flex items-center justify-between gap-3">
               <p className="text-[13px] font-semibold tracking-[-0.03em] text-[#3f372f]">마음의 주파수</p>
-              <p className="text-[11px] font-medium tracking-[-0.02em] text-[#9a9289]">선택 안 하면 일상기록</p>
             </div>
             <div className="grid grid-cols-2 gap-2">
               {selectableFrequencyOptions.map((option) => {
@@ -1714,7 +1713,7 @@ function NowTab({
 
   return (
     <main className="relative px-5 pb-10 pt-5">
-      <header className="mb-7 flex items-start justify-between">
+      <header className="mb-4 flex items-start justify-between">
         <div>
           <div className="mb-5 flex items-center gap-2.5">
             <span className="text-[16px] font-semibold tracking-[-0.04em] text-[#102747]">마음툭</span>
@@ -1741,7 +1740,246 @@ function NowTab({
         </button>
       </header>
 
-      <section className="-mx-5 mt-1 border-t border-[#eee7df] bg-transparent px-5 pb-2 pt-4">
+      <input
+        ref={photoInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(event) => {
+          setPhotoError("");
+          readImageFile(event.target.files?.[0], setPhotoData, setPhotoError);
+          event.target.value = "";
+        }}
+      />
+
+      <div className="relative mb-3 min-h-[48px] px-1 pr-[116px]">
+        <p className="whitespace-pre-line pt-0.5 text-[13px] font-medium leading-[21px] tracking-[-0.03em] text-[#7d746b]">
+          {"걱정, 사진, 한 문장,\n지나간 생각 하나면 충분해."}
+        </p>
+        <img
+          src="/now-hero.png"
+          alt=""
+          className="absolute bottom-[-3px] right-0 h-[86px] w-[128px] select-none object-contain object-right-bottom opacity-92 mix-blend-multiply"
+          draggable="false"
+        />
+      </div>
+
+      <section className="mb-6 rounded-[26px] border border-[#ece7de] bg-white px-4 py-4 shadow-[0_4px_16px_rgba(0,0,0,0.04)]">
+
+        <div
+          className={`transition duration-300 ${
+            isLeaving ? "translate-y-0.5 opacity-55" : ""
+          }`}
+        >
+          <div className="maeumtuk-draft-zone relative pl-0">
+            <div className="relative">
+              <textarea
+                ref={draftRef}
+                value={draft}
+                onChange={(event) => {
+                  setDraft(event.target.value);
+                  if (lengthNotice) setLengthNotice(false);
+                  if (emptyNotice) setEmptyNotice(false);
+                }}
+                className="maeumtuk-draft-input relative z-[1] min-h-[96px] max-h-[300px] w-full resize-none overflow-y-auto bg-transparent py-0 pl-0 pr-0 text-[17px] font-normal leading-[31px] tracking-[-0.02em] text-[#061c36] outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                placeholder=""
+                aria-label="지금 이 순간의 마음 작성"
+                maxLength={301}
+                rows={3}
+              />
+              {!draft && (
+                <p
+                  aria-hidden="true"
+                  className="composer-guide pointer-events-none absolute left-0 right-0 top-0 whitespace-pre-line text-[17px] font-normal leading-[31px] tracking-[-0.02em] text-[#7a756e] opacity-100 transition-opacity duration-200"
+                >
+                  {typedNoteGuide}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-3 border-t border-[#eee6dd] pt-3 px-1">
+            <div className="flex flex-col items-start gap-1.5">
+              <button
+                type="button"
+                onClick={() => setFrequencyPickerOpen((open) => !open)}
+                aria-expanded={frequencyPickerOpen}
+                className={`rounded-full border px-3 py-1.5 text-[12px] font-semibold tracking-[-0.02em] transition ${
+                  frequencyPickerOpen
+                    ? "border-[#102747] bg-[#102747] text-[#fffdf7]"
+                    : "border-[#ece7de] bg-[#fffdf9] text-[#102747]"
+                }`}
+              >
+                {frequencyPickerOpen ? "−" : "+"} 지금 마음은?
+              </button>
+              <button
+                type="button"
+                onClick={() => setMoodPickerOpen((open) => !open)}
+                aria-expanded={moodPickerOpen}
+                className={`rounded-full border px-3 py-1.5 text-[12px] font-semibold tracking-[-0.02em] transition ${
+                  moodPickerOpen
+                    ? "border-[#102747] bg-[#102747] text-[#fffdf7]"
+                    : "border-[#ece7de] bg-[#fffdf9] text-[#102747]"
+                }`}
+              >
+                {moodPickerOpen ? "−" : "+"} 마음 이름 붙이기
+              </button>
+            </div>
+
+            {frequencyPickerOpen && (
+              <div className="mt-3 rounded-[16px] border border-[#ece7de] bg-[#fffdf9] p-3">
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <p className="text-[12px] font-semibold tracking-[-0.03em] text-[#3f372f]">마음의 주파수</p>
+                </div>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {selectableFrequencyOptions.map((option) => {
+                    const selected = selectedFrequencyKey === option.key;
+                    return (
+                      <button
+                        type="button"
+                        key={option.key}
+                        onClick={() => toggleFrequency(option.key)}
+                        className={`h-8 rounded-[11px] border px-1.5 text-center text-[11px] font-semibold tracking-[-0.04em] transition ${
+                          selected
+                            ? "border-[#d7b958] bg-[#fff3b8] text-[#102747] shadow-[0_4px_10px_rgba(185,151,54,0.10)]"
+                            : "border-[#ece7de] bg-white text-[#5a5047] hover:bg-[#f7f1ea]"
+                        }`}
+                      >
+                        <span className="mr-0.5" aria-hidden="true">{option.icon}</span>
+                        {option.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {moodPickerOpen && (
+              <div className="mt-3">
+                {draftMoods.length > 0 && (
+                  <div className="mb-2 flex flex-wrap gap-1.5">
+                    {draftMoods.map((mood) => (
+                      <button
+                        type="button"
+                        key={mood}
+                        onClick={() => toggleDraftMood(mood)}
+                        className="rounded-full border border-[#ece7de] bg-white px-2.5 py-1 text-[12px] font-medium text-[#5e5145]"
+                      >
+                        #{mood}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                  <div className="rounded-[16px] border border-[#ece7de] bg-[#fffdf9] p-3">
+                    <div className="mb-2 flex items-center justify-between text-[12px] font-medium text-[#7d746b]">
+                      <span>{draftMoods.length > 0 ? draftMoods.join(" · ") : "마음 이름을 2개까지 붙일 수 있어요."}</span>
+                      <span>{draftMoods.length}/2</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {moodOptions.map((mood) => {
+                        const selected = draftMoods.includes(mood);
+                        const disabled = !selected && draftMoods.length >= 2;
+                        return (
+                          <button
+                            type="button"
+                            key={mood}
+                            onClick={() => toggleDraftMood(mood)}
+                            disabled={disabled}
+                            className={`rounded-full border px-2.5 py-1.5 text-[12px] font-medium transition ${
+                              selected
+                                ? "border-[#102747] bg-[#102747] text-white"
+                                : disabled
+                                  ? "border-[#e8dfd6] bg-[#f5f0ea] text-[#b4aaa0]"
+                                  : "border-[#ece7de] bg-white text-[#5c5045]"
+                            }`}
+                          >
+                            {mood}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="mt-3 flex gap-2">
+                      <input
+                        value={customDraftMood}
+                        onChange={(event) => setCustomDraftMood(event.target.value)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") toggleDraftMood(customDraftMood);
+                        }}
+                        className="h-9 min-w-0 flex-1 rounded-[10px] border border-[#e5dbd0] bg-white px-3 text-[13px] outline-none focus:border-[#c8b5a4]"
+                        placeholder="내 마음대로 이름 붙이기"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => toggleDraftMood(customDraftMood)}
+                        disabled={!customDraftMood.trim() || (!draftMoods.includes(customDraftMood.trim()) && draftMoods.length >= 2)}
+                        className="h-9 rounded-[10px] bg-[#102747] px-3 text-[12px] font-semibold text-white disabled:bg-[#d8d0c8]"
+                      >
+                        추가
+                      </button>
+                    </div>
+                  </div>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-3 border-t border-[#ece7de]" />
+
+          {photoData && (
+            <div className="mt-3 flex items-center gap-3">
+              <div className="relative">
+                <MiniPhoto bg={photoData} />
+                <button
+                  type="button"
+                  onClick={() => setPhotoData(null)}
+                  className="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-[#fffdf9] text-[#6c6259] shadow-[0_2px_8px_rgba(54,42,30,.12)] ring-1 ring-[#e8dfd5]"
+                  aria-label="첨부 사진 삭제"
+                >
+                  <X size={10} strokeWidth={2} />
+                </button>
+              </div>
+              <span className="text-[12px] font-medium text-[#91887f]">사진도 함께 남겨둘게요.</span>
+            </div>
+          )}
+
+          {(lengthNotice || photoError || emptyNotice) && (
+            <p className="mt-2 px-1 text-[12px] font-medium text-[#c46b49]">
+              {photoError || (emptyNotice ? "마음을 먼저 적어주세요." : "조금 길어요. 300자 안쪽으로 남겨주세요.")}
+            </p>
+          )}
+
+          <div className="mt-3 flex items-center justify-between pt-1">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => photoInputRef.current?.click()}
+                className="grid h-11 w-11 place-items-center rounded-[12px] border border-[#ece7de] bg-white text-[#81776e] transition hover:bg-[#f7f3ef]"
+                aria-label="카메라로 사진 추가"
+              >
+                <Camera size={18} strokeWidth={1.7} />
+              </button>
+              <button
+                type="button"
+                onClick={() => photoInputRef.current?.click()}
+                className="grid h-11 w-11 place-items-center rounded-[12px] border border-[#ece7de] bg-white text-[#81776e] transition hover:bg-[#f7f3ef]"
+                aria-label="앨범에서 사진 추가"
+              >
+                <Image size={18} strokeWidth={1.7} />
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={leaveTuk}
+              disabled={isLeaving}
+              aria-disabled={!canLeaveTuk}
+              className="tuk-button h-11 min-w-[92px] rounded-full px-5 text-[15px] font-semibold"
+            >
+              맡겨두기
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section className="-mx-5 mt-1 border-t border-[#ece7de] bg-transparent px-6 pb-2 pt-4">
         <div className="mb-2.5 flex items-center justify-between">
           <h2 className="text-[15px] font-semibold tracking-[-0.03em] text-[#102747]">오늘의 툭</h2>
           {displayRecentLogs.length > 0 && (
@@ -1768,7 +2006,7 @@ function NowTab({
             ))}
           </div>
         ) : (
-          <section className="flex min-h-[260px] flex-col items-center justify-center rounded-[22px] border border-[#eee5dc] bg-[#fffaf4]/52 px-5 py-10 text-center">
+          <section className="flex min-h-[260px] flex-col items-center justify-center rounded-[22px] border border-[#ece7de] bg-white px-5 py-10 text-center shadow-[0_4px_16px_rgba(0,0,0,0.025)]">
             <img
               src="/now-hero.png"
               alt=""
@@ -1899,6 +2137,7 @@ function RecentCard({
   const editImageInputRef = useRef(null);
   const moodLabels = getMoodLabels(item);
   const frequency = getFrequencyOption(item);
+  const frequencyTone = getFrequencyTone(item);
   const hasEmotion = moodLabels.length > 0;
   const noteEntries = getNoteEntries(item);
   const hasNote = noteEntries.length > 0;
@@ -1921,7 +2160,7 @@ function RecentCard({
   };
 
   return (
-    <article className="maeumtuk-log-card relative border-b border-[#ded2c6] px-1 py-5 last:border-b-0">
+    <article className="maeumtuk-log-card relative border-b border-[#ece7de] px-1 py-5 last:border-b-0">
       {showManage && (
         <button
           onClick={() => {
@@ -1973,10 +2212,23 @@ function RecentCard({
       )}
       <div className="font-['Pretendard']">
           <div className="relative mb-2 flex h-[20px] items-center pl-[24px] pr-10 text-[12px] font-medium tracking-[-0.02em] text-[#766c63]">
-            <span
-              className="absolute left-0 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full ring-2 ring-[#fffaf3] shadow-[0_1px_5px_rgba(43,35,28,0.16)]"
-              style={{ background: getLogDotColor(item) }}
-            />
+            {frequency && frequencyTone ? (
+              <span
+                className="absolute left-[-3px] top-1/2 grid h-4 w-4 -translate-y-1/2 place-items-center rounded-full border text-[9px] leading-none shadow-[0_1px_5px_rgba(43,35,28,0.10)]"
+                style={{
+                  backgroundColor: frequencyTone.bg,
+                  borderColor: frequencyTone.border,
+                  color: frequencyTone.text,
+                }}
+              >
+                {frequency.icon}
+              </span>
+            ) : (
+              <span
+                className="absolute left-0 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full ring-2 ring-white shadow-[0_1px_5px_rgba(43,35,28,0.16)]"
+                style={{ background: getLogDotColor(item) }}
+              />
+            )}
             <span>{item.time}</span>
           </div>
         <div className="pl-[24px]">
@@ -3094,11 +3346,6 @@ export default function App() {
     setCustomEmotions((current) => [nextEmotion, ...current.filter((item) => item !== nextEmotion)].slice(0, 12));
   };
 
-  const openComposer = () => {
-    setTab("recent");
-    setComposerOpen(true);
-  };
-
   const openLogWithQuery = (query) => {
     setLogSearchQuery(query);
     setComposerOpen(false);
@@ -3170,14 +3417,12 @@ export default function App() {
   ) : null;
 
   return (
-    <div className="h-[var(--maeumtuk-vh,100dvh)] overflow-hidden bg-[#faf8f2] p-0 font-['Pretendard'] text-[#102747] sm:p-6">
+    <div className="h-[var(--maeumtuk-vh,100dvh)] overflow-hidden bg-[#fcfcfa] p-0 font-['Pretendard'] text-[#102747] sm:p-6">
       <div className="mx-auto flex h-full max-w-[1260px] items-stretch justify-center gap-7 sm:items-start">
         <Phone
           tab={tab}
           setTab={setTab}
-          onCompose={openComposer}
-          composing={composerOpen}
-          hideNav={Boolean(editTarget || composerOpen)}
+          hideNav={Boolean(editTarget)}
           overlay={
             addSheet ||
             (frequencyGuideTarget ? (
