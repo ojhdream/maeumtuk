@@ -660,29 +660,29 @@ function BottomNav({ tab, setTab }) {
   ];
 
   return (
-    <nav className="maeumtuk-bottom-nav absolute bottom-0 left-0 right-0 flex h-[calc(78px+env(safe-area-inset-bottom))] items-center justify-around border-t border-[#ded4ca] bg-[#f4eee8]/96 px-2 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_22px_rgba(73,59,47,0.035)] backdrop-blur-[10px] transition duration-200">
+    <nav className="maeumtuk-bottom-nav absolute bottom-0 left-3 right-3 flex h-[calc(76px+env(safe-area-inset-bottom))] items-center justify-around rounded-t-[26px] border border-b-0 border-[#ded6c8] bg-[#fffdf7]/96 px-2 pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_28px_rgba(16,39,71,0.055)] backdrop-blur-[12px] transition duration-200">
       {items.map((item) => {
         const active = tab === item.id;
         return (
           <button
             key={item.id}
             onClick={() => setTab(item.id)}
-            className={`relative flex h-[56px] w-[58px] flex-col items-center justify-center gap-0.5 rounded-[18px] text-[10.5px] transition duration-200 ${
-              active ? "text-[#061c36]" : "text-[#72777c] hover:text-[#173253]"
-            }`}
+              className={`relative flex h-[54px] w-[62px] flex-col items-center justify-center gap-0.5 rounded-[20px] text-[10.5px] transition duration-200 ${
+                active ? "text-[#061c36]" : "text-[#5f6872] hover:text-[#173253]"
+              }`}
           >
             <span
               aria-hidden="true"
-              className={`absolute inset-0 rounded-[18px] bg-[#fff1bd]/82 shadow-[0_8px_18px_rgba(16,39,71,0.05)] transition duration-200 ${active ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
+              className={`absolute inset-[2px] rounded-[18px] bg-[linear-gradient(145deg,#fff8dc_0%,#fff0b8_100%)] shadow-[0_8px_18px_rgba(16,39,71,0.07)] ring-1 ring-[#dfc86d]/70 transition duration-200 ${active ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
             />
             <div
               className={`relative z-[1] grid h-6 w-8 place-items-center transition duration-200 ${
-                active ? "text-[#061c36]" : "text-[#72777c]"
+                active ? "text-[#061c36]" : "text-[#5f6872]"
               }`}
             >
               {item.icon}
             </div>
-            <span className="relative z-[1] whitespace-nowrap font-['Pretendard'] font-medium tracking-[-0.03em]">{item.label}</span>
+            <span className={`relative z-[1] whitespace-nowrap font-['Pretendard'] tracking-[-0.03em] ${active ? "font-semibold" : "font-medium"}`}>{item.label}</span>
           </button>
         );
       })}
@@ -1218,7 +1218,7 @@ function NowFlowItem({ item, sequence, isLatest = false, onEdit, onDelete }) {
     .slice(0, 3);
   return (
     <article
-      className={`maeumtuk-now-row relative mb-2.5 rounded-[18px] border border-[#ece7de] bg-white px-3 py-3 shadow-[0_4px_16px_rgba(0,0,0,0.025)] last:mb-0 ${
+      className={`maeumtuk-now-row relative mb-2.5 rounded-[18px] border border-[#ece7de] bg-white px-4 py-3 shadow-[0_4px_16px_rgba(0,0,0,0.025)] last:mb-0 ${
         menuOpen ? "z-30" : ""
       } ${
         isLatest ? "maeumtuk-now-settle" : ""
@@ -1259,35 +1259,33 @@ function NowFlowItem({ item, sequence, isLatest = false, onEdit, onDelete }) {
         </div>
       )}
       <div className={`relative pl-[24px] font-['Pretendard'] ${isSample ? "pr-1" : "pr-10"}`}>
-        {frequency && frequencyTone ? (
-          <span
-            aria-hidden="true"
-            className="absolute left-[-1px] top-[5px] grid h-4 w-4 place-items-center rounded-full border text-[9px] leading-none shadow-[0_1px_5px_rgba(43,35,28,0.10)]"
-            style={{
-              backgroundColor: frequencyTone.bg,
-              borderColor: frequencyTone.border,
-              color: frequencyTone.text,
-            }}
-          >
-            {frequency.icon}
-          </span>
-        ) : (
-          <span
-            aria-hidden="true"
-            className="absolute left-[3px] top-[10px] h-2 w-2 rounded-full ring-2 ring-white shadow-[0_1px_5px_rgba(43,35,28,0.16)]"
-            style={{ background: dotColor }}
-          />
-        )}
         <span
           aria-hidden="true"
-          className="absolute left-[6px] top-[27px] h-[calc(100%-24px)] border-l border-dotted border-[#e3ddd5]"
+          className="absolute left-[3px] top-[10px] h-2 w-2 rounded-full ring-2 ring-white shadow-[0_1px_5px_rgba(43,35,28,0.16)]"
+          style={{ background: dotColor }}
         />
-        <time className="block h-[23px] text-[12px] font-medium leading-[23px] tracking-[-0.02em] text-[#766c63]">
-          {item.time}
+        <span
+          aria-hidden="true"
+          className="hidden"
+        />
+        <time className="flex h-[23px] items-center gap-2 text-[12px] font-medium leading-[23px] tracking-[-0.02em] text-[#766c63]">
+          <span>{item.time}</span>
+          {frequency && (
+            <span
+              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium tracking-[-0.03em]"
+              style={{
+                backgroundColor: frequencyTone?.bg || "#f7f3ef",
+                color: frequencyTone?.text || "#7e746b",
+              }}
+            >
+              <span aria-hidden="true">{frequency.icon}</span>
+              {frequency.label}
+            </span>
+          )}
         </time>
         <div className="mt-1 flex items-start gap-3">
           <div className="min-w-0 flex-1">
-            <p className="maeumtuk-now-preview whitespace-pre-line font-['Pretendard'] text-[16px] font-normal leading-[28px] tracking-[-0.02em] text-[#29241f]">
+            <p className="maeumtuk-now-preview whitespace-pre-line font-['Pretendard'] text-[15px] font-normal leading-[25px] tracking-[-0.02em] text-[#151f2a]">
               {item.text}
             </p>
             {previewTags.length > 0 && (
@@ -1296,11 +1294,6 @@ function NowFlowItem({ item, sequence, isLatest = false, onEdit, onDelete }) {
                   <span key={tag}>#{tag}</span>
                 ))}
               </div>
-            )}
-            {frequency && (
-              <p className="mt-1.5 text-[12px] font-medium leading-5 tracking-[-0.02em] text-[#7e746b]">
-                {frequency.icon} {frequency.label}
-              </p>
             )}
             {hasNote && (
               <p className="mt-1.5 text-[12px] font-medium leading-5 tracking-[-0.02em] text-[#7e746b]">
@@ -1353,8 +1346,8 @@ function NowTab({
   onAddEmotion,
 }) {
   const noteGuide = useMemo(() => nowNoteGuideOptions[Math.floor(Math.random() * nowNoteGuideOptions.length)], []);
-  const minDraftHeight = 96;
-  const maxDraftHeight = 270;
+  const minDraftHeight = 76;
+  const maxDraftHeight = 240;
   const [draft, setDraft] = useState("");
   const [photoData, setPhotoData] = useState(null);
   const [photoError, setPhotoError] = useState("");
@@ -1371,10 +1364,11 @@ function NowTab({
   const photoInputRef = useRef(null);
   const currentMeta = getCurrentLogMeta();
   const todayCount = todayLogs.length;
-  const displayRecentLogs = recentLogs.slice(0, 3);
+  const displayRecentLogs = recentLogs.slice(0, 2);
   const canLeaveTuk = Boolean(draft.trim() || photoData);
   const moodOptions = emotionOptions;
   const hasSelectedFrequency = Boolean(selectedFrequencyKey);
+  const selectedFrequency = frequencyOptions.find((option) => option.key === selectedFrequencyKey);
 
   useEffect(() => {
     let index = 0;
@@ -1433,7 +1427,7 @@ function NowTab({
       mood: draftMoods[0] || "남김",
       moods: draftMoods,
       frequencyKey: selectedFrequencyKey,
-      frequency: frequencyOptions.find((option) => option.key === selectedFrequencyKey)?.label || "",
+      frequency: selectedFrequency?.label || "",
       dot: currentMeta.dot,
       image: photoData,
       note: "",
@@ -1712,7 +1706,7 @@ function NowTab({
   }
 
   return (
-    <main className="relative px-5 pb-10 pt-5">
+    <main className="relative flex flex-col px-5 pb-10 pt-5">
       <header className="mb-4 flex items-start justify-between">
         <div>
           <div className="mb-5 flex items-center gap-2.5">
@@ -1752,19 +1746,65 @@ function NowTab({
         }}
       />
 
-      <div className="relative mb-3 min-h-[48px] px-1 pr-[116px]">
-        <p className="whitespace-pre-line pt-0.5 text-[13px] font-medium leading-[21px] tracking-[-0.03em] text-[#7d746b]">
+      <div className="relative mb-3 min-h-[64px] px-1 pr-[152px]">
+        <p className="whitespace-pre-line pt-0.5 text-[15px] font-medium leading-[27px] tracking-[-0.035em] text-[#5f6972]">
           {"걱정, 사진, 한 문장,\n지나간 생각 하나면 충분해."}
         </p>
         <img
           src="/now-hero.png"
           alt=""
-          className="absolute bottom-[-3px] right-0 h-[86px] w-[128px] select-none object-contain object-right-bottom opacity-92 mix-blend-multiply"
+          className="absolute bottom-[-6px] right-[-2px] h-[112px] w-[162px] select-none object-contain object-right-bottom opacity-92 mix-blend-multiply"
           draggable="false"
         />
       </div>
 
-      <section className="mb-6 rounded-[26px] border border-[#ece7de] bg-white px-4 py-4 shadow-[0_4px_16px_rgba(0,0,0,0.04)]">
+      <section className="order-3 mb-5 mt-4 px-1">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-[17px] font-semibold tracking-[-0.04em] text-[#102747]">오늘의 툭</h2>
+          {displayRecentLogs.length > 0 && (
+            <button
+              type="button"
+              className="inline-flex items-center gap-1 text-[13px] font-medium tracking-[-0.03em] text-[#747c84]"
+            >
+              모두 보기
+              <ChevronDown size={14} strokeWidth={1.8} className="-rotate-90" />
+            </button>
+          )}
+        </div>
+        {displayRecentLogs.length > 0 ? (
+          <div className="space-y-2.5">
+            {displayRecentLogs.map((item, index) => (
+              <NowFlowItem
+                key={item.id || `${item.date}-${item.time}`}
+                item={item}
+                sequence={displayRecentLogs.length - index}
+                isLatest={recentLogs.length > 0 && index === 0}
+                onEdit={onEditLog}
+                onDelete={onDeleteLog}
+              />
+            ))}
+          </div>
+        ) : (
+          <section className="maeumtuk-empty-today rounded-[18px] border border-[#ece7de] bg-white px-4 py-5 text-[14px] font-medium leading-6 tracking-[-0.03em] text-[#6f7882] shadow-[0_4px_16px_rgba(0,0,0,0.02)]">
+            <span className="mr-1" aria-hidden="true">☀️</span>
+            첫 번째 순간을 기다리고 있어요.
+            <h3 className="text-[16px] font-semibold tracking-[-0.04em] text-[#102747]">아직 남겨둔 툭이 없어요</h3>
+            <p className="mt-2 text-[13px] font-medium leading-5 tracking-[-0.03em] text-[#7f8790]">
+              마음이 움직인 순간,
+              <br />
+              지금 툭 남겨보세요
+            </p>
+          </section>
+        )}
+        {todayCount > 0 && (
+          <p className="mt-3 px-1 text-[13px] font-medium leading-5 tracking-[-0.03em] text-[#747c84]">
+            <span className="mr-1 text-[#f5c94a]" aria-hidden="true">♥</span>
+            오늘 {todayCount}개의 마음이 남겨졌어요.
+          </p>
+        )}
+      </section>
+
+      <section className="maeumtuk-inline-composer order-2 mb-6 rounded-[26px] border border-[#ece7de] bg-white px-4 py-4 shadow-[0_4px_16px_rgba(0,0,0,0.04)]">
 
         <div
           className={`transition duration-300 ${
@@ -1781,16 +1821,16 @@ function NowTab({
                   if (lengthNotice) setLengthNotice(false);
                   if (emptyNotice) setEmptyNotice(false);
                 }}
-                className="maeumtuk-draft-input relative z-[1] min-h-[96px] max-h-[300px] w-full resize-none overflow-y-auto bg-transparent py-0 pl-0 pr-0 text-[17px] font-normal leading-[31px] tracking-[-0.02em] text-[#061c36] outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                className="maeumtuk-draft-input relative z-[1] min-h-[76px] max-h-[240px] w-full resize-none overflow-y-auto bg-transparent py-0 pl-0 pr-0 text-[16px] font-normal leading-[27px] tracking-[-0.02em] text-[#061c36] outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                 placeholder=""
                 aria-label="지금 이 순간의 마음 작성"
                 maxLength={301}
-                rows={3}
+                rows={2}
               />
               {!draft && (
                 <p
                   aria-hidden="true"
-                  className="composer-guide pointer-events-none absolute left-0 right-0 top-0 whitespace-pre-line text-[17px] font-normal leading-[31px] tracking-[-0.02em] text-[#7a756e] opacity-100 transition-opacity duration-200"
+                  className="composer-guide pointer-events-none absolute left-0 right-0 top-0 whitespace-pre-line text-[16px] font-normal leading-[27px] tracking-[-0.02em] text-[#5f6972] opacity-100 transition-opacity duration-200"
                 >
                   {typedNoteGuide}
                 </p>
@@ -1798,8 +1838,37 @@ function NowTab({
             </div>
           </div>
 
-          <div className="mt-3 border-t border-[#eee6dd] pt-3 px-1">
-            <div className="flex flex-col items-start gap-1.5">
+          {(selectedFrequency || draftMoods.length > 0) && (
+            <div className="mt-2 flex flex-wrap gap-1.5 px-0.5">
+              {selectedFrequency && (
+                <span
+                  className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[12px] font-medium tracking-[-0.03em]"
+                  style={{
+                    backgroundColor: frequencyToneMap[selectedFrequency.key]?.bg || "#f7f3ef",
+                    borderColor: frequencyToneMap[selectedFrequency.key]?.border || "#ece7de",
+                    color: frequencyToneMap[selectedFrequency.key]?.text || "#7e746b",
+                  }}
+                >
+                  <span aria-hidden="true">{selectedFrequency.icon}</span>
+                  {selectedFrequency.label}
+                </span>
+              )}
+              {draftMoods.map((mood) => (
+                <button
+                  type="button"
+                  key={mood}
+                  onClick={() => toggleDraftMood(mood)}
+                  className="inline-flex items-center rounded-full border border-[#e2d8ce] bg-[#fffdf9] px-2.5 py-1 text-[12px] font-medium tracking-[-0.03em] text-[#5e5145]"
+                  aria-label={`${mood} 마음 이름 제거`}
+                >
+                  #{mood}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-3 border-t border-[#eee6dd] px-1 pt-3">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={() => setFrequencyPickerOpen((open) => !open)}
@@ -1810,7 +1879,7 @@ function NowTab({
                     : "border-[#ece7de] bg-[#fffdf9] text-[#102747]"
                 }`}
               >
-                {frequencyPickerOpen ? "−" : "+"} 지금 마음은?
+                {frequencyPickerOpen ? "−" : "+"} 지금 마음은? <span className="font-medium text-[#7b858e]">(선택)</span>
               </button>
               <button
                 type="button"
@@ -1822,7 +1891,7 @@ function NowTab({
                     : "border-[#ece7de] bg-[#fffdf9] text-[#102747]"
                 }`}
               >
-                {moodPickerOpen ? "−" : "+"} 마음 이름 붙이기
+                {moodPickerOpen ? "−" : "+"} 마음 이름 붙이기 <span className="font-medium text-[#7b858e]">(선택)</span>
               </button>
             </div>
 
@@ -1947,7 +2016,7 @@ function NowTab({
             </p>
           )}
 
-          <div className="mt-3 flex items-center justify-between pt-1">
+          <div className="maeumtuk-inline-composer-actions mt-3 flex items-center justify-between pt-1">
             <div className="flex items-center gap-2">
               <button
                 type="button"
@@ -1979,7 +2048,7 @@ function NowTab({
         </div>
       </section>
 
-      <section className="-mx-5 mt-1 border-t border-[#ece7de] bg-transparent px-6 pb-2 pt-4">
+      <section className="hidden">
         <div className="mb-2.5 flex items-center justify-between">
           <h2 className="text-[15px] font-semibold tracking-[-0.03em] text-[#102747]">오늘의 툭</h2>
           {displayRecentLogs.length > 0 && (
