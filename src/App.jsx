@@ -2039,17 +2039,17 @@ function NowTab({
   }
 
   return (
-    <main className="relative flex flex-col px-5 pb-10 pt-5">
-      <header className="mb-5 flex items-start justify-between">
+    <main className="relative flex flex-col px-5 pb-8 pt-4">
+      <header className="mb-3 flex items-start justify-between">
         <div>
-          <div className="mb-4 flex items-center gap-2.5">
-            <span className="text-[16px] font-semibold tracking-[-0.04em] text-[#102747]">마음툭</span>
+          <div className="mb-2.5 flex items-center gap-2.5">
+            <span className="text-[15px] font-semibold tracking-[-0.04em] text-[#102747]">마음툭</span>
             <span className="flex w-[36px] items-center" aria-hidden="true">
               <span className="h-px flex-1 bg-[#d0c5b8]" />
               <span className="h-2 w-2 rounded-full bg-[#f6c400]" />
             </span>
           </div>
-          <p className="text-[13px] font-medium tracking-[-0.03em] text-[#8b8b8b]">
+          <p className="text-[12px] font-medium tracking-[-0.03em] text-[#8b8b8b]">
             {currentMeta.displayDate} {currentMeta.day}
           </p>
         </div>
@@ -2062,12 +2062,12 @@ function NowTab({
         </button>
       </header>
 
-      <section className="mb-4">
-        <h1 className="mb-4 text-[28px] font-extrabold leading-[1.22] tracking-[-0.06em] text-[#3f423f]">
+      <section className="mb-3">
+        <h1 className="mb-2.5 text-[25px] font-extrabold leading-[1.18] tracking-[-0.06em] text-[#3f423f]">
           지금 스친 것은?
         </h1>
-        <div className="flex items-center gap-3.5 rounded-[22px] border border-[#e9e7e2]/75 bg-[#fcfaf5]/75 px-4 py-4 shadow-[0_8px_24px_rgba(20,28,38,0.045)]">
-          <div className="relative h-[58px] w-[74px] shrink-0">
+        <div className="flex items-center gap-3 rounded-[18px] border border-[#e9e7e2]/75 bg-[#fcfaf5]/75 px-3.5 py-3 shadow-[0_6px_18px_rgba(20,28,38,0.035)]">
+          <div className="relative h-[48px] w-[62px] shrink-0">
             <span className="absolute right-1 top-1 h-10 w-10 rounded-full bg-[#ffc82e]/20" aria-hidden="true" />
             <img
               src="/now-hero.png"
@@ -2076,8 +2076,8 @@ function NowTab({
               draggable="false"
             />
           </div>
-          <p className="whitespace-pre-line text-[13px] font-medium leading-[1.5] tracking-[-0.03em] text-[#777]">
-            <strong className="mb-1 block text-[15px] font-bold text-[#343434]">문득.</strong>
+          <p className="whitespace-pre-line text-[12px] font-medium leading-[1.42] tracking-[-0.03em] text-[#777]">
+            <strong className="mb-0.5 block text-[14px] font-bold text-[#343434]">문득.</strong>
             {"말문이 막혀도 괜찮아요.\n지금 스친 것 하나면 충분해요."}
           </p>
         </div>
@@ -2086,23 +2086,23 @@ function NowTab({
       <button
         type="button"
         onClick={() => onComposerOpenChange?.(true)}
-        className="mb-5 flex w-full items-center justify-between rounded-[20px] bg-[linear-gradient(135deg,#fff8d7,#f6cf5a)] p-5 text-left shadow-[0_10px_26px_rgba(32,50,75,0.07)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(32,50,75,0.09)]"
+        className="mb-3 flex w-full items-center justify-between rounded-[18px] bg-[linear-gradient(135deg,#fff8d7,#f6cf5a)] px-4 py-3.5 text-left shadow-[0_8px_22px_rgba(32,50,75,0.065)] transition hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(32,50,75,0.08)]"
       >
         <span>
-          <span className="block text-[18px] font-bold tracking-[-0.04em] text-[#20324b]">툭 남기기</span>
-          <span className="mt-1.5 block text-[13px] font-medium tracking-[-0.03em] text-[#6b6258]">
+          <span className="block text-[16px] font-bold tracking-[-0.04em] text-[#20324b]">툭 남기기</span>
+          <span className="mt-0.5 block text-[12px] font-medium tracking-[-0.03em] text-[#6b6258]">
             글이나 낙서로 남겨보세요.
           </span>
         </span>
-        <span className="text-[25px] leading-none text-[#6b6258]" aria-hidden="true">✎</span>
+        <span className="text-[22px] leading-none text-[#6b6258]" aria-hidden="true">✎</span>
       </button>
 
-      <section className="mb-5 rounded-[19px] border border-[rgba(0,0,0,0.025)] bg-white px-[18px] py-[18px] shadow-[0_10px_26px_rgba(32,50,75,0.07)]">
-        <div className="mb-[18px] flex items-center justify-between">
-          <h2 className="text-[16px] font-bold tracking-[-0.04em] text-[#383838]">오늘 내 마음의 위치</h2>
-          <span className="text-[12px] font-medium tracking-[-0.03em] text-[#99958e]">작성창으로 이어져요</span>
+      <section className="mb-4 rounded-[17px] border border-[rgba(0,0,0,0.025)] bg-white px-4 py-3.5 shadow-[0_8px_22px_rgba(32,50,75,0.055)]">
+        <div className="mb-2.5 flex items-center justify-between">
+          <h2 className="text-[15px] font-bold tracking-[-0.04em] text-[#383838]">오늘 내 마음의 위치</h2>
+          <span className="text-[11px] font-medium tracking-[-0.03em] text-[#99958e]">작성창으로 이어져요</span>
         </div>
-        <div className="relative mx-1 mb-4 mt-7">
+        <div className="relative mx-1 mb-2.5 mt-4">
           <input
             type="range"
             min="0"
@@ -2114,7 +2114,7 @@ function NowTab({
             aria-label="오늘 내 마음의 위치 선택"
           />
         </div>
-        <div className="flex justify-between text-[12px] font-bold tracking-[-0.03em] text-[#77746e]">
+        <div className="flex justify-between text-[11px] font-bold tracking-[-0.03em] text-[#77746e]">
           {selectableFrequencyOptions.map((option) => (
             <button
               type="button"
@@ -2128,26 +2128,26 @@ function NowTab({
             </button>
           ))}
         </div>
-        <p className="mt-3 rounded-[13px] bg-[#eef3ee] px-3 py-2 text-center text-[12px] font-semibold leading-5 tracking-[-0.03em] text-[#526957]">
+        <p className="mt-2 rounded-[12px] bg-[#eef3ee] px-3 py-1.5 text-center text-[11px] font-semibold leading-5 tracking-[-0.03em] text-[#526957]">
           {moodPositionMessage}
         </p>
       </section>
 
       {sevenDayFragment && (
-        <section className="mb-6 rounded-[19px] border border-dashed border-[#d8d2c9] bg-[#fcfaf5]/75 px-[18px] py-[18px]">
-          <h2 className="mb-2.5 text-[14px] font-extrabold tracking-[-0.03em] text-[#5e665e]">
+        <section className="mb-4 rounded-[17px] border border-dashed border-[#d8d2c9] bg-[#fcfaf5]/75 px-4 py-3.5">
+          <h2 className="mb-2 text-[13px] font-extrabold tracking-[-0.03em] text-[#5e665e]">
             ⏳ {sevenDayFragment.title === "7일 전 조각" ? "7일 전 당신이 남겨둔 조각" : "가장 먼저 남겨둔 조각"}
           </h2>
-          <blockquote className="maeumtuk-now-preview m-0 whitespace-pre-line text-[16px] font-medium italic leading-[1.7] tracking-[-0.03em] text-[#606060]">
+          <blockquote className="maeumtuk-now-preview m-0 whitespace-pre-line text-[14px] font-medium italic leading-[1.6] tracking-[-0.03em] text-[#606060]">
             “{sevenDayFragment.item.text}”
           </blockquote>
         </section>
       )}
 
       {displayTodayLogs.length > 0 && (
-        <section className="mb-6">
-          <div className="mb-3 flex items-center justify-between px-0.5">
-            <h2 className="text-[18px] font-extrabold tracking-[-0.04em] text-[#20324b]">오늘의 툭</h2>
+        <section className="mb-5">
+          <div className="mb-2.5 flex items-center justify-between px-0.5">
+            <h2 className="text-[17px] font-extrabold tracking-[-0.04em] text-[#20324b]">오늘의 툭</h2>
             <button
               type="button"
               className="text-[14px] font-medium tracking-[-0.03em] text-[#85888c]"
