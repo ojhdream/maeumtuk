@@ -381,13 +381,22 @@ textarea.maeumtuk-reading-text {
 }
 
 .maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-composer-copy {
+  margin-bottom: 8px;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-composer-header {
   margin-bottom: 12px;
-  font-size: 14px;
-  line-height: 21px;
+}
+
+.maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-composer-mode {
+  margin-bottom: 8px;
 }
 
 .maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-draft-input {
-  max-height: 112px;
+  min-height: 142px !important;
+  max-height: 168px !important;
 }
 
 .maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-scroll {
@@ -400,7 +409,17 @@ textarea.maeumtuk-reading-text {
   max-height: var(--maeumtuk-visible-vh, 100dvh);
   overflow-y: auto;
   overscroll-behavior: contain;
+  padding-top: 12px;
   padding-bottom: calc(10px + env(safe-area-inset-bottom));
+}
+
+.maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-composer-card {
+  padding: 10px;
+}
+
+.maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-text-editor {
+  min-height: 174px !important;
+  padding: 14px;
 }
 
 .maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-inline-composer {

@@ -1526,8 +1526,8 @@ function NowTab({
   onAddEmotion,
 }) {
   const noteGuide = useMemo(() => nowNoteGuideOptions[Math.floor(Math.random() * nowNoteGuideOptions.length)], []);
-  const minDraftHeight = 76;
-  const maxDraftHeight = 240;
+  const minDraftHeight = 210;
+  const maxDraftHeight = 360;
   const [draft, setDraft] = useState("");
   const [photoData, setPhotoData] = useState(null);
   const [photoError, setPhotoError] = useState("");
@@ -1606,11 +1606,11 @@ function NowTab({
       const visibleTop = viewport?.offsetTop || 0;
       const visibleHeight = viewport?.height || window.innerHeight;
       const rect = input.getBoundingClientRect();
-      const targetTop = visibleTop + visibleHeight * 0.34;
-      const targetBottom = visibleTop + visibleHeight * 0.72;
+      const targetTop = visibleTop + visibleHeight * 0.18;
+      const targetBottom = visibleTop + visibleHeight * 0.78;
 
       if (rect.top < targetTop || rect.bottom > targetBottom) {
-        input.scrollIntoView({ behavior, block: "center", inline: "nearest" });
+        input.scrollIntoView({ behavior, block: "nearest", inline: "nearest" });
       }
     });
   };
@@ -1751,45 +1751,28 @@ function NowTab({
 
   if (composerOpen) {
     return (
-      <main className="maeumtuk-composer-screen flex h-full min-h-0 flex-col px-6 pb-[calc(16px+env(safe-area-inset-bottom))] pt-[22px]">
-        <header className="mb-[34px] flex items-center justify-between">
+      <main className="maeumtuk-composer-screen flex h-full min-h-0 flex-col px-5 pb-[calc(14px+env(safe-area-inset-bottom))] pt-[18px]">
+        <header className="maeumtuk-composer-header mb-5 grid grid-cols-[44px_1fr_44px] items-center">
           <button
             type="button"
             onClick={() => onComposerOpenChange?.(false)}
-            className="grid h-10 w-10 place-items-center rounded-full text-[30px] leading-none text-[#333] transition hover:bg-[#f1ebe4]"
+            className="grid h-11 w-11 place-items-center rounded-full text-[34px] leading-none text-[#333] transition hover:bg-[#f1ebe4]"
             aria-label="작성창 닫기"
           >
-            ‹
+            ×
           </button>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="grid h-[38px] w-[38px] place-items-center rounded-full bg-white text-[18px] font-bold text-[#333] shadow-[0_10px_26px_rgba(32,50,75,0.07)]"
-              aria-label="작성 옵션"
-            >
-              •••
-            </button>
-            <button
-              type="button"
-              className="h-[38px] rounded-full bg-white px-4 text-[14px] font-bold tracking-[-0.03em] text-[#333] shadow-[0_10px_26px_rgba(32,50,75,0.07)]"
-            >
-              임시저장
-            </button>
+          <div className="text-center">
+            <p className="text-[22px] font-bold leading-none tracking-[-0.04em] text-[#333]">{currentMeta.date}</p>
+            <p className="mt-1 text-[12px] font-medium tracking-[-0.02em] text-[#9a9a9a]">{currentMeta.day} · {currentMeta.time}</p>
           </div>
+          <span aria-hidden="true" />
         </header>
 
-        <div className="mb-[18px]">
-          <h1 className="m-0 text-[24px] font-bold leading-[1.35] tracking-[-0.05em] text-[#242424]">
-            마음에 스친 것을
-            <br />
-            툭 남겨보세요.
-          </h1>
-          <p className="mt-1.5 text-[14px] font-normal leading-[1.5] tracking-[-0.03em] text-[#7b7d80]">
-            글이 아니어도 괜찮아요. 낙서 한 줄도 좋아요.
-          </p>
-        </div>
+        <p className="maeumtuk-composer-copy mb-3 text-[13px] font-medium leading-[1.45] tracking-[-0.02em] text-[#8B8B8B]">
+          글이 아니어도 괜찮아요. 낙서 한 줄도 좋아요.
+        </p>
 
-        <div className="mb-4 grid grid-cols-2 gap-2 rounded-[18px] bg-white p-1.5 shadow-[0_8px_24px_rgba(32,50,75,0.06)]">
+        <div className="maeumtuk-composer-mode mb-3 grid grid-cols-2 gap-2 rounded-[16px] bg-white p-1.5 shadow-[0_8px_24px_rgba(32,50,75,0.05)]">
           {[
             { key: "text", label: "글" },
             { key: "sketch", label: "낙서툭" },
@@ -1798,7 +1781,7 @@ function NowTab({
               key={mode.key}
               type="button"
               onClick={() => setComposerMode(mode.key)}
-              className={`h-11 rounded-[14px] text-[14px] font-extrabold tracking-[-0.03em] transition ${
+              className={`h-10 rounded-[13px] text-[14px] font-extrabold tracking-[-0.03em] transition ${
                 composerMode === mode.key
                   ? "bg-[#fff4cc] text-[#20324b]"
                   : "text-[#777] hover:bg-[#faf7ef]"
@@ -1822,7 +1805,7 @@ function NowTab({
         />
 
         <section
-          className={`rounded-[22px] border border-[#e9e2d9] bg-white p-4 shadow-[0_10px_26px_rgba(32,50,75,0.06)] transition duration-300 ${
+          className={`maeumtuk-composer-card flex min-h-0 flex-1 flex-col rounded-[22px] border border-[#e9e2d9] bg-white p-3 shadow-[0_10px_26px_rgba(32,50,75,0.045)] transition duration-300 ${
             isLeaving ? "translate-y-0.5 opacity-55" : ""
           }`}
         >
@@ -1878,8 +1861,8 @@ function NowTab({
               </div>
             </div>
           )}
-          <div className={`relative overflow-hidden rounded-[18px] bg-[#fcfaf5] p-4 transition-[min-height] duration-[3000ms] ease-in-out ${composerMode === "sketch" ? "hidden" : ""} ${
-            mindSpaceOpen ? "min-h-[300px]" : "min-h-[236px]"
+          <div className={`maeumtuk-text-editor relative overflow-hidden rounded-[18px] bg-[#fcfaf5] p-4 transition-[min-height] duration-[3000ms] ease-in-out ${composerMode === "sketch" ? "hidden" : ""} ${
+            mindSpaceOpen ? "min-h-[300px]" : "min-h-[260px]"
           }`}>
             <div className="relative">
               <textarea
@@ -1896,7 +1879,7 @@ function NowTab({
                   window.setTimeout(() => keepDraftVisible("smooth"), 360);
                 }}
                 onInput={() => keepDraftVisible("auto")}
-                className="maeumtuk-reading-text maeumtuk-draft-input relative z-[1] min-h-[76px] max-h-[300px] w-full resize-none overflow-y-auto bg-transparent p-0 text-[#2e2e2e] outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                className="maeumtuk-reading-text maeumtuk-draft-input relative z-[1] min-h-[210px] max-h-[360px] w-full resize-none overflow-y-auto bg-transparent p-0 text-[#2e2e2e] outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                 placeholder=""
                 aria-label="지금 이 순간의 마음 작성"
                 maxLength={301}
