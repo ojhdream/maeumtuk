@@ -1756,28 +1756,27 @@ function NowTab({
 
   if (composerOpen) {
     return (
-      <main className="maeumtuk-composer-screen flex h-full min-h-0 flex-col px-5 pb-[calc(14px+env(safe-area-inset-bottom))] pt-[18px]">
-        <header className="maeumtuk-composer-header mb-5 grid grid-cols-[44px_1fr_44px] items-center">
+      <main className="maeumtuk-composer-screen flex h-full min-h-0 flex-col px-5 pb-[calc(12px+env(safe-area-inset-bottom))] pt-[14px]">
+        <header className="maeumtuk-composer-header mb-3 grid grid-cols-[38px_1fr_38px] items-center">
           <button
             type="button"
             onClick={() => onComposerOpenChange?.(false)}
-            className="grid h-11 w-11 place-items-center rounded-full text-[34px] leading-none text-[#333] transition hover:bg-[#f1ebe4]"
+            className="grid h-9 w-9 place-items-center rounded-full text-[28px] leading-none text-[#333] transition hover:bg-[#f1ebe4]"
             aria-label="작성창 닫기"
           >
             ×
           </button>
           <div className="text-center">
-            <p className="text-[22px] font-bold leading-none tracking-[-0.04em] text-[#333]">{currentMeta.date}</p>
-            <p className="mt-1 text-[12px] font-medium tracking-[-0.02em] text-[#9a9a9a]">{currentMeta.day} · {currentMeta.time}</p>
+            <p className="text-[15px] font-semibold leading-none tracking-[-0.03em] text-[#555]">{currentMeta.date} · {currentMeta.day} · {currentMeta.time}</p>
           </div>
           <span aria-hidden="true" />
         </header>
 
-        <p className="maeumtuk-composer-copy mb-3 text-[13px] font-medium leading-[1.45] tracking-[-0.02em] text-[#8B8B8B]">
+        <p className="maeumtuk-composer-copy mb-2 text-[12px] font-medium leading-[1.4] tracking-[-0.02em] text-[#8B8B8B]">
           글이 아니어도 괜찮아요. 낙서 한 줄도 좋아요.
         </p>
 
-        <div className="maeumtuk-composer-mode mb-3 grid grid-cols-2 gap-2 rounded-[16px] bg-white p-1.5 shadow-[0_8px_24px_rgba(32,50,75,0.05)]">
+        <div className="maeumtuk-composer-mode mb-2 grid grid-cols-2 gap-1.5 rounded-[13px] bg-white p-1 shadow-[0_6px_18px_rgba(32,50,75,0.045)]">
           {[
             { key: "text", label: "글" },
             { key: "sketch", label: "낙서툭" },
@@ -1786,7 +1785,7 @@ function NowTab({
               key={mode.key}
               type="button"
               onClick={() => setComposerMode(mode.key)}
-              className={`h-10 rounded-[13px] text-[14px] font-extrabold tracking-[-0.03em] transition ${
+              className={`h-8 rounded-[10px] text-[13px] font-extrabold tracking-[-0.03em] transition ${
                 composerMode === mode.key
                   ? "bg-[#fff4cc] text-[#20324b]"
                   : "text-[#777] hover:bg-[#faf7ef]"
@@ -2031,21 +2030,21 @@ function NowTab({
           </p>
         )}
 
-        <div className="maeumtuk-composer-actions mt-3 flex items-center justify-between pt-1">
+        <div className="maeumtuk-composer-actions mt-2 flex items-center justify-between pt-0.5">
           <button
             type="button"
             onClick={() => photoInputRef.current?.click()}
-            className={`grid h-10 w-10 place-items-center rounded-[12px] bg-white text-[#81776e] shadow-[0_8px_18px_rgba(32,50,75,0.045)] transition hover:bg-[#f1ece5] ${composerMode === "sketch" ? "invisible pointer-events-none" : ""}`}
+            className={`grid h-9 w-9 place-items-center rounded-[11px] bg-white text-[#81776e] shadow-[0_6px_14px_rgba(32,50,75,0.04)] transition hover:bg-[#f1ece5] ${composerMode === "sketch" ? "invisible pointer-events-none" : ""}`}
             aria-label="사진 추가"
           >
-            <Image size={18} strokeWidth={1.65} />
+            <Image size={16} strokeWidth={1.65} />
           </button>
           <button
             type="button"
             onClick={leaveTuk}
             disabled={isLeaving}
             aria-disabled={!canLeaveTuk}
-            className="h-10 rounded-full bg-[#20324b] px-6 text-[14px] font-extrabold tracking-[-0.03em] text-white shadow-[0_10px_24px_rgba(32,50,75,0.10)] transition disabled:opacity-45"
+            className="h-9 rounded-full bg-[#20324b] px-5 text-[13px] font-extrabold tracking-[-0.03em] text-white shadow-[0_8px_20px_rgba(32,50,75,0.09)] transition disabled:opacity-45"
           >
             툭 남기기
           </button>
