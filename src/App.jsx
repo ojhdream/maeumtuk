@@ -2043,7 +2043,7 @@ function NowTab({
       <header className="mb-3 flex items-start justify-between">
         <div>
           <div className="mb-2.5 flex items-center gap-2.5">
-            <span className="text-[15px] font-semibold tracking-[-0.04em] text-[#102747]">마음툭</span>
+            <span className="text-[15px] font-semibold tracking-[-0.03em] text-[#20324B]">마음툭</span>
             <span className="flex w-[36px] items-center" aria-hidden="true">
               <span className="h-px flex-1 bg-[#d0c5b8]" />
               <span className="h-2 w-2 rounded-full bg-[#f6c400]" />
@@ -2063,8 +2063,8 @@ function NowTab({
       </header>
 
       <section className="mb-3">
-        <h1 className="mb-2.5 text-[25px] font-extrabold leading-[1.18] tracking-[-0.06em] text-[#3f423f]">
-          지금 스친 것은?
+        <h1 className="mb-2.5 font-['Pretendard'] text-[24px] font-bold leading-[1.2] tracking-[-0.045em] text-[#20324B]">
+          지금 맴도는 생각을 <span className="text-[#7B927D]">툭</span>..
         </h1>
         <div className="flex items-center gap-3 rounded-[18px] border border-[#e9e7e2]/75 bg-[#fcfaf5]/75 px-3.5 py-3 shadow-[0_6px_18px_rgba(20,28,38,0.035)]">
           <div className="relative h-[48px] w-[62px] shrink-0">
@@ -2076,9 +2076,9 @@ function NowTab({
               draggable="false"
             />
           </div>
-          <p className="whitespace-pre-line text-[12px] font-medium leading-[1.42] tracking-[-0.03em] text-[#777]">
-            <strong className="mb-0.5 block text-[14px] font-bold text-[#343434]">문득.</strong>
-            {"말문이 막혀도 괜찮아요.\n지금 스친 것 하나면 충분해요."}
+          <p className="whitespace-pre-line text-[13px] font-medium leading-[1.5] tracking-[-0.03em] text-[#777]">
+            <strong className="mb-0.5 block text-[14px] font-semibold text-[#20324B]">문득.</strong>
+            지금 떠오른 것 하나면 충분해요.
           </p>
         </div>
       </section>
@@ -2089,7 +2089,7 @@ function NowTab({
         className="mb-3 flex w-full items-center justify-between rounded-[18px] bg-[linear-gradient(135deg,#fff8d7,#f6cf5a)] px-4 py-3.5 text-left shadow-[0_8px_22px_rgba(32,50,75,0.065)] transition hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(32,50,75,0.08)]"
       >
         <span>
-          <span className="block text-[16px] font-bold tracking-[-0.04em] text-[#20324b]">툭 남기기</span>
+          <span className="block text-[16px] font-semibold tracking-[-0.03em] text-[#20324B]">툭 남기기</span>
           <span className="mt-0.5 block text-[12px] font-medium tracking-[-0.03em] text-[#6b6258]">
             글이나 낙서로 남겨보세요.
           </span>
@@ -2099,7 +2099,7 @@ function NowTab({
 
       <section className="mb-4 rounded-[17px] border border-[rgba(0,0,0,0.025)] bg-white px-4 py-3.5 shadow-[0_8px_22px_rgba(32,50,75,0.055)]">
         <div className="mb-2.5 flex items-center justify-between">
-          <h2 className="text-[15px] font-bold tracking-[-0.04em] text-[#383838]">오늘 내 마음의 위치</h2>
+          <h2 className="text-[15px] font-semibold tracking-[-0.03em] text-[#20324B]">오늘 내 마음의 위치</h2>
           <span className="text-[11px] font-medium tracking-[-0.03em] text-[#99958e]">작성창으로 이어져요</span>
         </div>
         <div className="relative mx-1 mb-2.5 mt-4">
@@ -2135,10 +2135,10 @@ function NowTab({
 
       {sevenDayFragment && (
         <section className="mb-4 rounded-[17px] border border-dashed border-[#d8d2c9] bg-[#fcfaf5]/75 px-4 py-3.5">
-          <h2 className="mb-2 text-[13px] font-extrabold tracking-[-0.03em] text-[#5e665e]">
+          <h2 className="mb-2 text-[13px] font-semibold tracking-[-0.03em] text-[#20324B]">
             ⏳ {sevenDayFragment.title === "7일 전 조각" ? "7일 전 당신이 남겨둔 조각" : "가장 먼저 남겨둔 조각"}
           </h2>
-          <blockquote className="maeumtuk-now-preview m-0 whitespace-pre-line text-[14px] font-medium italic leading-[1.6] tracking-[-0.03em] text-[#606060]">
+          <blockquote className="maeumtuk-now-preview m-0 whitespace-pre-line text-[15px] font-normal italic leading-[1.65] tracking-[-0.02em] text-[#555]">
             “{sevenDayFragment.item.text}”
           </blockquote>
         </section>
@@ -2147,7 +2147,7 @@ function NowTab({
       {displayTodayLogs.length > 0 && (
         <section className="mb-5">
           <div className="mb-2.5 flex items-center justify-between px-0.5">
-            <h2 className="text-[17px] font-extrabold tracking-[-0.04em] text-[#20324b]">오늘의 툭</h2>
+            <h2 className="text-[16px] font-semibold tracking-[-0.03em] text-[#20324B]">오늘의 툭</h2>
             <button
               type="button"
               className="text-[14px] font-medium tracking-[-0.03em] text-[#85888c]"
