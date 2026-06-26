@@ -4,17 +4,33 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --maeumtuk-navy: #20324b;
+  --maeumtuk-sage: #7b927d;
+  --maeumtuk-yellow: #f6cf5a;
+  --maeumtuk-bg: #fafaf8;
+  --maeumtuk-paper: #fcfaf5;
+  --maeumtuk-card: #ffffff;
+  --maeumtuk-text: #2e2e2e;
+  --maeumtuk-subtext: #8b8b8b;
+  --maeumtuk-line: #e9e6de;
+  --maeumtuk-soft-yellow: #fff4cc;
+  --maeumtuk-sage-soft: #eef3ee;
+  --maeumtuk-shadow: 0 10px 26px rgba(32, 50, 75, 0.07);
+  --maeumtuk-radius-lg: 22px;
+}
+
 html,
 body,
 #root {
   height: 100%;
-  background: #faf8f5;
+  background: var(--maeumtuk-bg);
 }
 
 html.maeumtuk-keyboard-open,
 html.maeumtuk-keyboard-open body,
 html.maeumtuk-keyboard-open #root {
-  background: #faf8f2;
+  background: var(--maeumtuk-bg);
 }
 
 * {
@@ -26,7 +42,8 @@ body {
   min-width: 320px;
   min-height: 100dvh;
   overflow: hidden;
-  background: #faf8f2;
+  background: var(--maeumtuk-bg);
+  color: var(--maeumtuk-text);
   font-family: "Pretendard", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -50,16 +67,24 @@ button,
 }
 
 .maeumtuk-phone {
-  color: #102747;
-  background-color: #fcfcfa;
+  color: var(--maeumtuk-text);
+  background-color: var(--maeumtuk-bg);
   background-image: linear-gradient(
     180deg,
     #ffffff 0%,
-    #fcfcfa 34%,
-    #fbfaf7 62%,
-    #f8f5ef 100%
+    var(--maeumtuk-bg) 34%,
+    var(--maeumtuk-paper) 72%,
+    #f7f4ec 100%
   );
   background-attachment: fixed;
+  border: 1px solid rgba(32, 50, 75, 0.05);
+  box-shadow: 0 24px 80px rgba(32, 50, 75, 0.14);
+}
+
+@media (min-width: 640px) {
+  .maeumtuk-phone {
+    border-radius: 34px;
+  }
 }
 
 .maeumtuk-keyboard-open .maeumtuk-phone {
@@ -88,18 +113,92 @@ button,
   background: transparent;
 }
 
+.maeumtuk-scroll-with-nav {
+  padding-bottom: calc(104px + env(safe-area-inset-bottom));
+}
+
+.maeumtuk-scroll-without-nav {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 .maeumtuk-keyboard-open .maeumtuk-scroll {
   background: transparent;
 }
 
 .maeumtuk-bottom-nav {
   z-index: 20;
-  border-color: #ded6c8 !important;
+  height: calc(78px + env(safe-area-inset-bottom));
+  padding: 9px 10px calc(8px + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(32, 50, 75, 0.08);
+  border-radius: 26px 26px 0 0;
+  border-color: var(--maeumtuk-line) !important;
   background:
-    linear-gradient(180deg, rgba(255, 253, 247, 0.98) 0%, rgba(255, 249, 232, 0.96) 100%) !important;
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(252, 250, 245, 0.92) 100%) !important;
   box-shadow:
-    0 -10px 28px rgba(16, 39, 71, 0.065),
+    0 -10px 26px rgba(32, 50, 75, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.86) !important;
+  backdrop-filter: blur(16px);
+}
+
+.maeumtuk-bottom-nav-item {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
+  color: #687079;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.maeumtuk-bottom-nav-item:hover {
+  color: var(--maeumtuk-navy);
+}
+
+.maeumtuk-bottom-nav-item.is-active {
+  background: var(--maeumtuk-soft-yellow);
+  color: var(--maeumtuk-navy);
+  font-weight: 800;
+  box-shadow: inset 0 0 0 1px rgba(246, 207, 90, 0.28);
+}
+
+.maeumtuk-bottom-nav-item:active {
+  transform: scale(0.98);
+}
+
+.maeumtuk-bottom-nav-icon {
+  display: grid;
+  height: 24px;
+  place-items: center;
+}
+
+.maeumtuk-bottom-nav-label {
+  white-space: nowrap;
+}
+
+.maeumtuk-reading-text {
+  font-family: "Pretendard", system-ui, sans-serif !important;
+  font-size: 17px !important;
+  font-weight: 400 !important;
+  line-height: 1.8 !important;
+  letter-spacing: -0.01em !important;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+textarea.maeumtuk-reading-text {
+  white-space: pre-wrap;
 }
 
 .maeumtuk-hero-friend-img {
@@ -127,10 +226,10 @@ button,
 }
 
 .input-card-container {
-  background-color: #fffdf9;
-  border: 1px solid rgba(142, 132, 111, 0.05);
+  background-color: var(--maeumtuk-paper);
+  border: 1px solid var(--maeumtuk-line);
   border-radius: 16px;
-  box-shadow: 0 12px 30px rgba(142, 132, 111, 0.07);
+  box-shadow: var(--maeumtuk-shadow);
   transition:
     border-color 0.3s ease,
     box-shadow 0.3s ease,
@@ -139,8 +238,8 @@ button,
 }
 
 .input-card-container:focus-within {
-  border-color: #9c8f80;
-  box-shadow: 0 14px 35px rgba(142, 132, 111, 0.12);
+  border-color: var(--maeumtuk-sage);
+  box-shadow: 0 14px 35px rgba(32, 50, 75, 0.1);
 }
 
 .input-card-container:focus-within .composer-guide {
@@ -152,8 +251,8 @@ button,
     to bottom,
     transparent 0,
     transparent 44px,
-    rgba(142, 132, 111, 0.22) 44px,
-    rgba(142, 132, 111, 0.22) 45px
+    rgba(123, 146, 125, 0.22) 44px,
+    rgba(123, 146, 125, 0.22) 45px
   );
   background-attachment: local;
 }
@@ -217,29 +316,50 @@ button,
 }
 
 .tuk-button:disabled {
-  background-color: #e8dfd3;
-  color: #8b8178;
+  background-color: var(--maeumtuk-paper);
+  color: var(--maeumtuk-subtext);
   cursor: not-allowed;
-  box-shadow: inset 0 0 0 1px rgba(126, 109, 92, 0.08);
+  box-shadow: inset 0 0 0 1px var(--maeumtuk-line);
   opacity: 0.82;
 }
 
 .tuk-button:not(:disabled) {
-  background-color: #f5c94a;
-  color: #102747;
-  box-shadow: 0 7px 18px rgba(16, 39, 71, 0.12);
+  background-color: var(--maeumtuk-yellow);
+  color: var(--maeumtuk-navy);
+  box-shadow: 0 7px 18px rgba(32, 50, 75, 0.12);
   opacity: 1;
 }
 
 .tuk-button[aria-disabled="true"] {
-  background-color: #e8dfd3;
-  color: #8b8178;
-  box-shadow: inset 0 0 0 1px rgba(126, 109, 92, 0.08);
+  background-color: var(--maeumtuk-paper);
+  color: var(--maeumtuk-subtext);
+  box-shadow: inset 0 0 0 1px var(--maeumtuk-line);
   opacity: 0.9;
 }
 
 .tuk-button:not(:disabled):active {
   transform: scale(0.98);
+}
+
+.maeumtuk-composer-screen {
+  height: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding-bottom: 104px;
+}
+
+.maeumtuk-composer-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 15;
+  flex-shrink: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(250, 250, 248, 0) 0%,
+    rgba(250, 250, 248, 0.96) 24%,
+    rgba(250, 250, 248, 0.98) 100%
+  );
 }
 
 .maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-bottom-nav {
@@ -275,6 +395,14 @@ button,
   scroll-padding-bottom: 128px;
 }
 
+.maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-composer-screen {
+  min-height: auto;
+  max-height: var(--maeumtuk-visible-vh, 100dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+}
+
 .maeumtuk-keyboard-open .maeumtuk-phone:has(.maeumtuk-draft-input:focus) .maeumtuk-inline-composer {
   max-height: calc(var(--maeumtuk-visible-vh, 100dvh) - 28px);
   overflow-y: auto;
@@ -299,11 +427,13 @@ button,
   position: sticky;
   bottom: 0;
   z-index: 15;
-  margin-left: -20px;
-  margin-right: -20px;
-  padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
-  background: linear-gradient(180deg, rgba(245, 239, 234, 0.9) 0%, rgba(242, 235, 229, 0.98) 100%);
-  box-shadow: 0 -10px 24px rgba(73, 59, 47, 0.035);
+  margin-left: -24px;
+  margin-right: -24px;
+  margin-bottom: calc(-10px - env(safe-area-inset-bottom));
+  padding: 10px 24px calc(10px + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(233, 230, 222, 0.92);
+  background: rgba(250, 250, 248, 0.96);
+  box-shadow: 0 -10px 24px rgba(32, 50, 75, 0.06);
   backdrop-filter: blur(8px);
 }
 
@@ -389,7 +519,7 @@ button,
 @keyframes maeumtuk-card-settle {
   0% {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(12px);
   }
   100% {
     opacity: 1;
