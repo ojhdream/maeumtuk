@@ -1809,13 +1809,13 @@ function NowTab({
         />
 
         <section
-          className={`maeumtuk-composer-card flex min-h-0 flex-1 flex-col rounded-[22px] border border-[#e9e2d9] bg-white p-3 shadow-[0_10px_26px_rgba(32,50,75,0.045)] transition duration-300 ${
+          className={`maeumtuk-composer-card flex min-h-0 flex-1 flex-col transition duration-300 ${
             isLeaving ? "translate-y-0.5 opacity-55" : ""
           }`}
         >
           {composerMode === "sketch" && (
             <div>
-              <div className="relative h-[275px] overflow-hidden rounded-[19px] bg-[#fcfaf5] p-3 shadow-[inset_0_0_0_1px_rgba(233,230,222,0.9)]">
+              <div className="relative h-[360px] overflow-hidden rounded-[18px] bg-[#fcfaf5] p-3 shadow-[inset_0_0_0_1px_rgba(233,230,222,0.9)]">
                 {doodleStrokes.length === 0 && (
                   <p className="pointer-events-none absolute left-5 top-5 z-[1] whitespace-pre-line text-[17px] font-normal leading-[1.6] tracking-[-0.03em] text-[#aeb1b5]">
                     말로 잘 안 잡히는 마음은
@@ -1865,10 +1865,8 @@ function NowTab({
               </div>
             </div>
           )}
-          <div className={`maeumtuk-text-editor relative overflow-hidden rounded-[18px] bg-[#fcfaf5] p-4 transition-[min-height] duration-[3000ms] ease-in-out ${composerMode === "sketch" ? "hidden" : ""} ${
-            mindSpaceOpen ? "min-h-[300px]" : "min-h-[260px]"
-          }`}>
-            <div className="relative">
+          <div className={`maeumtuk-text-editor relative min-h-0 flex-1 overflow-hidden py-3 ${composerMode === "sketch" ? "hidden" : ""}`}>
+            <div className="relative h-full">
               <textarea
                 ref={draftRef}
                 value={draft}
@@ -1883,7 +1881,7 @@ function NowTab({
                   window.setTimeout(() => keepDraftVisible("smooth"), 360);
                 }}
                 onInput={() => keepDraftVisible("auto")}
-                className="maeumtuk-reading-text maeumtuk-draft-input relative z-[1] min-h-[210px] max-h-[360px] w-full resize-none overflow-y-auto bg-transparent p-0 text-[#2e2e2e] outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                className="maeumtuk-reading-text maeumtuk-draft-input relative z-[1] h-full min-h-[330px] max-h-none w-full resize-none overflow-y-auto bg-transparent p-0 text-[#2e2e2e] outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                 placeholder=""
                 aria-label="지금 이 순간의 마음 작성"
                 maxLength={301}
@@ -1900,8 +1898,9 @@ function NowTab({
             </div>
           </div>
 
-          <div className={`mt-3 ${composerMode === "sketch" ? "hidden" : ""}`}>
-            <div className="flex flex-wrap gap-2">
+          <div className={`mt-2 ${composerMode === "sketch" ? "hidden" : ""}`}>
+            <div className="flex flex-wrap gap-1.5">
+              {/*
               <button
                 type="button"
                 onClick={() => {
@@ -1912,37 +1911,23 @@ function NowTab({
                     return nextOpen;
                   });
                 }}
-                className={`inline-flex h-9 items-center gap-1.5 rounded-full border px-3 text-[13px] font-bold tracking-[-0.03em] transition ${
-                  mindSpaceOpen
-                    ? "border-[#7b927d] bg-[#eef3ee] text-[#526957]"
-                    : "border-[#e9e6de] bg-white text-[#20324b]"
-                }`}
               >
-                <span aria-hidden="true">🌱</span>
-                <span>{mindSpaceOpen ? "여백 접기" : "마음 여백"}</span>
-                {mindSpaceCount > 0 && <span className="text-[11px] font-medium text-[#999]">{mindSpaceCount}</span>}
+                마음 여백
               </button>
+              */}
               <button
                 type="button"
                 onClick={() => setMoreOpen((open) => !open)}
-                className={`inline-flex h-9 items-center rounded-full border px-3 text-[13px] font-bold tracking-[-0.03em] transition ${
+                className={`inline-flex h-8 items-center rounded-full border px-3 text-[12px] font-bold tracking-[-0.03em] transition ${
                   moreOpen
                     ? "border-[#7b927d] bg-[#eef3ee] text-[#526957]"
-                    : "border-[#e9e6de] bg-white text-[#7b927d]"
+                    : "border-[#e4ded5] bg-white/80 text-[#7b927d]"
                 }`}
                 aria-expanded={moreOpen}
               >
                 {moreOpen ? "− 더 남기기" : "+ 더 남기기"}
               </button>
             </div>
-            <p
-              className={`overflow-hidden px-1 text-[12px] font-normal leading-[1.6] tracking-[-0.02em] text-[#7a746c] transition-all duration-500 ${
-                mindSpaceOpen ? "mt-2 h-10 opacity-100" : "mt-0 h-0 opacity-0"
-              }`}
-            >
-              잠시 자판에서 손을 떼고,<br />
-              방금 적은 마음을 바라봐요.
-            </p>
           </div>
 
           {composerMode !== "sketch" && photoData && (
@@ -1963,7 +1948,7 @@ function NowTab({
           )}
 
           <div className={`mt-3 ${composerMode === "sketch" || !moreOpen ? "hidden" : ""}`}>
-            <div className="rounded-[16px] bg-white p-4 shadow-[0_8px_24px_rgba(32,50,75,0.045)]">
+            <div className="rounded-[18px] border border-[#e9e6de] bg-[#fcfaf5]/80 p-4">
               <div className="text-[15px] font-extrabold tracking-[-0.03em] text-[#2e2e2e]">내 마음의 위치</div>
               <div className="mt-1 text-[13px] font-normal tracking-[-0.02em] text-[#8b8b8b]">오늘탭에서 이어진 위치예요.</div>
               <div className="relative mx-1 mb-4 mt-6">
