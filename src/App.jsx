@@ -1539,6 +1539,7 @@ function NowTab({
   const [moodPickerOpen, setMoodPickerOpen] = useState(false);
   const [customDraftMood, setCustomDraftMood] = useState("");
   const [selectedFrequencyKey, setSelectedFrequencyKey] = useState("");
+  const [moodPositionValue, setMoodPositionValue] = useState(2);
   const [frequencyPickerOpen, setFrequencyPickerOpen] = useState(false);
   const [composerMode, setComposerMode] = useState("text");
   const [mindSpaceOpen, setMindSpaceOpen] = useState(false);
@@ -1560,15 +1561,12 @@ function NowTab({
   const hasSelectedFrequency = Boolean(selectedFrequencyKey);
   const selectedFrequency = frequencyOptions.find((option) => option.key === selectedFrequencyKey);
   const sevenDayFragment = getSevenDayFragment(logItems);
-  const selectedPositionIndex = Math.max(
+  const moodPositionOptionIndex = Math.max(
     0,
-    selectableFrequencyOptions.findIndex((option) => option.key === selectedFrequencyKey),
+    Math.min(selectableFrequencyOptions.length - 1, Math.round((moodPositionValue / 4) * (selectableFrequencyOptions.length - 1))),
   );
-  const moodPositionIndex = selectedFrequencyKey ? selectedPositionIndex : Math.min(1, selectableFrequencyOptions.length - 1);
-  const moodPositionLeft = selectableFrequencyOptions.length > 1
-    ? `${(moodPositionIndex / (selectableFrequencyOptions.length - 1)) * 100}%`
-    : "50%";
-  const moodPositionMessage = getMoodPositionMessage(selectedFrequencyKey ? selectedPositionIndex * 2 : 2);
+  const moodPositionKey = selectableFrequencyOptions[moodPositionOptionIndex]?.key || "";
+  const moodPositionMessage = getMoodPositionMessage(moodPositionValue);
 
   useEffect(() => {
     let index = 0;
@@ -1738,15 +1736,22 @@ function NowTab({
   };
 
   const toggleFrequency = (key) => {
-    setSelectedFrequencyKey((current) => {
-      if (current === key) {
-        setMoodPickerOpen(false);
-        setDraftMoods([]);
-        setCustomDraftMood("");
-        return "";
-      }
-      return key;
-    });
+    const nextIndex = selectableFrequencyOptions.findIndex((option) => option.key === key);
+    if (nextIndex >= 0) {
+      const nextValue = Math.round((nextIndex / Math.max(1, selectableFrequencyOptions.length - 1)) * 4);
+      setMoodPositionValue(nextValue);
+    }
+    setSelectedFrequencyKey(key);
+  };
+
+  const updateMoodPosition = (value) => {
+    const nextValue = Math.max(0, Math.min(4, Number(value)));
+    const nextOptionIndex = Math.max(
+      0,
+      Math.min(selectableFrequencyOptions.length - 1, Math.round((nextValue / 4) * (selectableFrequencyOptions.length - 1))),
+    );
+    setMoodPositionValue(nextValue);
+    setSelectedFrequencyKey(selectableFrequencyOptions[nextOptionIndex]?.key || "");
   };
 
   if (composerOpen) {
@@ -1896,36 +1901,49 @@ function NowTab({
             </div>
           </div>
 
-          <div className={`mt-3 rounded-[16px] bg-white px-4 py-3 shadow-[0_8px_24px_rgba(32,50,75,0.045)] ${composerMode === "sketch" ? "hidden" : ""}`}>
-            <div className="flex items-center justify-between gap-3">
-              <strong className="text-[15px] font-extrabold tracking-[-0.03em] text-[#7b927d]">🌱 마음 여백</strong>
-              <span className="text-[12px] font-normal tracking-[-0.02em] text-[#999]">{mindSpaceCount}번</span>
+          <div className={`mt-3 ${composerMode === "sketch" ? "hidden" : ""}`}>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  draftRef.current?.blur();
+                  setMindSpaceOpen((open) => {
+                    const nextOpen = !open;
+                    if (nextOpen) setMindSpaceCount((count) => count + 1);
+                    return nextOpen;
+                  });
+                }}
+                className={`inline-flex h-9 items-center gap-1.5 rounded-full border px-3 text-[13px] font-bold tracking-[-0.03em] transition ${
+                  mindSpaceOpen
+                    ? "border-[#7b927d] bg-[#eef3ee] text-[#526957]"
+                    : "border-[#e9e6de] bg-white text-[#20324b]"
+                }`}
+              >
+                <span aria-hidden="true">🌱</span>
+                <span>{mindSpaceOpen ? "여백 접기" : "마음 여백"}</span>
+                {mindSpaceCount > 0 && <span className="text-[11px] font-medium text-[#999]">{mindSpaceCount}</span>}
+              </button>
+              <button
+                type="button"
+                onClick={() => setMoreOpen((open) => !open)}
+                className={`inline-flex h-9 items-center rounded-full border px-3 text-[13px] font-bold tracking-[-0.03em] transition ${
+                  moreOpen
+                    ? "border-[#7b927d] bg-[#eef3ee] text-[#526957]"
+                    : "border-[#e9e6de] bg-white text-[#7b927d]"
+                }`}
+                aria-expanded={moreOpen}
+              >
+                {moreOpen ? "− 더 남기기" : "+ 더 남기기"}
+              </button>
             </div>
-            <div
-              className={`overflow-hidden text-center text-[12px] font-normal leading-[1.7] tracking-[-0.02em] text-[#7a746c] transition-all duration-700 ${
-                mindSpaceOpen ? "mt-3 h-12 opacity-100" : "mt-0 h-0 opacity-0"
+            <p
+              className={`overflow-hidden px-1 text-[12px] font-normal leading-[1.6] tracking-[-0.02em] text-[#7a746c] transition-all duration-500 ${
+                mindSpaceOpen ? "mt-2 h-10 opacity-100" : "mt-0 h-0 opacity-0"
               }`}
             >
-              잠시 자판에서 손을 떼고,
-              <br />
+              잠시 자판에서 손을 떼고,<br />
               방금 적은 마음을 바라봐요.
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                draftRef.current?.blur();
-                setMindSpaceOpen((open) => {
-                  const nextOpen = !open;
-                  if (nextOpen) setMindSpaceCount((count) => count + 1);
-                  return nextOpen;
-                });
-              }}
-              className={`mt-3 h-11 w-full rounded-[12px] text-[13px] font-extrabold tracking-[-0.03em] transition ${
-                mindSpaceOpen ? "bg-[#7b927d] text-white" : "bg-[#eef3ee] text-[#20324b]"
-              }`}
-            >
-              {mindSpaceOpen ? "여백 접기" : "마음 여백"}
-            </button>
+            </p>
           </div>
 
           {composerMode !== "sketch" && photoData && (
@@ -1945,89 +1963,66 @@ function NowTab({
             </div>
           )}
 
-          <div className={`mt-3 ${composerMode === "sketch" ? "hidden" : ""}`}>
-            <button
-              type="button"
-              onClick={() => setMoreOpen((open) => !open)}
-              className="h-11 w-full rounded-[14px] bg-white text-[14px] font-extrabold tracking-[-0.03em] text-[#7b927d] shadow-[0_8px_24px_rgba(32,50,75,0.045)]"
-              aria-expanded={moreOpen}
-            >
-              {moreOpen ? "− 더 남기기" : "+ 더 남기기"}
-            </button>
+          <div className={`mt-3 ${composerMode === "sketch" || !moreOpen ? "hidden" : ""}`}>
+            <div className="rounded-[16px] bg-white p-4 shadow-[0_8px_24px_rgba(32,50,75,0.045)]">
+              <div className="text-[15px] font-extrabold tracking-[-0.03em] text-[#2e2e2e]">내 마음의 위치</div>
+              <div className="mt-1 text-[13px] font-normal tracking-[-0.02em] text-[#8b8b8b]">오늘탭에서 이어진 위치예요.</div>
+              <div className="relative mx-1 mb-4 mt-6">
+                <input
+                  type="range"
+                  min="0"
+                  max="4"
+                  step="1"
+                  value={moodPositionValue}
+                  onChange={(event) => updateMoodPosition(event.target.value)}
+                  className="maeumtuk-mood-range"
+                  aria-label="내 마음의 위치 선택"
+                />
+              </div>
+              <div className="flex justify-between text-[13px] font-bold tracking-[-0.03em] text-[#77746e]">
+                {selectableFrequencyOptions.map((option) => (
+                  <button
+                    type="button"
+                    key={option.key}
+                    onClick={() => toggleFrequency(option.key)}
+                    className={`rounded-full px-0.5 transition ${
+                      moodPositionKey === option.key ? "text-[#7b927d]" : "text-[#77746e]"
+                    }`}
+                  >
+                    {option.icon} {option.label}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-3 rounded-[13px] bg-[#eef3ee] px-3 py-2 text-center text-[12px] font-semibold leading-5 tracking-[-0.03em] text-[#526957]">
+                {moodPositionMessage}
+              </p>
 
-            {moreOpen && (
-              <div className="mt-3 rounded-[16px] bg-white p-4 shadow-[0_8px_24px_rgba(32,50,75,0.045)]">
-                <div className="text-[15px] font-extrabold tracking-[-0.03em] text-[#2e2e2e]">내 마음의 위치</div>
-                <div className="mt-1 text-[13px] font-normal tracking-[-0.02em] text-[#8b8b8b]">오늘탭에서 이어진 위치예요.</div>
-                <div className="relative mx-3 mb-4 mt-6 h-[3px] rounded-full bg-[#ddd9d3]">
-                  <span
-                    className="absolute top-1/2 h-[17px] w-[17px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#7b927d] shadow-[0_0_0_6px_rgba(123,146,125,0.14)] transition-all duration-300"
-                    style={{ left: moodPositionLeft }}
-                    aria-hidden="true"
-                  />
-                  {selectableFrequencyOptions.map((option) => {
-                    const index = selectableFrequencyOptions.findIndex((item) => item.key === option.key);
-                    const left = selectableFrequencyOptions.length > 1
-                      ? `${(index / (selectableFrequencyOptions.length - 1)) * 100}%`
-                      : "50%";
-                    return (
-                      <button
-                        type="button"
-                        key={option.key}
-                        onClick={() => toggleFrequency(option.key)}
-                        className="absolute top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full"
-                        style={{ left }}
-                        aria-label={`${option.label} 위치 선택`}
-                      >
-                        <span className="sr-only">{option.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-                <div className="flex justify-between text-[13px] font-bold tracking-[-0.03em] text-[#77746e]">
-                  {selectableFrequencyOptions.map((option) => (
-                    <button
-                      type="button"
-                      key={option.key}
-                      onClick={() => toggleFrequency(option.key)}
-                      className={`rounded-full px-0.5 transition ${
-                        selectedFrequencyKey === option.key ? "text-[#7b927d]" : "text-[#77746e]"
-                      }`}
-                    >
-                      {option.icon} {option.label}
+              <div className="mt-4 rounded-[14px] bg-[#f8f8f8] px-3">
+                <input
+                  value={customDraftMood}
+                  onChange={(event) => setCustomDraftMood(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") toggleDraftMood(customDraftMood);
+                  }}
+                  onBlur={() => {
+                    if (customDraftMood.trim()) toggleDraftMood(customDraftMood);
+                  }}
+                  className="h-12 w-full bg-transparent text-[15px] font-normal tracking-[-0.02em] text-[#2e2e2e] outline-none placeholder:text-[#aeb1b5]"
+                  placeholder="마음 이름 붙이기 (선택)"
+                />
+              </div>
+              {draftMoods.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1.5 text-[12px] font-medium text-[#7b927d]">
+                  {draftMoods.map((mood) => (
+                    <button type="button" key={mood} onClick={() => toggleDraftMood(mood)}>
+                      #{mood}
                     </button>
                   ))}
                 </div>
-                <p className="mt-3 rounded-[13px] bg-[#eef3ee] px-3 py-2 text-center text-[12px] font-semibold leading-5 tracking-[-0.03em] text-[#526957]">
-                  {moodPositionMessage}
-                </p>
-
-                <div className="mt-4 rounded-[14px] bg-[#f8f8f8] px-3">
-                  <input
-                    value={customDraftMood}
-                    onChange={(event) => setCustomDraftMood(event.target.value)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter") toggleDraftMood(customDraftMood);
-                    }}
-                    onBlur={() => {
-                      if (customDraftMood.trim()) toggleDraftMood(customDraftMood);
-                    }}
-                    className="h-12 w-full bg-transparent text-[15px] font-normal tracking-[-0.02em] text-[#2e2e2e] outline-none placeholder:text-[#aeb1b5]"
-                    placeholder="마음 이름 붙이기 (선택)"
-                  />
-                </div>
-                {draftMoods.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-1.5 text-[12px] font-medium text-[#7b927d]">
-                    {draftMoods.map((mood) => (
-                      <button type="button" key={mood} onClick={() => toggleDraftMood(mood)}>
-                        #{mood}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+              )}
+            </div>
           </div>
+
         </section>
 
         {(lengthNotice || photoError || emptyNotice) && (
@@ -2040,17 +2035,17 @@ function NowTab({
           <button
             type="button"
             onClick={() => photoInputRef.current?.click()}
-            className={`grid h-12 w-12 place-items-center rounded-[14px] bg-white text-[#81776e] shadow-[0_8px_24px_rgba(32,50,75,0.05)] transition hover:bg-[#f1ece5] ${composerMode === "sketch" ? "invisible pointer-events-none" : ""}`}
+            className={`grid h-10 w-10 place-items-center rounded-[12px] bg-white text-[#81776e] shadow-[0_8px_18px_rgba(32,50,75,0.045)] transition hover:bg-[#f1ece5] ${composerMode === "sketch" ? "invisible pointer-events-none" : ""}`}
             aria-label="사진 추가"
           >
-            <Image size={20} strokeWidth={1.65} />
+            <Image size={18} strokeWidth={1.65} />
           </button>
           <button
             type="button"
             onClick={leaveTuk}
             disabled={isLeaving}
             aria-disabled={!canLeaveTuk}
-            className="h-12 rounded-full bg-[#20324b] px-9 text-[16px] font-extrabold tracking-[-0.03em] text-white shadow-[0_12px_32px_rgba(32,50,75,0.12)] transition disabled:opacity-45"
+            className="h-10 rounded-full bg-[#20324b] px-6 text-[14px] font-extrabold tracking-[-0.03em] text-white shadow-[0_10px_24px_rgba(32,50,75,0.10)] transition disabled:opacity-45"
           >
             툭 남기기
           </button>
@@ -2123,30 +2118,17 @@ function NowTab({
           <h2 className="text-[16px] font-bold tracking-[-0.04em] text-[#383838]">오늘 내 마음의 위치</h2>
           <span className="text-[12px] font-medium tracking-[-0.03em] text-[#99958e]">작성창으로 이어져요</span>
         </div>
-        <div className="relative mx-3 mb-4 mt-7 h-[3px] rounded-full bg-[#ddd9d3]">
-          <span
-            className="absolute top-1/2 h-[17px] w-[17px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#7b927d] shadow-[0_0_0_6px_rgba(123,146,125,0.14)] transition-all duration-300"
-            style={{ left: moodPositionLeft }}
-            aria-hidden="true"
+        <div className="relative mx-1 mb-4 mt-7">
+          <input
+            type="range"
+            min="0"
+            max="4"
+            step="1"
+            value={moodPositionValue}
+            onChange={(event) => updateMoodPosition(event.target.value)}
+            className="maeumtuk-mood-range"
+            aria-label="오늘 내 마음의 위치 선택"
           />
-          {selectableFrequencyOptions.map((option) => {
-            const index = selectableFrequencyOptions.findIndex((item) => item.key === option.key);
-            const left = selectableFrequencyOptions.length > 1
-              ? `${(index / (selectableFrequencyOptions.length - 1)) * 100}%`
-              : "50%";
-            return (
-              <button
-                type="button"
-                key={option.key}
-                onClick={() => toggleFrequency(option.key)}
-                className="absolute top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full"
-                style={{ left }}
-                aria-label={`${option.label} 위치 선택`}
-              >
-                <span className="sr-only">{option.label}</span>
-              </button>
-            );
-          })}
         </div>
         <div className="flex justify-between text-[12px] font-bold tracking-[-0.03em] text-[#77746e]">
           {selectableFrequencyOptions.map((option) => (
@@ -2155,7 +2137,7 @@ function NowTab({
               key={option.key}
               onClick={() => toggleFrequency(option.key)}
               className={`rounded-full px-0.5 transition ${
-                selectedFrequencyKey === option.key ? "text-[#7b927d]" : "text-[#77746e]"
+                moodPositionKey === option.key ? "text-[#7b927d]" : "text-[#77746e]"
               }`}
             >
               {option.label} {option.icon}

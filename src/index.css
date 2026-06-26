@@ -156,9 +156,23 @@ button,
   font-weight: 600;
   letter-spacing: -0.03em;
   transition:
-    background-color 0.2s ease,
     color 0.2s ease,
     transform 0.2s ease;
+}
+
+.maeumtuk-bottom-nav-item::before {
+  content: "";
+  position: absolute;
+  inset: 6px 12px;
+  z-index: 0;
+  border-radius: 16px;
+  background: transparent;
+  box-shadow: none;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .maeumtuk-bottom-nav-item:hover {
@@ -166,10 +180,13 @@ button,
 }
 
 .maeumtuk-bottom-nav-item.is-active {
-  background: var(--maeumtuk-soft-yellow);
   color: var(--maeumtuk-navy);
   font-weight: 800;
-  box-shadow: inset 0 0 0 1px rgba(246, 207, 90, 0.28);
+}
+
+.maeumtuk-bottom-nav-item.is-active::before {
+  background: var(--maeumtuk-soft-yellow);
+  box-shadow: inset 0 0 0 1px rgba(246, 207, 90, 0.22);
 }
 
 .maeumtuk-bottom-nav-item:active {
@@ -177,12 +194,16 @@ button,
 }
 
 .maeumtuk-bottom-nav-icon {
+  position: relative;
+  z-index: 1;
   display: grid;
   height: 24px;
   place-items: center;
 }
 
 .maeumtuk-bottom-nav-label {
+  position: relative;
+  z-index: 1;
   white-space: nowrap;
 }
 
@@ -199,6 +220,57 @@ button,
 
 textarea.maeumtuk-reading-text {
   white-space: pre-wrap;
+}
+
+.maeumtuk-mood-range {
+  width: 100%;
+  height: 34px;
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.maeumtuk-mood-range:focus {
+  outline: none;
+}
+
+.maeumtuk-mood-range::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #c7cfd7 0%, #7b927d 50%, #f6cf5a 100%);
+}
+
+.maeumtuk-mood-range::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -7.5px;
+  border: 3px solid #fcfaf5;
+  border-radius: 999px;
+  background: #7b927d;
+  box-shadow:
+    0 0 0 6px rgba(123, 146, 125, 0.14),
+    0 4px 12px rgba(32, 50, 75, 0.12);
+}
+
+.maeumtuk-mood-range::-moz-range-track {
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #c7cfd7 0%, #7b927d 50%, #f6cf5a 100%);
+}
+
+.maeumtuk-mood-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 3px solid #fcfaf5;
+  border-radius: 999px;
+  background: #7b927d;
+  box-shadow:
+    0 0 0 6px rgba(123, 146, 125, 0.14),
+    0 4px 12px rgba(32, 50, 75, 0.12);
 }
 
 .maeumtuk-hero-friend-img {
