@@ -1597,11 +1597,56 @@ function NowTab({
     input.style.height = `${Math.min(Math.max(input.scrollHeight, baseHeight), maxDraftHeight)}px`;
   }, [draft, mindSpaceOpen]);
 
+  const keepDraftVisible = (behavior = "smooth") => {
+    const input = draftRef.current;
+    if (!input) return;
+
+    window.requestAnimationFrame(() => {
+      const viewport = window.visualViewport;
+      const visibleTop = viewport?.offsetTop || 0;
+      const visibleHeight = viewport?.height || window.innerHeight;
+      const rect = input.getBoundingClientRect();
+      const targetTop = visibleTop + visibleHeight * 0.34;
+      const targetBottom = visibleTop + visibleHeight * 0.72;
+
+      if (rect.top < targetTop || rect.bottom > targetBottom) {
+        input.scrollIntoView({ behavior, block: "center", inline: "nearest" });
+      }
+    });
+  };
+
   useEffect(() => {
     if (!composerOpen) return;
     if (composerMode !== "text") return;
-    const focusTimer = window.setTimeout(() => draftRef.current?.focus(), 120);
-    return () => window.clearTimeout(focusTimer);
+    const focusTimer = window.setTimeout(() => {
+      draftRef.current?.focus();
+      keepDraftVisible("smooth");
+    }, 120);
+    const settleTimer = window.setTimeout(() => keepDraftVisible("smooth"), 420);
+    return () => {
+      window.clearTimeout(focusTimer);
+      window.clearTimeout(settleTimer);
+    };
+  }, [composerOpen, composerMode]);
+
+  useEffect(() => {
+    if (!composerOpen || composerMode !== "text") return undefined;
+
+    const handleViewportChange = () => {
+      if (document.activeElement === draftRef.current) {
+        keepDraftVisible("auto");
+      }
+    };
+
+    window.visualViewport?.addEventListener("resize", handleViewportChange);
+    window.visualViewport?.addEventListener("scroll", handleViewportChange);
+    window.addEventListener("resize", handleViewportChange);
+
+    return () => {
+      window.visualViewport?.removeEventListener("resize", handleViewportChange);
+      window.visualViewport?.removeEventListener("scroll", handleViewportChange);
+      window.removeEventListener("resize", handleViewportChange);
+    };
   }, [composerOpen, composerMode]);
 
   const leaveTuk = () => {
@@ -1844,7 +1889,13 @@ function NowTab({
                   setDraft(event.target.value);
                   if (lengthNotice) setLengthNotice(false);
                   if (emptyNotice) setEmptyNotice(false);
+                  keepDraftVisible("auto");
                 }}
+                onFocus={() => {
+                  window.setTimeout(() => keepDraftVisible("smooth"), 80);
+                  window.setTimeout(() => keepDraftVisible("smooth"), 360);
+                }}
+                onInput={() => keepDraftVisible("auto")}
                 className="maeumtuk-reading-text maeumtuk-draft-input relative z-[1] min-h-[76px] max-h-[300px] w-full resize-none overflow-y-auto bg-transparent p-0 text-[#2e2e2e] outline-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                 placeholder=""
                 aria-label="지금 이 순간의 마음 작성"
